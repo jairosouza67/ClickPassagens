@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  clickpassagens:
+    build: .
+    ports:
+      - "5001:5001"
+    environment:
+      - FLASK_ENV=production
+      - SECRET_KEY=clickpassagens_production_secret_key_change_in_production
+    volumes:
+      - ./database:/app/database
+      - ./logs:/app/logs
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5001/api/busca/companhias"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx_clickpassagens.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - clickpassagens
+    restart: unless-stopped
