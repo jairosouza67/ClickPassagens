@@ -1,0 +1,19 @@
+[Unit]
+Description=ClickPassagens Production Server
+After=network.target
+
+[Service]
+Type=notify
+User=www-data
+Group=www-data
+RuntimeDirectory=clickpassagens
+WorkingDirectory=D:\VS Code\Milhas2
+Environment=PATH=D:\VS Code\Milhas2/.venv/bin
+ExecStart=D:\VS Code\Milhas2/.venv/bin/gunicorn --config gunicorn.conf.py main:app
+ExecReload=/bin/kill -s HUP $MAINPID
+KillMode=mixed
+TimeoutStopSec=5
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
