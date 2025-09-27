@@ -44,6 +44,8 @@ export default function BuscaIntegrada({ onBuscaCompleta }) {
   }
 
   const realizarBusca = async () => {
+    console.log('Iniciando busca com dados:', searchData)
+    
     if (!searchData.origem || !searchData.destino || !searchData.data_ida) {
       alert('Por favor, preencha origem, destino e data de ida')
       return
@@ -53,6 +55,7 @@ export default function BuscaIntegrada({ onBuscaCompleta }) {
     setBuscaRealizada(false)
 
     try {
+      console.log('Fazendo requisição para:', `${API_BASE_URL}/busca/buscar`)
       const response = await fetch(`${API_BASE_URL}/busca/buscar`, {
         method: 'POST',
         headers: {
@@ -64,14 +67,17 @@ export default function BuscaIntegrada({ onBuscaCompleta }) {
         })
       })
 
+      console.log('Resposta recebida:', response.status)
       const data = await response.json()
+      console.log('Dados da resposta:', data)
 
       if (data.success) {
         setResultados(data.data.resultados)
         setBuscaRealizada(true)
-
+        
         // Chamar callback se fornecido
         if (onBuscaCompleta) {
+          console.log('Chamando callback com resultados:', data.data.resultados)
           onBuscaCompleta(data.data.resultados)
         }
       } else {
@@ -79,7 +85,7 @@ export default function BuscaIntegrada({ onBuscaCompleta }) {
       }
     } catch (error) {
       console.error('Erro na busca:', error)
-      alert('Erro ao realizar busca')
+      alert('Erro ao realizar busca: ' + error.message)
     } finally {
       setLoading(false)
     }
@@ -149,9 +155,9 @@ export default function BuscaIntegrada({ onBuscaCompleta }) {
                   variant="outline"
                   size="sm"
                   onClick={trocarOrigemDestino}
-                  className="absolute top-8 left-1/2 transform -translate-x-1/2 bg-white border-2 border-aviation-blue text-aviation-blue hover:bg-aviation-blue hover:text-white rounded-full w-10 h-10 p-0 shadow-lg z-10"
+                  className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white border-2 border-aviation-blue text-aviation-blue hover:bg-aviation-blue hover:text-white rounded-full p-2 shadow-lg z-10"
                 >
-                  <ArrowUpDown className="w-4 h-4" />
+                  <ArrowUpDown className="h-4 w-4" />
                 </Button>
               </div>
             </div>
@@ -175,7 +181,7 @@ export default function BuscaIntegrada({ onBuscaCompleta }) {
               <div className="space-y-2">
                 <Label htmlFor="data_volta" className="text-sm font-semibold text-gray-700 flex items-center">
                   <Calendar className="w-4 h-4 mr-2 text-aviation-light-blue" />
-                  Data de Volta
+                  Data de Volta (opcional)
                 </Label>
                 <Input
                   id="data_volta"
@@ -199,10 +205,8 @@ export default function BuscaIntegrada({ onBuscaCompleta }) {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    {[1,2,3,4,5,6].map(num => (
-                      <SelectItem key={num} value={num.toString()}>
-                        {num} {num === 1 ? 'Passageiro' : 'Passageiros'}
-                      </SelectItem>
+                    {[1,2,3,4,5,6,7,8,9].map(num => (
+                      <SelectItem key={num} value={num.toString()}>{num} passageiro{num > 1 ? 's' : ''}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -210,7 +214,7 @@ export default function BuscaIntegrada({ onBuscaCompleta }) {
               
               <div className="space-y-2">
                 <Label htmlFor="classe" className="text-sm font-semibold text-gray-700 flex items-center">
-                  <Plane className="w-4 h-4 mr-2 text-aviation-blue" />
+                  <Plane className="w-4 h-4 mr-2 text-aviation-light-blue" />
                   Classe
                 </Label>
                 <Select value={searchData.classe} onValueChange={(value) => setSearchData({...searchData, classe: value})}>
@@ -252,140 +256,58 @@ export default function BuscaIntegrada({ onBuscaCompleta }) {
         </CardContent>
       </Card>
 
-      {/* Resultados da Busca */}
-      {buscaRealizada && (
-        <div className="space-y-6 animate-fade-in">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-            <div>
-              <h2 className="text-3xl font-bold text-gray-900">Resultados da Busca</h2>
-              <p className="text-gray-600 mt-1">
-                {resultados.length} voos encontrados para sua viagem
-              </p>
+      {/* Dicas de Busca */}
+      <Card className="border-0 shadow-lg bg-gradient-to-r from-blue-50 to-indigo-50">
+        <CardContent className="p-6">
+          <div className="flex items-start space-x-4">
+            <div className="bg-aviation-blue/10 p-3 rounded-full">
+              <Clock className="h-6 w-6 text-aviation-blue" />
             </div>
-            
-            <div className="flex items-center space-x-3">
-              <Badge variant="secondary" className="px-3 py-1">
-                <Clock className="w-4 h-4 mr-1" />
-                Atualizado agora
-              </Badge>
-              <Button variant="outline" className="border-aviation-blue text-aviation-blue hover:bg-aviation-blue hover:text-white">
-                Filtros Avançados
-              </Button>
-            </div>
-          </div>
-          
-          {resultados.length > 0 ? (
-            <div className="grid gap-6">
-              {resultados.map((resultado, index) => (
-                <div key={index} className="animate-slide-in-right" style={{animationDelay: `${index * 0.1}s`}}>
-                  <FlightCard 
-                    resultado={resultado} 
-                    onSelect={(voo) => {
-                      console.log('Voo selecionado:', voo)
-                    }}
-                  />
+            <div className="flex-1">
+              <h3 className="font-semibold text-gray-900 mb-2">Dicas para economizar</h3>
+              <div className="grid md:grid-cols-2 gap-4 text-sm text-gray-600">
+                <div className="space-y-2">
+                  <p>• Seja flexível com as datas para encontrar melhores preços</p>
+                  <p>• Compare preços em milhas vs. dinheiro</p>
                 </div>
-              ))}
-            </div>
-          ) : (
-            <Card className="border-0 shadow-lg bg-white/80 backdrop-blur-sm">
-              <CardContent className="p-12 text-center">
-                <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <Plane className="w-12 h-12 text-gray-400" />
+                <div className="space-y-2">
+                  <p>• Considere aeroportos alternativos próximos</p>
+                  <p>• Voos com escalas podem ser mais econômicos</p>
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">Nenhum voo encontrado</h3>
-                <p className="text-gray-600 mb-6">
-                  Não encontramos voos para os critérios selecionados. 
-                  Tente ajustar suas datas ou destinos.
-                </p>
-                <Button 
-                  variant="outline" 
-                  onClick={() => setBuscaRealizada(false)}
-                  className="border-aviation-blue text-aviation-blue hover:bg-aviation-blue hover:text-white"
-                >
-                  Nova Busca
-                </Button>
-              </CardContent>
-            </Card>
-          )}
-        </div>
-      )}
-
-      {/* Companhias Disponíveis */}
-      {companhias.length > 0 && (
-        <Card className="border-0 shadow-lg bg-white/80 backdrop-blur-sm">
-          <CardHeader>
-            <CardTitle className="text-xl text-gray-900">Companhias Parceiras</CardTitle>
-            <CardDescription>
-              Buscamos nas melhores companhias aéreas para você
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-              {companhias.map((companhia, index) => (
-                <div 
-                  key={index}
-                  className="flex flex-col items-center p-4 rounded-xl border-2 border-gray-200 hover:border-aviation-blue transition-colors group"
-                >
-                  <div className="w-12 h-12 bg-gradient-aviation rounded-full flex items-center justify-center text-white font-bold mb-2 group-hover:scale-110 transition-transform">
-                    {companhia.nome?.charAt(0) || 'A'}
-                  </div>
-                  <span className="text-sm font-medium text-gray-700 group-hover:text-aviation-blue transition-colors">
-                    {companhia.nome}
-                  </span>
-                  <Badge 
-                    variant={companhia.ativo ? "default" : "secondary"} 
-                    className="mt-2 text-xs"
-                  >
-                    {companhia.ativo ? 'Ativo' : 'Em breve'}
-                  </Badge>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Dicas de Economia */}
-      <Card className="border-0 shadow-lg bg-gradient-to-r from-aviation-gold/10 to-aviation-blue/10 backdrop-blur-sm">
-        <CardContent className="p-8">
-          <div className="text-center space-y-4">
-            <div className="w-16 h-16 bg-aviation-gold rounded-full flex items-center justify-center mx-auto">
-              <span className="text-2xl">💡</span>
-            </div>
-            <h3 className="text-2xl font-bold text-gray-900">Dicas para Economizar</h3>
-            <div className="grid md:grid-cols-3 gap-6 mt-8">
-              <div className="text-center space-y-2">
-                <div className="w-12 h-12 bg-aviation-blue rounded-full flex items-center justify-center mx-auto">
-                  <Calendar className="w-6 h-6 text-white" />
-                </div>
-                <h4 className="font-semibold text-gray-900">Flexibilidade nas Datas</h4>
-                <p className="text-sm text-gray-600">
-                  Voos em dias úteis costumam ser mais baratos
-                </p>
-              </div>
-              <div className="text-center space-y-2">
-                <div className="w-12 h-12 bg-aviation-light-blue rounded-full flex items-center justify-center mx-auto">
-                  <Clock className="w-6 h-6 text-white" />
-                </div>
-                <h4 className="font-semibold text-gray-900">Antecedência</h4>
-                <p className="text-sm text-gray-600">
-                  Reserve com 2-3 meses de antecedência
-                </p>
-              </div>
-              <div className="text-center space-y-2">
-                <div className="w-12 h-12 bg-aviation-gold rounded-full flex items-center justify-center mx-auto">
-                  <Users className="w-6 h-6 text-white" />
-                </div>
-                <h4 className="font-semibold text-gray-900">Compare Sempre</h4>
-                <p className="text-sm text-gray-600">
-                  Use nossa plataforma para comparar todas as opções
-                </p>
               </div>
             </div>
           </div>
         </CardContent>
       </Card>
+
+      {/* Resultados da Busca */}
+      {buscaRealizada && (
+        <Card className="border-0 shadow-xl">
+          <CardHeader className="bg-gradient-aviation text-white">
+            <CardTitle className="flex items-center space-x-3">
+              <Plane className="h-6 w-6" />
+              <span>Resultados da Busca</span>
+              <Badge variant="secondary" className="bg-white/20 text-white">
+                {resultados.length} voos encontrados
+              </Badge>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-6">
+            {resultados.length > 0 ? (
+              <div className="space-y-4">
+                {resultados.map((voo, index) => (
+                  <FlightCard key={index} voo={voo} />
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <Plane className="h-12 w-12 mx-auto text-gray-400 mb-4" />
+                <p className="text-gray-500">Nenhum voo encontrado para os critérios selecionados.</p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
     </div>
   )
 }
