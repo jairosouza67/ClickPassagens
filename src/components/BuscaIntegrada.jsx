@@ -5,11 +5,12 @@ import { Input } from './ui/input.jsx'
 import { Label } from './ui/label.jsx'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select.jsx'
 import { Badge } from './ui/badge.jsx'
-import { Loader2, Search, Plane, Clock, MapPin, Users } from 'lucide-react'
+import { Loader2, Search, Plane, Clock, MapPin, Users, Calendar, ArrowUpDown } from 'lucide-react'
+import FlightCard from './FlightCard.jsx'
 
 const API_BASE_URL = 'http://localhost:5001/api'
 
-export default function BuscaIntegrada() {
+export default function BuscaIntegrada({ onBuscaCompleta }) {
   const [searchData, setSearchData] = useState({
     origem: '',
     destino: '',
@@ -68,6 +69,11 @@ export default function BuscaIntegrada() {
       if (data.success) {
         setResultados(data.data.resultados)
         setBuscaRealizada(true)
+
+        // Chamar callback se fornecido
+        if (onBuscaCompleta) {
+          onBuscaCompleta(data.data.resultados)
+        }
       } else {
         alert('Erro na busca: ' + data.error)
       }
@@ -79,152 +85,260 @@ export default function BuscaIntegrada() {
     }
   }
 
-  const formatarMoeda = (valor) => {
-    return new Intl.NumberFormat('pt-BR', {
-      style: 'currency',
-      currency: 'BRL'
-    }).format(valor)
-  }
-
-  const formatarMilhas = (milhas) => {
-    return new Intl.NumberFormat('pt-BR').format(milhas)
+  const trocarOrigemDestino = () => {
+    setSearchData(prev => ({
+      ...prev,
+      origem: prev.destino,
+      destino: prev.origem
+    }))
   }
 
   return (
-    <div className="space-y-6">
-      {/* Formulário de Busca */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <Search className="h-5 w-5" />
-            <span>Buscar Passagens (Integrado com API)</span>
+    <div className="space-y-8">
+      {/* Formulário de Busca Melhorado */}
+      <Card className="border-0 shadow-xl bg-white/90 backdrop-blur-sm overflow-hidden">
+        <CardHeader className="bg-gradient-aviation text-white">
+          <CardTitle className="flex items-center space-x-3 text-xl">
+            <div className="bg-white/20 p-2 rounded-lg">
+              <Search className="h-6 w-6" />
+            </div>
+            <span>Encontre sua passagem ideal</span>
           </CardTitle>
-          <CardDescription>
-            Busca real integrada com o backend
+          <CardDescription className="text-blue-100">
+            Compare preços em milhas vs. dinheiro em tempo real
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="origem">Origem</Label>
+        
+        <CardContent className="p-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {/* Origem e Destino */}
+            <div className="lg:col-span-2 space-y-4">
               <div className="relative">
-                <MapPin className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="origem" className="text-sm font-semibold text-gray-700 flex items-center">
+                      <MapPin className="w-4 h-4 mr-2 text-aviation-blue" />
+                      Origem
+                    </Label>
+                    <Input
+                      id="origem"
+                      placeholder="São Paulo (GRU)"
+                      value={searchData.origem}
+                      onChange={(e) => setSearchData({...searchData, origem: e.target.value})}
+                      className="h-12 border-2 border-gray-200 focus:border-aviation-blue rounded-xl"
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="destino" className="text-sm font-semibold text-gray-700 flex items-center">
+                      <MapPin className="w-4 h-4 mr-2 text-aviation-light-blue" />
+                      Destino
+                    </Label>
+                    <Input
+                      id="destino"
+                      placeholder="Rio de Janeiro (GIG)"
+                      value={searchData.destino}
+                      onChange={(e) => setSearchData({...searchData, destino: e.target.value})}
+                      className="h-12 border-2 border-gray-200 focus:border-aviation-blue rounded-xl"
+                    />
+                  </div>
+                </div>
+                
+                {/* Botão de trocar origem/destino */}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={trocarOrigemDestino}
+                  className="absolute top-8 left-1/2 transform -translate-x-1/2 bg-white border-2 border-aviation-blue text-aviation-blue hover:bg-aviation-blue hover:text-white rounded-full w-10 h-10 p-0 shadow-lg z-10"
+                >
+                  <ArrowUpDown className="w-4 h-4" />
+                </Button>
+              </div>
+            </div>
+
+            {/* Datas */}
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="data_ida" className="text-sm font-semibold text-gray-700 flex items-center">
+                  <Calendar className="w-4 h-4 mr-2 text-aviation-blue" />
+                  Data de Ida
+                </Label>
                 <Input
-                  id="origem"
-                  placeholder="GRU"
-                  className="pl-10"
-                  value={searchData.origem}
-                  onChange={(e) => setSearchData({...searchData, origem: e.target.value})}
+                  id="data_ida"
+                  type="date"
+                  value={searchData.data_ida}
+                  onChange={(e) => setSearchData({...searchData, data_ida: e.target.value})}
+                  className="h-12 border-2 border-gray-200 focus:border-aviation-blue rounded-xl"
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="data_volta" className="text-sm font-semibold text-gray-700 flex items-center">
+                  <Calendar className="w-4 h-4 mr-2 text-aviation-light-blue" />
+                  Data de Volta
+                </Label>
+                <Input
+                  id="data_volta"
+                  type="date"
+                  value={searchData.data_volta}
+                  onChange={(e) => setSearchData({...searchData, data_volta: e.target.value})}
+                  className="h-12 border-2 border-gray-200 focus:border-aviation-blue rounded-xl"
                 />
               </div>
             </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="destino">Destino</Label>
-              <div className="relative">
-                <MapPin className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                <Input
-                  id="destino"
-                  placeholder="GIG"
-                  className="pl-10"
-                  value={searchData.destino}
-                  onChange={(e) => setSearchData({...searchData, destino: e.target.value})}
-                />
+
+            {/* Passageiros e Classe */}
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="passageiros" className="text-sm font-semibold text-gray-700 flex items-center">
+                  <Users className="w-4 h-4 mr-2 text-aviation-blue" />
+                  Passageiros
+                </Label>
+                <Select value={searchData.passageiros.toString()} onValueChange={(value) => setSearchData({...searchData, passageiros: parseInt(value)})}>
+                  <SelectTrigger className="h-12 border-2 border-gray-200 focus:border-aviation-blue rounded-xl">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {[1,2,3,4,5,6].map(num => (
+                      <SelectItem key={num} value={num.toString()}>
+                        {num} {num === 1 ? 'Passageiro' : 'Passageiros'}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="classe" className="text-sm font-semibold text-gray-700 flex items-center">
+                  <Plane className="w-4 h-4 mr-2 text-aviation-blue" />
+                  Classe
+                </Label>
+                <Select value={searchData.classe} onValueChange={(value) => setSearchData({...searchData, classe: value})}>
+                  <SelectTrigger className="h-12 border-2 border-gray-200 focus:border-aviation-blue rounded-xl">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="economica">Econômica</SelectItem>
+                    <SelectItem value="premium">Premium</SelectItem>
+                    <SelectItem value="executiva">Executiva</SelectItem>
+                    <SelectItem value="primeira">Primeira Classe</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="dataIda">Data de Ida</Label>
-              <Input
-                id="dataIda"
-                type="date"
-                value={searchData.data_ida}
-                onChange={(e) => setSearchData({...searchData, data_ida: e.target.value})}
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="dataVolta">Data de Volta (opcional)</Label>
-              <Input
-                id="dataVolta"
-                type="date"
-                value={searchData.data_volta}
-                onChange={(e) => setSearchData({...searchData, data_volta: e.target.value})}
-              />
-            </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="passageiros">Passageiros</Label>
-              <Select value={searchData.passageiros.toString()} onValueChange={(value) => setSearchData({...searchData, passageiros: parseInt(value)})}>
-                <SelectTrigger>
-                  <Users className="h-4 w-4 mr-2" />
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="1">1 Passageiro</SelectItem>
-                  <SelectItem value="2">2 Passageiros</SelectItem>
-                  <SelectItem value="3">3 Passageiros</SelectItem>
-                  <SelectItem value="4">4 Passageiros</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="classe">Classe</Label>
-              <Select value={searchData.classe} onValueChange={(value) => setSearchData({...searchData, classe: value})}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="economica">Econômica</SelectItem>
-                  <SelectItem value="premium">Premium Economy</SelectItem>
-                  <SelectItem value="executiva">Executiva</SelectItem>
-                  <SelectItem value="primeira">Primeira Classe</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+          {/* Botão de Busca */}
+          <div className="mt-8 flex justify-center">
+            <Button 
+              onClick={realizarBusca}
+              disabled={loading}
+              size="lg"
+              className="bg-gradient-aviation hover:opacity-90 text-white px-12 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="w-5 h-5 mr-3 animate-spin" />
+                  Buscando voos...
+                </>
+              ) : (
+                <>
+                  <Search className="w-5 h-5 mr-3" />
+                  Buscar Passagens
+                </>
+              )}
+            </Button>
           </div>
-
-          <Button onClick={realizarBusca} disabled={loading} className="w-full md:w-auto" size="lg">
-            {loading ? (
-              <>
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                Buscando...
-              </>
-            ) : (
-              <>
-                <Search className="h-4 w-4 mr-2" />
-                Buscar Passagens
-              </>
-            )}
-          </Button>
         </CardContent>
       </Card>
 
+      {/* Resultados da Busca */}
+      {buscaRealizada && (
+        <div className="space-y-6 animate-fade-in">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div>
+              <h2 className="text-3xl font-bold text-gray-900">Resultados da Busca</h2>
+              <p className="text-gray-600 mt-1">
+                {resultados.length} voos encontrados para sua viagem
+              </p>
+            </div>
+            
+            <div className="flex items-center space-x-3">
+              <Badge variant="secondary" className="px-3 py-1">
+                <Clock className="w-4 h-4 mr-1" />
+                Atualizado agora
+              </Badge>
+              <Button variant="outline" className="border-aviation-blue text-aviation-blue hover:bg-aviation-blue hover:text-white">
+                Filtros Avançados
+              </Button>
+            </div>
+          </div>
+          
+          {resultados.length > 0 ? (
+            <div className="grid gap-6">
+              {resultados.map((resultado, index) => (
+                <div key={index} className="animate-slide-in-right" style={{animationDelay: `${index * 0.1}s`}}>
+                  <FlightCard 
+                    resultado={resultado} 
+                    onSelect={(voo) => {
+                      console.log('Voo selecionado:', voo)
+                    }}
+                  />
+                </div>
+              ))}
+            </div>
+          ) : (
+            <Card className="border-0 shadow-lg bg-white/80 backdrop-blur-sm">
+              <CardContent className="p-12 text-center">
+                <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <Plane className="w-12 h-12 text-gray-400" />
+                </div>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">Nenhum voo encontrado</h3>
+                <p className="text-gray-600 mb-6">
+                  Não encontramos voos para os critérios selecionados. 
+                  Tente ajustar suas datas ou destinos.
+                </p>
+                <Button 
+                  variant="outline" 
+                  onClick={() => setBuscaRealizada(false)}
+                  className="border-aviation-blue text-aviation-blue hover:bg-aviation-blue hover:text-white"
+                >
+                  Nova Busca
+                </Button>
+              </CardContent>
+            </Card>
+          )}
+        </div>
+      )}
+
       {/* Companhias Disponíveis */}
       {companhias.length > 0 && (
-        <Card>
+        <Card className="border-0 shadow-lg bg-white/80 backdrop-blur-sm">
           <CardHeader>
-            <CardTitle>Companhias Parceiras</CardTitle>
+            <CardTitle className="text-xl text-gray-900">Companhias Parceiras</CardTitle>
             <CardDescription>
-              Buscamos nas melhores companhias aéreas do mercado
+              Buscamos nas melhores companhias aéreas para você
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="flex flex-wrap gap-4">
-              {companhias.map((companhia) => (
-                <div key={companhia.id} className="flex items-center space-x-2 bg-gray-50 rounded-lg p-3">
-                  <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                    <Plane className="h-4 w-4 text-blue-600" />
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+              {companhias.map((companhia, index) => (
+                <div 
+                  key={index}
+                  className="flex flex-col items-center p-4 rounded-xl border-2 border-gray-200 hover:border-aviation-blue transition-colors group"
+                >
+                  <div className="w-12 h-12 bg-gradient-aviation rounded-full flex items-center justify-center text-white font-bold mb-2 group-hover:scale-110 transition-transform">
+                    {companhia.nome?.charAt(0) || 'A'}
                   </div>
-                  <div>
-                    <p className="font-medium">{companhia.nome}</p>
-                    <p className="text-sm text-gray-500">
-                      Milheiro: {formatarMoeda(companhia.valor_milheiro)}
-                    </p>
-                  </div>
+                  <span className="text-sm font-medium text-gray-700 group-hover:text-aviation-blue transition-colors">
+                    {companhia.nome}
+                  </span>
+                  <Badge 
+                    variant={companhia.ativo ? "default" : "secondary"} 
+                    className="mt-2 text-xs"
+                  >
+                    {companhia.ativo ? 'Ativo' : 'Em breve'}
+                  </Badge>
                 </div>
               ))}
             </div>
@@ -232,80 +346,46 @@ export default function BuscaIntegrada() {
         </Card>
       )}
 
-      {/* Resultados da Busca */}
-      {buscaRealizada && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Resultados da Busca</CardTitle>
-            <CardDescription>
-              {resultados.length} opções encontradas
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {resultados.length === 0 ? (
-              <p className="text-center text-gray-500 py-8">
-                Nenhum resultado encontrado para esta busca.
-              </p>
-            ) : (
-              <div className="space-y-4">
-                {resultados.map((resultado) => (
-                  <Card key={resultado.id} className="hover:shadow-lg transition-shadow">
-                    <CardContent className="p-6">
-                      <div className="grid grid-cols-1 md:grid-cols-6 gap-4 items-center">
-                        <div className="flex items-center space-x-3">
-                          <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                            <Plane className="h-5 w-5 text-blue-600" />
-                          </div>
-                          <div>
-                            <p className="font-semibold">{resultado.companhia?.nome}</p>
-                            <p className="text-sm text-gray-500">{resultado.voo_numero}</p>
-                          </div>
-                        </div>
-                        
-                        <div className="text-center">
-                          <p className="font-medium">{searchData.origem}</p>
-                          <p className="text-sm text-gray-500">Origem</p>
-                        </div>
-                        
-                        <div className="text-center">
-                          <Clock className="h-4 w-4 mx-auto mb-1 text-gray-400" />
-                          <p className="font-medium">
-                            {resultado.horario_saida} - {resultado.horario_chegada}
-                          </p>
-                          <p className="text-sm text-gray-500">{resultado.paradas}</p>
-                        </div>
-                        
-                        <div className="text-center">
-                          <p className="font-medium">{searchData.destino}</p>
-                          <p className="text-sm text-gray-500">Destino</p>
-                        </div>
-                        
-                        <div className="text-center">
-                          <p className="text-lg font-bold text-blue-600">
-                            {formatarMilhas(resultado.milhas_necessarias)} milhas
-                          </p>
-                          <p className="text-sm text-gray-500">
-                            vs {formatarMoeda(resultado.preco_dinheiro)}
-                          </p>
-                          <Badge variant="secondary" className="mt-1">
-                            Economia: {formatarMoeda(resultado.economia_calculada)}
-                          </Badge>
-                        </div>
-                        
-                        <div className="text-center">
-                          <Button className="w-full">
-                            Selecionar
-                          </Button>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
+      {/* Dicas de Economia */}
+      <Card className="border-0 shadow-lg bg-gradient-to-r from-aviation-gold/10 to-aviation-blue/10 backdrop-blur-sm">
+        <CardContent className="p-8">
+          <div className="text-center space-y-4">
+            <div className="w-16 h-16 bg-aviation-gold rounded-full flex items-center justify-center mx-auto">
+              <span className="text-2xl">💡</span>
+            </div>
+            <h3 className="text-2xl font-bold text-gray-900">Dicas para Economizar</h3>
+            <div className="grid md:grid-cols-3 gap-6 mt-8">
+              <div className="text-center space-y-2">
+                <div className="w-12 h-12 bg-aviation-blue rounded-full flex items-center justify-center mx-auto">
+                  <Calendar className="w-6 h-6 text-white" />
+                </div>
+                <h4 className="font-semibold text-gray-900">Flexibilidade nas Datas</h4>
+                <p className="text-sm text-gray-600">
+                  Voos em dias úteis costumam ser mais baratos
+                </p>
               </div>
-            )}
-          </CardContent>
-        </Card>
-      )}
+              <div className="text-center space-y-2">
+                <div className="w-12 h-12 bg-aviation-light-blue rounded-full flex items-center justify-center mx-auto">
+                  <Clock className="w-6 h-6 text-white" />
+                </div>
+                <h4 className="font-semibold text-gray-900">Antecedência</h4>
+                <p className="text-sm text-gray-600">
+                  Reserve com 2-3 meses de antecedência
+                </p>
+              </div>
+              <div className="text-center space-y-2">
+                <div className="w-12 h-12 bg-aviation-gold rounded-full flex items-center justify-center mx-auto">
+                  <Users className="w-6 h-6 text-white" />
+                </div>
+                <h4 className="font-semibold text-gray-900">Compare Sempre</h4>
+                <p className="text-sm text-gray-600">
+                  Use nossa plataforma para comparar todas as opções
+                </p>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   )
 }
