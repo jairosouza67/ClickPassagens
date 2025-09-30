@@ -3,6 +3,7 @@ from datetime import datetime, time
 import json
 import random
 from src.models.milhas import db, BuscaPassagem, ResultadoBusca, CompanhiaAerea, Usuario, StatusBusca
+from src.services.flight_api import FlightAPIService
 
 busca_bp = Blueprint('busca', __name__)
 
@@ -51,8 +52,18 @@ def buscar_passagens():
         db.session.add(busca)
         db.session.commit()
         
-        # Simular busca nas companhias (dados mockados)
-        resultados = simular_busca_companhias(busca.id, data)
+        # Buscar voos reais usando o serviço de API
+        flight_service = FlightAPIService()
+        resultados = flight_service.search_flights(
+            origem=data['origem'],
+            destino=data['destino'], 
+            data_ida=data['data_ida'],
+            data_volta=data.get('data_volta'),
+            passageiros=data.get('passageiros', 1)
+        )
+        
+        # Salvar resultados no banco (opcional, para histórico)
+        salvar_resultados_banco(busca.id, resultados)
         
         # Atualizar status da busca
         busca.status = StatusBusca.CONCLUIDA
@@ -72,48 +83,58 @@ def buscar_passagens():
             'error': str(e)
         }), 500
 
-def simular_busca_companhias(busca_id, dados_busca):
-    """Simula busca nas companhias aéreas com dados mockados"""
-    companhias = CompanhiaAerea.query.filter_by(ativa=True).all()
-    resultados = []
-    
-    for companhia in companhias:
-        # Simular 1-3 voos por companhia
-        num_voos = random.randint(1, 3)
-        
-        for i in range(num_voos):
-            # Gerar dados aleatórios para simulação
-            milhas_base = random.randint(8000, 25000)
-            preco_dinheiro = milhas_base * companhia.valor_milheiro / 1000
-            economia = preco_dinheiro * 0.3  # 30% de economia média
+def salvar_resultados_banco(busca_id, resultados):
+    """Salva resultados da API no banco de dados"""
+    for resultado in resultados:
+        try:
+            # Criar ou encontrar companhia
+            companhia_data = resultado['companhia']
+            companhia = CompanhiaAerea.query.filter_by(codigo=companhia_data['codigo']).first()
             
-            # Horários aleatórios
-            hora_saida = time(random.randint(6, 22), random.choice([0, 15, 30, 45]))
-            hora_chegada = time(
-                (hora_saida.hour + random.randint(1, 4)) % 24,
-                random.choice([0, 15, 30, 45])
-            )
+            if not companhia:
+                companhia = CompanhiaAerea(
+                    nome=companhia_data['nome'],
+                    codigo=companhia_data['codigo'],
+                    logo_url=companhia_data.get('logo_url', ''),
+                    ativa=True,
+                    valor_milheiro=companhia_data.get('valor_milheiro', 20.0)
+                )
+                db.session.add(companhia)
+                db.session.flush()  # Para obter o ID
             
-            resultado = ResultadoBusca(
+            # Converter strings de horário para objetos time
+            try:
+                hora_saida = datetime.strptime(resultado['horario_saida'], '%H:%M').time()
+                hora_chegada = datetime.strptime(resultado['horario_chegada'], '%H:%M').time()
+            except:
+                hora_saida = time(8, 0)  # Fallback
+                hora_chegada = time(10, 0)
+            
+            # Criar resultado no banco
+            resultado_db = ResultadoBusca(
                 busca_id=busca_id,
                 companhia_id=companhia.id,
-                voo_numero=f"{companhia.codigo}{random.randint(1000, 9999)}",
+                voo_numero=resultado['voo_numero'],
                 horario_saida=hora_saida,
                 horario_chegada=hora_chegada,
-                milhas_necessarias=milhas_base,
-                preco_dinheiro=round(preco_dinheiro, 2),
-                economia_calculada=round(economia, 2),
-                paradas="Direto" if random.choice([True, False]) else "1 parada",
-                disponivel=True
+                milhas_necessarias=resultado['milhas_necessarias'],
+                preco_dinheiro=resultado['preco_dinheiro'],
+                economia_calculada=resultado['economia_calculada'],
+                paradas=resultado['paradas'],
+                disponivel=resultado.get('disponivel', True)
             )
             
-            db.session.add(resultado)
-            resultados.append(resultado)
+            db.session.add(resultado_db)
+            
+        except Exception as e:
+            print(f"Erro ao salvar resultado: {e}")
+            continue
     
-    db.session.commit()
-    
-    # Retornar resultados serializados
-    return [resultado.to_dict() for resultado in resultados]
+    try:
+        db.session.commit()
+    except Exception as e:
+        print(f"Erro ao commitar resultados: {e}")
+        db.session.rollback()
 
 @busca_bp.route('/historico/<int:usuario_id>', methods=['GET'])
 def historico_buscas(usuario_id):

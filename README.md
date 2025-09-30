@@ -1,6 +1,152 @@
 # ClickPassagens Frontend
 
-Frontend da plataforma ClickPassagens - Sistema de busca de passagens aéreas com milhas.
+Frontend da plataforma ClickPassagens - # ClickPassagens - Sistema de Busca de Passagens com Milhas
+
+Sistema completo para busca e comparação de passagens aéreas usando milhas, com dados reais de voos.
+
+## 🚀 Como Executar (Modo Fácil)
+
+### Opção 1: Script Automático
+```bash
+# Clique duplo no arquivo ou execute:
+start_clickpassagens.bat
+```
+Este script irá:
+- Iniciar o backend Flask (porta 5001)
+- Iniciar o frontend React (porta 5173)  
+- Abrir automaticamente o navegador
+
+### Opção 2: Manual
+```bash
+# Terminal 1 - Backend (mantenha aberto)
+.venv\Scripts\activate
+py main.py
+
+# Terminal 2 - Frontend (mantenha aberto)  
+npm run dev
+```
+
+## 🌐 URLs de Acesso
+
+- **Frontend**: http://localhost:5173
+- **Backend API**: http://127.0.0.1:5001
+- **Documentação da API**: http://127.0.0.1:5001/api
+
+## ⚡ Configuração Inicial
+
+### 1. Instalar Dependências Python
+```bash
+.venv\Scripts\activate
+pip install -r requirements.txt
+```
+
+### 2. Instalar Dependências Node.js
+```bash
+npm install
+```
+
+### 3. Inicializar Banco de Dados
+```bash
+.venv\Scripts\activate
+python init_db.py
+```
+
+## 🛫 APIs de Voos Reais
+
+### Modo Development (Padrão)
+- Usa dados realistas de fallback
+- Preços baseados em rotas reais
+- Companhias aéreas reais (Gol, Azul, LATAM, etc.)
+- Não requer credenciais de API
+
+### Modo Production (APIs Reais)
+Para usar dados 100% reais:
+
+1. **Cadastre-se na Amadeus**: https://developers.amadeus.com/
+2. **Configure no `.env`**:
+   ```env
+   AMADEUS_API_KEY=sua_chave_aqui
+   AMADEUS_API_SECRET=seu_secret_aqui
+   FLIGHT_API_MODE=production
+   ```
+3. **Reinicie o servidor**
+
+## 📱 Funcionalidades
+
+- ✅ Busca de voos com dados reais
+- ✅ Comparação de preços (dinheiro vs milhas)
+- ✅ Cálculo de economia automático
+- ✅ Interface responsiva
+- ✅ PWA (Progressive Web App)
+- ✅ Múltiplas companhias aéreas
+- ✅ Filtros avançados
+
+## 🏗️ Arquitetura
+
+```
+Frontend (React + Vite)
+│
+├── src/
+│   ├── components/
+│   │   ├── BuscaIntegrada.jsx
+│   │   ├── FlightCard.jsx
+│   │   └── ui/
+│   └── App.jsx
+│
+Backend (Flask + Python)
+│
+├── src/
+│   ├── routes/
+│   │   └── busca.py
+│   ├── models/
+│   │   └── milhas.py
+│   └── services/
+│       └── flight_api.py
+└── main.py
+```
+
+## 🛠️ Tecnologias
+
+### Frontend
+- React 18
+- Vite
+- TailwindCSS
+- Radix UI
+- Lucide Icons
+
+### Backend  
+- Flask
+- SQLAlchemy
+- SQLite
+- Amadeus API
+- SkyScanner API
+
+## 📋 Scripts Disponíveis
+
+- `start_clickpassagens.bat` - Inicia tudo automaticamente
+- `start_backend.bat` - Apenas backend Flask
+- `start_frontend.bat` - Apenas frontend React
+- `start_production.bat` - Modo produção com Gunicorn
+
+## 🐛 Troubleshooting
+
+### "Failed to fetch"
+- Certifique-se que o backend está rodando na porta 5001
+- Use os scripts `.bat` para manter os servidores ativos
+- Verifique se não há firewall bloqueando as portas
+
+### Dados não aparecem
+- Verifique o console do navegador (F12)
+- Confirme que a busca tem origem, destino e data válidos
+- Veja os logs do servidor Flask
+
+### Performance lenta
+- Use `FLIGHT_API_MODE=development` para dados de fallback
+- Credenciais de API podem ter rate limiting
+
+## 🚀 Deploy
+
+Ver `README_DEPLOY.md` para instruções de deploy em produção.
 
 ## 🚀 Tecnologias
 

@@ -52,6 +52,17 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        // Custom aviation colors
+        aviation: {
+          blue: "hsl(var(--aviation-blue))",
+          'light-blue': "hsl(var(--aviation-light-blue))",
+          'dark-blue': "hsl(var(--aviation-dark-blue))",
+          gold: "hsl(var(--aviation-gold))",
+          silver: "hsl(var(--aviation-silver))",
+        },
+        success: "hsl(var(--success))",
+        warning: "hsl(var(--warning))",
+        info: "hsl(var(--info))",
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -67,12 +78,32 @@ export default {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
+        float: {
+          '0%, 100%': { transform: 'translateY(0px)' },
+          '50%': { transform: 'translateY(-20px)' },
+        },
+        'fade-in': {
+          '0%': { opacity: '0', transform: 'translateY(20px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
+        'slide-in-right': {
+          '0%': { opacity: '0', transform: 'translateX(20px)' },
+          '100%': { opacity: '1', transform: 'translateX(0)' },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        float: "float 6s ease-in-out infinite",
+        'fade-in': 'fade-in 0.6s ease-out',
+        'slide-in-right': 'slide-in-right 0.6s ease-out',
+      },
+      backgroundImage: {
+        'gradient-aviation': 'linear-gradient(135deg, hsl(var(--aviation-blue)) 0%, hsl(var(--aviation-light-blue)) 100%)',
+        'gradient-gold': 'linear-gradient(135deg, hsl(var(--aviation-gold)) 0%, #f59e0b 100%)',
+        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
       },
     },
   },
-  plugins: [],
+  plugins: [require("tailwindcss-animate")],
 }
