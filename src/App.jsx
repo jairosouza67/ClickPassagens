@@ -18,7 +18,9 @@ import {
   Phone,
   Mail,
   MessageCircle,
-  TrendingDown
+  TrendingDown,
+  MapPin,
+  CreditCard
 } from 'lucide-react'
 import BuscaIntegrada from './components/BuscaIntegrada.jsx'
 import PWAInstallButton from './components/PWAInstallButton.jsx'
@@ -171,7 +173,7 @@ function App() {
       </header>
 
       {/* Conteúdo Principal */}
-      <main className="flex-1">
+      <main className="flex-1 pb-16 md:pb-0">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           {/* Tab Busca */}
           <TabsContent value="busca" className="m-0">
@@ -443,6 +445,59 @@ function App() {
           </div>
         </div>
       </footer>
+
+      {/* Navegação Mobile Inferior - Apenas em dispositivos móveis */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-50">
+        <div className="grid grid-cols-4 h-16">
+          <button 
+            onClick={() => setActiveTab('busca')}
+            className={`flex flex-col items-center justify-center space-y-1 transition-all duration-200 ${
+              activeTab === 'busca' 
+                ? 'text-aviation-blue bg-aviation-blue/10' 
+                : 'text-gray-600 hover:text-aviation-blue hover:bg-gray-50'
+            }`}
+          >
+            <Search className="w-5 h-5" />
+            <span className="text-xs font-medium">Buscar</span>
+          </button>
+          
+          <button 
+            onClick={() => setActiveTab('resultados')}
+            className={`flex flex-col items-center justify-center space-y-1 transition-all duration-200 ${
+              activeTab === 'resultados' 
+                ? 'text-aviation-blue bg-aviation-blue/10' 
+                : 'text-gray-600 hover:text-aviation-blue hover:bg-gray-50'
+            }`}
+          >
+            <MapPin className="w-5 h-5" />
+            <span className="text-xs font-medium">Resultados</span>
+          </button>
+          
+          <button 
+            onClick={() => setActiveTab('planos')}
+            className={`flex flex-col items-center justify-center space-y-1 transition-all duration-200 ${
+              activeTab === 'planos' 
+                ? 'text-aviation-blue bg-aviation-blue/10' 
+                : 'text-gray-600 hover:text-aviation-blue hover:bg-gray-50'
+            }`}
+          >
+            <CreditCard className="w-5 h-5" />
+            <span className="text-xs font-medium">Planos</span>
+          </button>
+          
+          <button 
+            onClick={() => setActiveTab('contato')}
+            className={`flex flex-col items-center justify-center space-y-1 transition-all duration-200 ${
+              activeTab === 'contato' 
+                ? 'text-aviation-blue bg-aviation-blue/10' 
+                : 'text-gray-600 hover:text-aviation-blue hover:bg-gray-50'
+            }`}
+          >
+            <MessageCircle className="w-5 h-5" />
+            <span className="text-xs font-medium">Contato</span>
+          </button>
+        </div>
+      </div>
     </div>
   )
 }
