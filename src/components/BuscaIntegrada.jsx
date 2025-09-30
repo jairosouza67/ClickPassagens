@@ -56,6 +56,7 @@ export default function BuscaIntegrada({ onBuscaCompleta }) {
     setBuscaRealizada(false)
 
     try {
+<<<<<<< HEAD
       // Se estiver em produção sem backend, usar dados estáticos
       if (APP_MODE === 'production' && !API_BASE_URL.includes('http')) {
         const resultadosEstaticos = gerarResultadosEstaticos(searchData);
@@ -77,6 +78,10 @@ export default function BuscaIntegrada({ onBuscaCompleta }) {
       console.log('Dados da requisição:', requestBody);
 
       const response = await fetch(url, {
+=======
+      console.log('Fazendo requisição para:', `${API_BASE_URL}/busca/buscar`)
+      const response = await fetch(`${API_BASE_URL}/busca/buscar`, {
+>>>>>>> 7eb8f2bd16af1886f7c9debf9a42fb8ac38452e5
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -84,16 +89,21 @@ export default function BuscaIntegrada({ onBuscaCompleta }) {
         body: JSON.stringify(requestBody)
       })
 
+<<<<<<< HEAD
       console.log('Resposta recebida:', response.status, response.statusText)
       
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
       
+=======
+      console.log('Resposta recebida:', response.status)
+>>>>>>> 7eb8f2bd16af1886f7c9debf9a42fb8ac38452e5
       const data = await response.json()
       console.log('Dados da resposta:', data)
 
       if (data.success) {
+<<<<<<< HEAD
         const resultados = data.data.resultados;
         console.log('Resultados recebidos:', resultados);
 
@@ -114,12 +124,22 @@ export default function BuscaIntegrada({ onBuscaCompleta }) {
         if (onBuscaCompleta) {
           console.log('Chamando callback com resultados:', resultadosValidos);
           onBuscaCompleta(resultadosValidos);
+=======
+        setResultados(data.data.resultados)
+        setBuscaRealizada(true)
+        
+        // Chamar callback se fornecido
+        if (onBuscaCompleta) {
+          console.log('Chamando callback com resultados:', data.data.resultados)
+          onBuscaCompleta(data.data.resultados)
+>>>>>>> 7eb8f2bd16af1886f7c9debf9a42fb8ac38452e5
         }
       } else {
         throw new Error(data.error || 'Erro desconhecido na busca');
       }
     } catch (error) {
       console.error('Erro na busca:', error)
+<<<<<<< HEAD
       
       // Fallback para dados estáticos em caso de erro
       console.log('Usando fallback com dados estáticos devido ao erro')
@@ -129,6 +149,9 @@ export default function BuscaIntegrada({ onBuscaCompleta }) {
       if (onBuscaCompleta) {
         onBuscaCompleta(resultadosEstaticos);
       }
+=======
+      alert('Erro ao realizar busca: ' + error.message)
+>>>>>>> 7eb8f2bd16af1886f7c9debf9a42fb8ac38452e5
     } finally {
       setLoading(false)
     }
@@ -140,6 +163,7 @@ export default function BuscaIntegrada({ onBuscaCompleta }) {
       origem: prev.destino,
       destino: prev.origem
     }))
+<<<<<<< HEAD
   }
 
   const gerarResultadosEstaticos = (dadosBusca) => {
@@ -220,6 +244,8 @@ export default function BuscaIntegrada({ onBuscaCompleta }) {
       passageiros: 1,
       classe: 'economica'
     })
+=======
+>>>>>>> 7eb8f2bd16af1886f7c9debf9a42fb8ac38452e5
   }
 
   return (
@@ -407,6 +433,7 @@ export default function BuscaIntegrada({ onBuscaCompleta }) {
       {buscaRealizada && (
         <Card className="border-0 shadow-xl">
           <CardHeader className="bg-gradient-aviation text-white">
+<<<<<<< HEAD
             <div className="flex items-center justify-between">
               <CardTitle className="flex items-center space-x-3">
                 <Plane className="h-6 w-6" />
@@ -425,6 +452,15 @@ export default function BuscaIntegrada({ onBuscaCompleta }) {
                 Nova Busca
               </Button>
             </div>
+=======
+            <CardTitle className="flex items-center space-x-3">
+              <Plane className="h-6 w-6" />
+              <span>Resultados da Busca</span>
+              <Badge variant="secondary" className="bg-white/20 text-white">
+                {resultados.length} voos encontrados
+              </Badge>
+            </CardTitle>
+>>>>>>> 7eb8f2bd16af1886f7c9debf9a42fb8ac38452e5
           </CardHeader>
           <CardContent className="p-6">
             {resultados.length > 0 ? (
