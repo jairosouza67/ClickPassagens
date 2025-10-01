@@ -6,11 +6,13 @@ import os
 bind = f"{os.getenv('HOST', '0.0.0.0')}:{os.getenv('PORT', '5001')}"
 backlog = 2048
 
-# Worker processes
-workers = int(os.getenv('WORKERS', multiprocessing.cpu_count() * 2 + 1))
-worker_class = 'sync'
+# Worker processes - OTIMIZADO PARA RENDER FREE (512MB RAM)
+# Render free tem apenas 512MB, então usamos 1 worker com threads
+workers = int(os.getenv('WORKERS', 1))  # Apenas 1 worker para economizar RAM
+worker_class = 'gthread'  # Usar threads ao invés de processos
+threads = int(os.getenv('THREADS', 4))  # 4 threads por worker
 worker_connections = 1000
-timeout = 30
+timeout = 120  # Aumentado para 120s (Render pode ser lento no free tier)
 keepalive = 60
 
 # Restart workers after this many requests, to help prevent memory leaks
