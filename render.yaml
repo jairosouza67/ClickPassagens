@@ -7,7 +7,7 @@ services:
     name: clickpassagens-api
     runtime: python
     plan: free
-    buildCommand: pip install -r requirements.txt && pip install gunicorn
+    buildCommand: pip install --upgrade pip && pip install -r requirements.txt
     startCommand: bash start.sh
     envVars:
       - key: PYTHON_VERSION
@@ -16,6 +16,5 @@ services:
         value: production
       - key: SECRET_KEY
         generateValue: true
-      - key: PORT
-        value: 5001
     healthCheckPath: /api/health
+    autoDeploy: true
