@@ -11,7 +11,7 @@ export default defineConfig({
     },
   },
   build: {
-    outDir: 'static',
+    outDir: 'dist',  // Usar 'dist' para compatibilidade com Netlify
     assetsDir: 'assets',
     emptyOutDir: true,
   },

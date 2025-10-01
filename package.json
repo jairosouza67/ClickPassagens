@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "build:netlify": "npm run build && echo 'Build completed for Netlify'",
+    "build:backend": "vite build && npm run copy-to-static",
+    "copy-to-static": "node -e \"require('fs').cpSync('dist', 'static', {recursive: true})\"",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },
