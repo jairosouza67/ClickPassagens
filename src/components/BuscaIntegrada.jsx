@@ -7,9 +7,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Badge } from './ui/badge.jsx'
 import { Loader2, Search, Plane, Clock, MapPin, Users, Calendar, ArrowUpDown, CheckCircle } from 'lucide-react'
 import FlightCard from './FlightCard.jsx'
+import { API_URL } from '../config.js'
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:5001/api'
-const APP_MODE = import.meta.env.VITE_APP_MODE || 'development'
+const API_BASE_URL = `${API_URL}/api`
+const APP_MODE = import.meta.env.MODE || 'development'
 
 export default function BuscaIntegrada({ onBuscaCompleta }) {
   const [searchData, setSearchData] = useState({

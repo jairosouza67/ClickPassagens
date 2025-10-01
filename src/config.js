@@ -3,7 +3,7 @@
 // Em desenvolvimento, usa localhost
 
 const API_URL = import.meta.env.PROD 
-  ? 'https://clickpassagens-api.onrender.com'  // ⚠️ ATUALIZE com sua URL do Render
+  ? 'https://clickpassagens.onrender.com'
   : 'http://localhost:5001';
 
 export { API_URL };
