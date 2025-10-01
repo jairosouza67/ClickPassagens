@@ -1,7 +1,7 @@
 {
   "name": "ClickPassagens - Busca de Passagens com Milhas",
   "short_name": "ClickPassagens",
-  "description": "A melhor plataforma para encontrar passagens aéreas com milhas",
+  "description": "A melhor plataforma para encontrar passagens aéreas com milhas. Compare preços e economize até 70% nas suas viagens.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
@@ -9,7 +9,9 @@
   "orientation": "portrait-primary",
   "scope": "/",
   "lang": "pt-BR",
-  "categories": ["travel", "business"],
+  "dir": "ltr",
+  "categories": ["travel", "business", "lifestyle"],
+  "iarc_rating_id": "e84b072d-71b3-4d3e-86ae-31a8ce4e53b7",
   "icons": [
     {
       "src": "/icon-192x192.png",

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Button } from './components/ui/button.jsx'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './components/ui/card.jsx'
 import { Badge } from './components/ui/badge.jsx'
@@ -24,13 +24,27 @@ import {
 } from 'lucide-react'
 import BuscaIntegrada from './components/BuscaIntegrada.jsx'
 import PWAInstallButton from './components/PWAInstallButton.jsx'
+import PushNotifications from './components/PushNotifications.jsx'
 import FlightCard from './components/FlightCard.jsx'
+import useGoogleAnalytics, { analytics } from './hooks/useGoogleAnalytics.js'
 import './App.css'
 
 function App() {
   const [activeTab, setActiveTab] = useState('busca')
   const [resultados, setResultados] = useState([])
   const [buscaRealizada, setBuscaRealizada] = useState(false)
+
+  // Inicializar Google Analytics
+  useGoogleAnalytics();
+
+  // Rastrear mudança de abas
+  useEffect(() => {
+    if (window.gtag) {
+      window.gtag('event', 'tab_change', {
+        tab_name: activeTab
+      });
+    }
+  }, [activeTab]);
 
   const planos = [
     {
@@ -77,6 +91,15 @@ function App() {
       setResultados(resultadosBusca)
       setBuscaRealizada(true)
       setActiveTab('resultados')
+      
+      // Rastrear busca no Google Analytics
+      if (resultadosBusca.length > 0) {
+        analytics.searchFlights(
+          resultadosBusca[0]?.origem || 'N/A',
+          resultadosBusca[0]?.destino || 'N/A',
+          resultadosBusca[0]?.data || 'N/A'
+        );
+      }
     } else {
       console.error('Resultados inválidos:', resultadosBusca)
     }
@@ -158,7 +181,8 @@ function App() {
               </button>
             </nav>
 
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-2 md:space-x-4">
+              <PushNotifications />
               <PWAInstallButton />
               <Button 
                 onClick={handleGoogleLogin}
