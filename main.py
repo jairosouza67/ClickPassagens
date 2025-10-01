@@ -30,6 +30,17 @@ db.init_app(app)
 with app.app_context():
     db.create_all()
 
+# Health check endpoint for monitoring services (Render, UptimeRobot, etc)
+@app.route('/api/health')
+def health_check():
+    from datetime import datetime
+    return {
+        'status': 'ok',
+        'service': 'ClickPassagens API',
+        'timestamp': datetime.now().isoformat(),
+        'version': '1.0.0'
+    }, 200
+
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
 def serve(path):

@@ -1,0 +1,21 @@
+# Render.com Build & Deploy Configuration
+# Documentação: https://render.com/docs/yaml-spec
+
+services:
+  # Backend API
+  - type: web
+    name: clickpassagens-api
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt && pip install gunicorn
+    startCommand: bash start.sh
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: FLASK_ENV
+        value: production
+      - key: SECRET_KEY
+        generateValue: true
+      - key: PORT
+        value: 5001
+    healthCheckPath: /api/health

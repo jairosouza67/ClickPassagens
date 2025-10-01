@@ -51,6 +51,8 @@ instance/
 
 # Logs
 *.log
+logs/
+*.log.*
 
 # IDE
 .vscode/

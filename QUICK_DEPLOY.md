@@ -26,16 +26,20 @@
    ```
    Name: clickpassagens-api
    Runtime: Python 3
-   Build: pip install -r requirements.txt
-   Start: gunicorn -c gunicorn.conf.py main:app
+   Build Command: pip install -r requirements.txt && pip install gunicorn
+   Start Command: bash start.sh
    ```
+   ⚠️ **Importante:** Use `bash start.sh` no Start Command!
+   
 5. **Environment Variables:**
    ```
    FLASK_ENV=production
    SECRET_KEY=sua_chave_secreta_123456
+   PYTHON_VERSION=3.11.0
    ```
 6. **Create Web Service**
-7. **Copiar URL** (ex: `https://clickpassagens-api.onrender.com`)
+7. Aguarde o build (~2-3 minutos)
+8. **Copiar URL** (ex: `https://clickpassagens-api.onrender.com`)
 
 ### **3️⃣ Deploy Frontend no Netlify (3 min)**
 🔗 https://app.netlify.com

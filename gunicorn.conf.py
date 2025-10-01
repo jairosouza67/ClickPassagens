@@ -22,9 +22,10 @@ limit_request_line = 4094
 limit_request_fields = 100
 limit_request_field_size = 8190
 
-# Logging
-accesslog = 'logs/access.log'
-errorlog = 'logs/error.log'
+# Logging - Use stdout/stderr for cloud platforms (Render, Heroku, etc)
+# Em produção cloud, logs vão para o console e são capturados pelo serviço
+accesslog = '-'  # stdout
+errorlog = '-'   # stderr
 loglevel = 'info'
 access_log_format = '%(h)s %(l)s %(u)s %(t)s "%(r)s" %(s)s %(b)s "%(f)s" "%(a)s"'
 
@@ -33,7 +34,7 @@ proc_name = 'clickpassagens'
 
 # Server mechanics
 daemon = False
-pidfile = 'logs/gunicorn.pid'
+pidfile = None  # Não usar pidfile em ambientes cloud
 user = None
 group = None
 tmp_upload_dir = None

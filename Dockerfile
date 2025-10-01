@@ -19,10 +19,12 @@ COPY . .
 # Create non-root user
 RUN groupadd -r clickpassagens && useradd -r -g clickpassagens clickpassagens
 RUN chown -R clickpassagens:clickpassagens /app
-USER clickpassagens
 
-# Initialize database
-RUN python init_db.py
+# Inicializar banco (como root antes de trocar de usuário)
+RUN python init_db.py && chown -R clickpassagens:clickpassagens /app/database
+
+# Trocar para usuário não-root
+USER clickpassagens
 
 # Expose port
 EXPOSE 5001
