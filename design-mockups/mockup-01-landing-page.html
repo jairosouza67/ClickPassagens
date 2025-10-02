@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ClickPassagens - Mockup Tela 01: Landing Page</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 50%, #dbeafe 100%);
+            overflow-x: hidden;
+        }
+
+        /* Header/Navigation */
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 24px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #1e293b;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: #3b82f6;
+        }
+
+        .btn-login {
+            padding: 0.6rem 1.5rem;
+            background: white;
+            border: 2px solid #3b82f6;
+            color: #3b82f6;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-login:hover {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .btn-register {
+            padding: 0.6rem 1.5rem;
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-register:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        /* Hero Section */
+        .hero {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+            text-align: center;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: white;
+            padding: 0.5rem 1.5rem;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #1e3a8a;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            margin-bottom: 2rem;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        .hero h1 {
+            font-size: 4rem;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 1.5rem;
+            color: #1e293b;
+            animation: fadeInUp 0.8s ease-out 0.2s both;
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #6366f1 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 1.5rem;
+            color: #64748b;
+            max-width: 800px;
+            margin: 0 auto 3rem;
+            line-height: 1.6;
+            animation: fadeInUp 0.8s ease-out 0.4s both;
+        }
+
+        .hero-cta {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            animation: fadeInUp 0.8s ease-out 0.6s both;
+        }
+
+        .btn-primary {
+            padding: 1rem 2.5rem;
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s;
+            box-shadow: 0 4px 14px rgba(59, 130, 246, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.5);
+        }
+
+        .btn-secondary {
+            padding: 1rem 2.5rem;
+            background: white;
+            color: #1e3a8a;
+            border: 2px solid #3b82f6;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-secondary:hover {
+            background: #f0f9ff;
+        }
+
+        /* Search Section */
+        .search-section {
+            max-width: 1200px;
+            margin: -50px auto 4rem;
+            padding: 0 2rem;
+            animation: fadeInUp 0.8s ease-out 0.8s both;
+        }
+
+        .search-card {
+            background: white;
+            border-radius: 24px;
+            padding: 3rem;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.12);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .search-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(90deg, #1e3a8a 0%, #3b82f6 50%, #6366f1 100%);
+        }
+
+        .search-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid #f1f5f9;
+        }
+
+        .search-tab {
+            padding: 1rem 2rem;
+            background: none;
+            border: none;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #64748b;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.3s;
+        }
+
+        .search-tab.active {
+            color: #3b82f6;
+        }
+
+        .search-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #3b82f6;
+        }
+
+        .search-form {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-group label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .form-group input,
+        .form-group select {
+            padding: 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s;
+            background: #f8fafc;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #3b82f6;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .btn-search {
+            grid-column: 1 / -1;
+            padding: 1.2rem;
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.3s;
+            margin-top: 1rem;
+        }
+
+        .btn-search:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+        }
+
+        /* Stats Section */
+        .stats-section {
+            max-width: 1400px;
+            margin: 0 auto 4rem;
+            padding: 0 2rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+            border-color: #3b82f6;
+        }
+
+        .stat-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #1e3a8a;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 1rem;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        /* Airlines Section */
+        .airlines-section {
+            max-width: 1400px;
+            margin: 0 auto 4rem;
+            padding: 0 2rem;
+            text-align: center;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 1rem;
+        }
+
+        .section-subtitle {
+            font-size: 1.1rem;
+            color: #64748b;
+            margin-bottom: 3rem;
+        }
+
+        .airlines-grid {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 2rem;
+        }
+
+        .airline-logo {
+            padding: 1.5rem 2.5rem;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+            font-weight: 700;
+            font-size: 1.2rem;
+            transition: all 0.3s;
+        }
+
+        .airline-logo:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+        }
+
+        .airline-gol { color: #ff6a13; border: 2px solid #ff6a13; }
+        .airline-azul { color: #003366; border: 2px solid #003366; }
+        .airline-latam { color: #e2001a; border: 2px solid #e2001a; }
+        .airline-avianca { color: #ed1c27; border: 2px solid #ed1c27; }
+        .airline-iberia { color: #00825f; border: 2px solid #00825f; }
+
+        /* How It Works */
+        .how-it-works {
+            background: white;
+            padding: 5rem 2rem;
+        }
+
+        .how-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .steps-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 3rem;
+            margin-top: 3rem;
+        }
+
+        .step-card {
+            text-align: center;
+            position: relative;
+        }
+
+        .step-number {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 1.5rem;
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: 800;
+            box-shadow: 0 4px 20px rgba(59, 130, 246, 0.3);
+        }
+
+        .step-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 1rem;
+        }
+
+        .step-description {
+            color: #64748b;
+            line-height: 1.6;
+        }
+
+        /* Testimonials */
+        .testimonials {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 5rem 2rem;
+        }
+
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .testimonial-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+
+        .testimonial-rating {
+            color: #f59e0b;
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+        }
+
+        .testimonial-text {
+            color: #1e293b;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .author-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        .author-info {
+            flex: 1;
+        }
+
+        .author-name {
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .author-role {
+            font-size: 0.9rem;
+            color: #64748b;
+        }
+
+        /* Footer */
+        .footer {
+            background: #1e293b;
+            color: white;
+            padding: 3rem 2rem 1rem;
+        }
+
+        .footer-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 3rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-section h3 {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-section a {
+            color: #94a3b8;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-section a:hover {
+            color: #3b82f6;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid #334155;
+            padding-top: 2rem;
+            text-align: center;
+            color: #94a3b8;
+        }
+
+        /* Animations */
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            .hero p {
+                font-size: 1.2rem;
+            }
+            .nav-links {
+                display: none;
+            }
+            .search-form {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                ✈️ ClickPassagens
+            </div>
+            <ul class="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#buscar">Buscar</a></li>
+                <li><a href="#planos">Planos</a></li>
+                <li><a href="#como-funciona">Como Funciona</a></li>
+                <li><a href="#contato">Contato</a></li>
+                <li><button class="btn-login">Entrar</button></li>
+                <li><button class="btn-register">Cadastrar</button></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="badge">
+            ⭐ #1 Plataforma de Milhas do Brasil
+        </div>
+        <h1>
+            Voe mais, <span class="gradient-text">gaste menos</span>
+        </h1>
+        <p>
+            A plataforma mais inteligente para encontrar passagens aéreas com milhas.
+            Compare preços em tempo real e economize até <strong>70%</strong> nas suas viagens.
+        </p>
+        <div class="hero-cta">
+            <button class="btn-primary">
+                ✈️ Buscar Passagens Agora
+            </button>
+            <button class="btn-secondary">
+                🎬 Ver Como Funciona
+            </button>
+        </div>
+    </section>
+
+    <!-- Search Section -->
+    <section class="search-section" id="buscar">
+        <div class="search-card">
+            <div class="search-tabs">
+                <button class="search-tab active">🔄 Ida e Volta</button>
+                <button class="search-tab">➡️ Só Ida</button>
+                <button class="search-tab">🌍 Múltiplos Destinos</button>
+            </div>
+            
+            <form class="search-form">
+                <div class="form-group">
+                    <label>✈️ Origem</label>
+                    <input type="text" placeholder="São Paulo (GRU)" value="">
+                </div>
+                
+                <div class="form-group">
+                    <label>🌎 Destino</label>
+                    <input type="text" placeholder="Rio de Janeiro (GIG)" value="">
+                </div>
+                
+                <div class="form-group">
+                    <label>📅 Data de Ida</label>
+                    <input type="date" value="">
+                </div>
+                
+                <div class="form-group">
+                    <label>📅 Data de Volta</label>
+                    <input type="date" value="">
+                </div>
+                
+                <div class="form-group">
+                    <label>👥 Passageiros</label>
+                    <select>
+                        <option>1 Passageiro</option>
+                        <option>2 Passageiros</option>
+                        <option>3 Passageiros</option>
+                        <option>4+ Passageiros</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>💺 Classe</label>
+                    <select>
+                        <option>Econômica</option>
+                        <option>Executiva</option>
+                        <option>Primeira Classe</option>
+                    </select>
+                </div>
+                
+                <button type="submit" class="btn-search">
+                    🔍 Buscar Passagens
+                </button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats-section">
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">👥</div>
+                <div class="stat-number">50K+</div>
+                <div class="stat-label">Passageiros Atendidos</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">📈</div>
+                <div class="stat-number">70%</div>
+                <div class="stat-label">Economia Média</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">⏰</div>
+                <div class="stat-number">24/7</div>
+                <div class="stat-label">Suporte Disponível</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">🔒</div>
+                <div class="stat-number">100%</div>
+                <div class="stat-label">Segurança Garantida</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Airlines Section -->
+    <section class="airlines-section">
+        <h2 class="section-title">Busque nas Principais Companhias</h2>
+        <p class="section-subtitle">Compare preços de todas as principais companhias aéreas em um só lugar</p>
+        
+        <div class="airlines-grid">
+            <div class="airline-logo airline-gol">GOL</div>
+            <div class="airline-logo airline-azul">AZUL</div>
+            <div class="airline-logo airline-latam">LATAM</div>
+            <div class="airline-logo airline-avianca">AVIANCA</div>
+            <div class="airline-logo airline-iberia">IBÉRIA</div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section class="how-it-works" id="como-funciona">
+        <div class="how-container">
+            <h2 class="section-title">Como Funciona?</h2>
+            <p class="section-subtitle">Encontre as melhores passagens em 4 passos simples</p>
+            
+            <div class="steps-grid">
+                <div class="step-card">
+                    <div class="step-number">1</div>
+                    <h3 class="step-title">Busque</h3>
+                    <p class="step-description">
+                        Insira origem, destino e datas. Nossa plataforma busca em tempo real nas principais companhias.
+                    </p>
+                </div>
+                
+                <div class="step-card">
+                    <div class="step-number">2</div>
+                    <h3 class="step-title">Compare</h3>
+                    <p class="step-description">
+                        Veja lado a lado os preços em milhas e em dinheiro. Descubra qual opção oferece mais economia.
+                    </p>
+                </div>
+                
+                <div class="step-card">
+                    <div class="step-number">3</div>
+                    <h3 class="step-title">Escolha</h3>
+                    <p class="step-description">
+                        Filtre por companhia, horário, paradas e classe. Encontre a opção perfeita para você.
+                    </p>
+                </div>
+                
+                <div class="step-card">
+                    <div class="step-number">4</div>
+                    <h3 class="step-title">Reserve</h3>
+                    <p class="step-description">
+                        Finalize sua reserva de forma rápida e segura. Receba sua confirmação por email.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section class="testimonials">
+        <h2 class="section-title">O que nossos clientes dizem</h2>
+        <p class="section-subtitle">Milhares de viajantes já economizaram com o ClickPassagens</p>
+        
+        <div class="testimonials-grid">
+            <div class="testimonial-card">
+                <div class="testimonial-rating">⭐⭐⭐⭐⭐</div>
+                <p class="testimonial-text">
+                    "Economizei R$ 2.500 na minha viagem para Paris! A plataforma é muito fácil de usar e o suporte foi excepcional."
+                </p>
+                <div class="testimonial-author">
+                    <div class="author-avatar">MC</div>
+                    <div class="author-info">
+                        <div class="author-name">Maria Clara</div>
+                        <div class="author-role">Viajante Frequente</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="testimonial-card">
+                <div class="testimonial-rating">⭐⭐⭐⭐⭐</div>
+                <p class="testimonial-text">
+                    "Como agente de viagens, essa ferramenta revolucionou meu trabalho. Consigo dar respostas rápidas e precisas aos meus clientes."
+                </p>
+                <div class="testimonial-author">
+                    <div class="author-avatar">RS</div>
+                    <div class="author-info">
+                        <div class="author-name">Ricardo Santos</div>
+                        <div class="author-role">Agente de Viagens</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="testimonial-card">
+                <div class="testimonial-rating">⭐⭐⭐⭐⭐</div>
+                <p class="testimonial-text">
+                    "Interface linda e intuitiva! Encontrei passagens para 5 pessoas pagando menos da metade do que custaria em dinheiro."
+                </p>
+                <div class="testimonial-author">
+                    <div class="author-avatar">AS</div>
+                    <div class="author-info">
+                        <div class="author-name">Ana Silva</div>
+                        <div class="author-role">Planejadora de Viagens</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>✈️ ClickPassagens</h3>
+                    <p>A plataforma mais inteligente para encontrar passagens aéreas com milhas.</p>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Links Rápidos</h3>
+                    <ul>
+                        <li><a href="#home">Home</a></li>
+                        <li><a href="#buscar">Buscar Passagens</a></li>
+                        <li><a href="#planos">Planos</a></li>
+                        <li><a href="#contato">Contato</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Suporte</h3>
+                    <ul>
+                        <li><a href="#">Central de Ajuda</a></li>
+                        <li><a href="#">FAQ</a></li>
+                        <li><a href="#">Termos de Uso</a></li>
+                        <li><a href="#">Política de Privacidade</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Contato</h3>
+                    <ul>
+                        <li>📧 contato@clickpassagens.me</li>
+                        <li>📱 (11) 9999-9999</li>
+                        <li>💬 Chat ao vivo</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2025 ClickPassagens. Todos os direitos reservados.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

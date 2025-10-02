@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ClickPassagens - Mockup Tela 05: Comparação Milhas vs Dinheiro</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 50%, #dbeafe 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            color: #1e293b;
+            margin-bottom: 1rem;
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #6366f1 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            color: #64748b;
+        }
+
+        /* Toggle Switch */
+        .view-toggle {
+            display: flex;
+            justify-content: center;
+            gap: 0;
+            margin-bottom: 3rem;
+            background: white;
+            padding: 0.5rem;
+            border-radius: 16px;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        .toggle-btn {
+            flex: 1;
+            padding: 1rem 2rem;
+            background: transparent;
+            border: none;
+            border-radius: 12px;
+            font-weight: 700;
+            color: #64748b;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1.1rem;
+        }
+
+        .toggle-btn.active {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        /* Comparison Grid */
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .option-card {
+            background: white;
+            border-radius: 24px;
+            padding: 2.5rem;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            transition: all 0.4s;
+            border: 3px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .option-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+        }
+
+        .option-card.recommended {
+            border-color: #f59e0b;
+        }
+
+        .option-card.recommended::before {
+            content: '⭐ RECOMENDADO';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 0.6rem;
+            background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%);
+            color: white;
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-align: center;
+            letter-spacing: 1px;
+        }
+
+        .option-card.recommended {
+            padding-top: 3.5rem;
+        }
+
+        .option-type {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .option-title {
+            font-size: 2rem;
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .option-miles {
+            color: #1e3a8a;
+        }
+
+        .option-cash {
+            color: #10b981;
+        }
+
+        .option-subtitle {
+            text-align: center;
+            color: #64748b;
+            margin-bottom: 2rem;
+        }
+
+        .price-display {
+            text-align: center;
+            padding: 2rem;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border-radius: 16px;
+            margin-bottom: 2rem;
+        }
+
+        .price-main {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+        }
+
+        .price-main.miles-color {
+            color: #1e3a8a;
+        }
+
+        .price-main.cash-color {
+            color: #10b981;
+        }
+
+        .price-sub {
+            color: #64748b;
+            font-size: 1.1rem;
+        }
+
+        .savings-badge {
+            display: inline-block;
+            padding: 0.8rem 1.5rem;
+            background: #dcfce7;
+            color: #166534;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 1.2rem;
+            margin-top: 1rem;
+        }
+
+        /* Features List */
+        .features-list {
+            list-style: none;
+            margin-bottom: 2rem;
+        }
+
+        .features-list li {
+            padding: 1rem 0;
+            color: #475569;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 1.05rem;
+        }
+
+        .features-list li:last-child {
+            border-bottom: none;
+        }
+
+        .check-icon {
+            font-size: 1.3rem;
+        }
+
+        .check-yes {
+            color: #10b981;
+        }
+
+        .check-no {
+            color: #ef4444;
+        }
+
+        /* Select Button */
+        .btn-select-option {
+            width: 100%;
+            padding: 1.5rem;
+            border: none;
+            border-radius: 16px;
+            font-weight: 700;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.8rem;
+        }
+
+        .btn-miles {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            color: white;
+            box-shadow: 0 4px 14px rgba(59, 130, 246, 0.4);
+        }
+
+        .btn-miles:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.5);
+        }
+
+        .btn-cash {
+            background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+            color: white;
+            box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4);
+        }
+
+        .btn-cash:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.5);
+        }
+
+        /* Detailed Comparison Table */
+        .comparison-table-section {
+            background: white;
+            border-radius: 24px;
+            padding: 3rem;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+            margin-bottom: 3rem;
+        }
+
+        .table-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1e293b;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .comparison-table thead {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+        }
+
+        .comparison-table th {
+            padding: 1.5rem;
+            color: white;
+            font-weight: 600;
+            text-align: center;
+            font-size: 1.2rem;
+        }
+
+        .comparison-table th:first-child {
+            text-align: left;
+            border-radius: 12px 0 0 0;
+        }
+
+        .comparison-table th:last-child {
+            border-radius: 0 12px 0 0;
+        }
+
+        .comparison-table td {
+            padding: 1.5rem;
+            border-bottom: 1px solid #f1f5f9;
+            text-align: center;
+            font-size: 1.05rem;
+        }
+
+        .comparison-table td:first-child {
+            text-align: left;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .comparison-table tr:hover {
+            background: #f8fafc;
+        }
+
+        .value-miles {
+            color: #1e3a8a;
+            font-weight: 700;
+        }
+
+        .value-cash {
+            color: #10b981;
+            font-weight: 700;
+        }
+
+        /* Calculator Section */
+        .calculator-section {
+            background: white;
+            border-radius: 24px;
+            padding: 3rem;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+        }
+
+        .calculator-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1e293b;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .calculator-form {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .form-group input,
+        .form-group select {
+            padding: 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 1rem;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #3b82f6;
+        }
+
+        .calculator-result {
+            padding: 2rem;
+            background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .calculator-result h3 {
+            font-size: 1.5rem;
+            color: #166534;
+            margin-bottom: 1rem;
+        }
+
+        .calculator-result .savings {
+            font-size: 3rem;
+            font-weight: 800;
+            color: #15803d;
+        }
+
+        /* Responsive */
+        @media (max-width: 968px) {
+            .comparison-grid {
+                grid-template-columns: 1fr;
+            }
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">✈️ ClickPassagens</div>
+            <h1>Compare: <span class="gradient-text">Milhas vs Dinheiro</span></h1>
+            <p>Descubra qual opção oferece mais economia para você</p>
+        </div>
+
+        <!-- View Toggle -->
+        <div class="view-toggle">
+            <button class="toggle-btn active">💰 Comparação</button>
+            <button class="toggle-btn">🧮 Calculadora</button>
+        </div>
+
+        <!-- Comparison Grid -->
+        <div class="comparison-grid">
+            <!-- Miles Option -->
+            <div class="option-card recommended">
+                <div class="option-type">💎</div>
+                <h2 class="option-title option-miles">Pagar com Milhas</h2>
+                <p class="option-subtitle">Economize até 70% na sua viagem</p>
+                
+                <div class="price-display">
+                    <div class="price-main miles-color">18.500</div>
+                    <div class="price-sub">milhas + R$ 120 taxas</div>
+                    <div class="savings-badge">💰 Economize R$ 730</div>
+                </div>
+
+                <ul class="features-list">
+                    <li>
+                        <span class="check-icon check-yes">✓</span>
+                        <span><strong>Economia de 65%</strong> vs dinheiro</span>
+                    </li>
+                    <li>
+                        <span class="check-icon check-yes">✓</span>
+                        <span>Ideal para quem tem milhas acumuladas</span>
+                    </li>
+                    <li>
+                        <span class="check-icon check-yes">✓</span>
+                        <span>Mesmos benefícios e bagagem</span>
+                    </li>
+                    <li>
+                        <span class="check-icon check-yes">✓</span>
+                        <span>Acumula novas milhas no voo</span>
+                    </li>
+                    <li>
+                        <span class="check-icon check-yes">✓</span>
+                        <span>Confirmação imediata</span>
+                    </li>
+                    <li>
+                        <span class="check-icon check-no">✗</span>
+                        <span>Requer milhas no programa</span>
+                    </li>
+                </ul>
+
+                <button class="btn-select-option btn-miles">
+                    ✈️ Selecionar Milhas
+                </button>
+            </div>
+
+            <!-- Cash Option -->
+            <div class="option-card">
+                <div class="option-type">💵</div>
+                <h2 class="option-title option-cash">Pagar em Dinheiro</h2>
+                <p class="option-subtitle">Opção tradicional de pagamento</p>
+                
+                <div class="price-display">
+                    <div class="price-main cash-color">R$ 850</div>
+                    <div class="price-sub">Preço total em dinheiro</div>
+                </div>
+
+                <ul class="features-list">
+                    <li>
+                        <span class="check-icon check-yes">✓</span>
+                        <span>Não requer milhas acumuladas</span>
+                    </li>
+                    <li>
+                        <span class="check-icon check-yes">✓</span>
+                        <span>Parcelamento em até 12x</span>
+                    </li>
+                    <li>
+                        <span class="check-icon check-yes">✓</span>
+                        <span>Acumula milhas do valor pago</span>
+                    </li>
+                    <li>
+                        <span class="check-icon check-yes">✓</span>
+                        <span>Flexibilidade de pagamento</span>
+                    </li>
+                    <li>
+                        <span class="check-icon check-yes">✓</span>
+                        <span>Mesmos benefícios e bagagem</span>
+                    </li>
+                    <li>
+                        <span class="check-icon check-no">✗</span>
+                        <span>Custo 65% maior que milhas</span>
+                    </li>
+                </ul>
+
+                <button class="btn-select-option btn-cash">
+                    💳 Pagar em Dinheiro
+                </button>
+            </div>
+        </div>
+
+        <!-- Detailed Comparison Table -->
+        <div class="comparison-table-section">
+            <h2 class="table-title">📊 Comparação Detalhada</h2>
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Critério</th>
+                        <th>💎 Milhas</th>
+                        <th>💵 Dinheiro</th>
+                        <th>🏆 Vencedor</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Valor Total</td>
+                        <td class="value-miles">18.500 milhas + R$ 120</td>
+                        <td class="value-cash">R$ 850</td>
+                        <td>💎 Milhas</td>
+                    </tr>
+                    <tr>
+                        <td>Economia</td>
+                        <td class="value-miles">65% de desconto</td>
+                        <td class="value-cash">-</td>
+                        <td>💎 Milhas</td>
+                    </tr>
+                    <tr>
+                        <td>Formas de Pagamento</td>
+                        <td>Milhas + Cartão (taxas)</td>
+                        <td class="value-cash">Cartão, PIX, Boleto</td>
+                        <td>💵 Dinheiro</td>
+                    </tr>
+                    <tr>
+                        <td>Parcelamento</td>
+                        <td>Não</td>
+                        <td class="value-cash">Até 12x sem juros</td>
+                        <td>💵 Dinheiro</td>
+                    </tr>
+                    <tr>
+                        <td>Acúmulo de Milhas</td>
+                        <td class="value-miles">Sim (100% do voo)</td>
+                        <td class="value-cash">Sim (100% do voo)</td>
+                        <td>🤝 Empate</td>
+                    </tr>
+                    <tr>
+                        <td>Bagagem Incluída</td>
+                        <td class="value-miles">23kg</td>
+                        <td class="value-cash">23kg</td>
+                        <td>🤝 Empate</td>
+                    </tr>
+                    <tr>
+                        <td>Escolha de Assento</td>
+                        <td class="value-miles">Incluído</td>
+                        <td class="value-cash">Incluído</td>
+                        <td>🤝 Empate</td>
+                    </tr>
+                    <tr>
+                        <td>Confirmação</td>
+                        <td class="value-miles">Imediata</td>
+                        <td class="value-cash">Imediata</td>
+                        <td>🤝 Empate</td>
+                    </tr>
+                    <tr>
+                        <td>Reembolso</td>
+                        <td>Retorno de milhas</td>
+                        <td class="value-cash">Retorno em dinheiro</td>
+                        <td>💵 Dinheiro</td>
+                    </tr>
+                    <tr>
+                        <td>Melhor Para</td>
+                        <td class="value-miles">Quem tem milhas</td>
+                        <td class="value-cash">Quem não tem milhas</td>
+                        <td>-</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Calculator -->
+        <div class="calculator-section">
+            <h2 class="calculator-title">🧮 Calculadora de Economia</h2>
+            <form class="calculator-form">
+                <div class="form-group">
+                    <label>💎 Quantas milhas você tem?</label>
+                    <input type="number" placeholder="Ex: 50.000" value="50000">
+                </div>
+                <div class="form-group">
+                    <label>💰 Valor do Milheiro (R$)</label>
+                    <input type="number" placeholder="Ex: 15,00" value="15" step="0.01">
+                </div>
+                <div class="form-group">
+                    <label>✈️ Milhas necessárias</label>
+                    <input type="number" placeholder="Ex: 18.500" value="18500">
+                </div>
+                <div class="form-group">
+                    <label>💳 Taxas em dinheiro (R$)</label>
+                    <input type="number" placeholder="Ex: 120,00" value="120" step="0.01">
+                </div>
+            </form>
+
+            <div class="calculator-result">
+                <h3>💰 Sua Economia Total</h3>
+                <div class="savings">R$ 730,00</div>
+                <p style="color: #166534; margin-top: 1rem; font-size: 1.1rem;">
+                    Você economiza <strong>65%</strong> usando milhas!<br>
+                    Equivalente a comprar milhas por R$ 15,00 o milheiro.
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

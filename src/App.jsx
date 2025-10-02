@@ -26,8 +26,10 @@ import BuscaIntegrada from './components/BuscaIntegrada.jsx'
 import PWAInstallButton from './components/PWAInstallButton.jsx'
 import PushNotifications from './components/PushNotifications.jsx'
 import FlightCard from './components/FlightCard.jsx'
+import HeroSection from './components/HeroSection.jsx'
 import useGoogleAnalytics, { analytics } from './hooks/useGoogleAnalytics.js'
 import './App.css'
+import './components/HeroSection.css'
 
 function App() {
   const [activeTab, setActiveTab] = useState('busca')
@@ -103,6 +105,20 @@ function App() {
     } else {
       console.error('Resultados inválidos:', resultadosBusca)
     }
+  }
+
+  const handleHeroSearch = (searchData) => {
+    console.log('Busca iniciada do Hero:', searchData)
+    // Passa os dados para o BuscaIntegrada através de referência ou state
+    // Por enquanto, muda para aba de busca para que o usuário veja o BuscaIntegrada
+    setActiveTab('busca')
+    // Scroll para o formulário
+    setTimeout(() => {
+      const buscaSection = document.querySelector('.busca-integrada')
+      if (buscaSection) {
+        buscaSection.scrollIntoView({ behavior: 'smooth' })
+      }
+    }, 100)
   }
 
   const handleGoogleLogin = () => {
@@ -201,7 +217,7 @@ function App() {
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           {/* Tab Busca */}
           <TabsContent value="busca" className="m-0">
-            <BuscaIntegrada onBuscaCompleta={handleBuscaCompleta} />
+            <HeroSection onSearchSubmit={handleBuscaCompleta} />
           </TabsContent>
 
           {/* Tab Resultados */}

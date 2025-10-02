@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ClickPassagens - Mockup Tela 03: Planos e Preços</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 50%, #dbeafe 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+        }
+
+        .header h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            color: #1e293b;
+            margin-bottom: 1rem;
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #6366f1 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header p {
+            font-size: 1.3rem;
+            color: #64748b;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        /* Billing Toggle */
+        .billing-toggle {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+            margin: 2rem 0 3rem;
+        }
+
+        .billing-option {
+            padding: 0.8rem 2rem;
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-weight: 600;
+            color: #64748b;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .billing-option.active {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            color: white;
+            border-color: #3b82f6;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .discount-badge {
+            display: inline-block;
+            padding: 0.4rem 1rem;
+            background: #dcfce7;
+            color: #166534;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 700;
+        }
+
+        /* Plans Grid */
+        .plans-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 4rem;
+        }
+
+        .plan-card {
+            background: white;
+            border-radius: 24px;
+            padding: 2.5rem;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+            transition: all 0.4s;
+            border: 3px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .plan-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+        }
+
+        .plan-card.popular {
+            border-color: #f59e0b;
+            transform: scale(1.05);
+        }
+
+        .plan-card.popular::before {
+            content: '⭐ MAIS POPULAR';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 0.6rem;
+            background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%);
+            color: white;
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-align: center;
+            letter-spacing: 1px;
+        }
+
+        .plan-card.popular {
+            padding-top: 3.5rem;
+        }
+
+        .plan-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .plan-name {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 0.5rem;
+        }
+
+        .plan-description {
+            color: #64748b;
+            margin-bottom: 1.5rem;
+            min-height: 50px;
+        }
+
+        .plan-price {
+            margin-bottom: 0.5rem;
+        }
+
+        .plan-price-value {
+            font-size: 3.5rem;
+            font-weight: 800;
+            color: #1e3a8a;
+        }
+
+        .plan-price-period {
+            font-size: 1.1rem;
+            color: #64748b;
+        }
+
+        .plan-consultations {
+            font-size: 1.1rem;
+            color: #3b82f6;
+            font-weight: 600;
+            margin-bottom: 2rem;
+        }
+
+        .plan-features {
+            list-style: none;
+            margin-bottom: 2rem;
+        }
+
+        .plan-features li {
+            padding: 1rem 0;
+            color: #475569;
+            display: flex;
+            align-items: start;
+            gap: 0.8rem;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .plan-features li:last-child {
+            border-bottom: none;
+        }
+
+        .check-icon {
+            color: #10b981;
+            font-size: 1.3rem;
+            flex-shrink: 0;
+        }
+
+        .plan-btn {
+            width: 100%;
+            padding: 1.2rem;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .plan-btn-primary {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            color: white;
+            box-shadow: 0 4px 14px rgba(59, 130, 246, 0.4);
+        }
+
+        .plan-btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.5);
+        }
+
+        .plan-btn-secondary {
+            background: white;
+            color: #3b82f6;
+            border: 2px solid #3b82f6;
+        }
+
+        .plan-btn-secondary:hover {
+            background: #f0f9ff;
+        }
+
+        /* Comparison Table */
+        .comparison-section {
+            background: white;
+            border-radius: 24px;
+            padding: 3rem;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+            margin-bottom: 4rem;
+        }
+
+        .comparison-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1e293b;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .comparison-table thead {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+        }
+
+        .comparison-table th {
+            padding: 1.5rem;
+            color: white;
+            font-weight: 600;
+            text-align: left;
+        }
+
+        .comparison-table th:first-child {
+            border-radius: 12px 0 0 0;
+        }
+
+        .comparison-table th:last-child {
+            border-radius: 0 12px 0 0;
+        }
+
+        .comparison-table td {
+            padding: 1.2rem 1.5rem;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .comparison-table tr:hover {
+            background: #f8fafc;
+        }
+
+        .feature-name {
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .feature-value {
+            text-align: center;
+        }
+
+        .check-yes {
+            color: #10b981;
+            font-size: 1.5rem;
+        }
+
+        .check-no {
+            color: #ef4444;
+            font-size: 1.5rem;
+        }
+
+        /* FAQ Section */
+        .faq-section {
+            background: white;
+            border-radius: 24px;
+            padding: 3rem;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+        }
+
+        .faq-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1e293b;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .faq-item {
+            border-bottom: 1px solid #e2e8f0;
+            padding: 1.5rem 0;
+        }
+
+        .faq-question {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .faq-answer {
+            color: #64748b;
+            line-height: 1.6;
+            padding-left: 2rem;
+        }
+
+        /* Guarantee Badge */
+        .guarantee-badge {
+            background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+            border: 2px solid #10b981;
+            border-radius: 16px;
+            padding: 2rem;
+            text-align: center;
+            margin-top: 3rem;
+        }
+
+        .guarantee-badge h3 {
+            font-size: 1.5rem;
+            color: #166534;
+            margin-bottom: 0.5rem;
+        }
+
+        .guarantee-badge p {
+            color: #15803d;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2.5rem;
+            }
+            .plans-grid {
+                grid-template-columns: 1fr;
+            }
+            .plan-card.popular {
+                transform: scale(1);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">✈️ ClickPassagens</div>
+            <h1>Escolha o <span class="gradient-text">plano perfeito</span> para você</h1>
+            <p>Todos os planos incluem busca ilimitada nas principais companhias aéreas</p>
+        </div>
+
+        <!-- Billing Toggle -->
+        <div class="billing-toggle">
+            <button class="billing-option">💳 Mensal</button>
+            <button class="billing-option active">💰 Anual <span class="discount-badge">-20% OFF</span></button>
+        </div>
+
+        <!-- Plans Grid -->
+        <div class="plans-grid">
+            <!-- Plano Gratuito -->
+            <div class="plan-card">
+                <div class="plan-icon">🆓</div>
+                <h3 class="plan-name">Gratuito</h3>
+                <p class="plan-description">Para quem quer testar a plataforma</p>
+                <div class="plan-price">
+                    <span class="plan-price-value">R$ 0</span>
+                    <span class="plan-price-period">/mês</span>
+                </div>
+                <p class="plan-consultations">5 consultas por mês</p>
+                <ul class="plan-features">
+                    <li><span class="check-icon">✓</span> Busca básica de passagens</li>
+                    <li><span class="check-icon">✓</span> Comparação simples</li>
+                    <li><span class="check-icon">✓</span> Suporte por email</li>
+                    <li><span class="check-icon">✓</span> Resultados limitados</li>
+                </ul>
+                <button class="plan-btn plan-btn-secondary">Começar Grátis</button>
+            </div>
+
+            <!-- Plano Básico -->
+            <div class="plan-card">
+                <div class="plan-icon">⭐</div>
+                <h3 class="plan-name">Básico</h3>
+                <p class="plan-description">Ideal para viajantes frequentes</p>
+                <div class="plan-price">
+                    <span class="plan-price-value">R$ 99</span>
+                    <span class="plan-price-period">/mês</span>
+                </div>
+                <p class="plan-consultations">100 consultas por mês</p>
+                <ul class="plan-features">
+                    <li><span class="check-icon">✓</span> Busca avançada de passagens</li>
+                    <li><span class="check-icon">✓</span> Filtros completos</li>
+                    <li><span class="check-icon">✓</span> Histórico de buscas</li>
+                    <li><span class="check-icon">✓</span> Suporte prioritário</li>
+                    <li><span class="check-icon">✓</span> Alertas de preços</li>
+                </ul>
+                <button class="plan-btn plan-btn-secondary">Assinar Plano Básico</button>
+            </div>
+
+            <!-- Plano Premium - POPULAR -->
+            <div class="plan-card popular">
+                <div class="plan-icon">💎</div>
+                <h3 class="plan-name">Premium</h3>
+                <p class="plan-description">O favorito dos nossos clientes</p>
+                <div class="plan-price">
+                    <span class="plan-price-value">R$ 299</span>
+                    <span class="plan-price-period">/mês</span>
+                </div>
+                <p class="plan-consultations">500 consultas por mês</p>
+                <ul class="plan-features">
+                    <li><span class="check-icon">✓</span> Todas as funcionalidades</li>
+                    <li><span class="check-icon">✓</span> Orçamentos personalizados</li>
+                    <li><span class="check-icon">✓</span> Cashback de 2%</li>
+                    <li><span class="check-icon">✓</span> Suporte 24/7</li>
+                    <li><span class="check-icon">✓</span> Relatórios avançados</li>
+                    <li><span class="check-icon">✓</span> API de integração</li>
+                </ul>
+                <button class="plan-btn plan-btn-primary">Assinar Plano Premium</button>
+            </div>
+
+            <!-- Plano Agente -->
+            <div class="plan-card">
+                <div class="plan-icon">👨‍💼</div>
+                <h3 class="plan-name">Agente</h3>
+                <p class="plan-description">Para agentes de viagem profissionais</p>
+                <div class="plan-price">
+                    <span class="plan-price-value">R$ 499</span>
+                    <span class="plan-price-period">/mês</span>
+                </div>
+                <p class="plan-consultations">1000 consultas por mês</p>
+                <ul class="plan-features">
+                    <li><span class="check-icon">✓</span> Painel do agente completo</li>
+                    <li><span class="check-icon">✓</span> Comissões configuráveis</li>
+                    <li><span class="check-icon">✓</span> Marca própria (White Label)</li>
+                    <li><span class="check-icon">✓</span> Relatórios personalizados</li>
+                    <li><span class="check-icon">✓</span> Multi-usuários</li>
+                    <li><span class="check-icon">✓</span> Gerente de conta dedicado</li>
+                </ul>
+                <button class="plan-btn plan-btn-primary">Assinar Plano Agente</button>
+            </div>
+        </div>
+
+        <!-- Comparison Table -->
+        <div class="comparison-section">
+            <h2 class="comparison-title">📊 Compare todos os recursos</h2>
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Funcionalidade</th>
+                        <th style="text-align: center;">Gratuito</th>
+                        <th style="text-align: center;">Básico</th>
+                        <th style="text-align: center;">Premium</th>
+                        <th style="text-align: center;">Agente</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="feature-name">Consultas por mês</td>
+                        <td class="feature-value">5</td>
+                        <td class="feature-value">100</td>
+                        <td class="feature-value">500</td>
+                        <td class="feature-value">1000</td>
+                    </tr>
+                    <tr>
+                        <td class="feature-name">Busca básica</td>
+                        <td class="feature-value"><span class="check-yes">✓</span></td>
+                        <td class="feature-value"><span class="check-yes">✓</span></td>
+                        <td class="feature-value"><span class="check-yes">✓</span></td>
+                        <td class="feature-value"><span class="check-yes">✓</span></td>
+                    </tr>
+                    <tr>
+                        <td class="feature-name">Filtros avançados</td>
+                        <td class="feature-value"><span class="check-no">✗</span></td>
+                        <td class="feature-value"><span class="check-yes">✓</span></td>
+                        <td class="feature-value"><span class="check-yes">✓</span></td>
+                        <td class="feature-value"><span class="check-yes">✓</span></td>
+                    </tr>
+                    <tr>
+                        <td class="feature-name">Histórico de buscas</td>
+                        <td class="feature-value"><span class="check-no">✗</span></td>
+                        <td class="feature-value"><span class="check-yes">✓</span></td>
+                        <td class="feature-value"><span class="check-yes">✓</span></td>
+                        <td class="feature-value"><span class="check-yes">✓</span></td>
+                    </tr>
+                    <tr>
+                        <td class="feature-name">Alertas de preços</td>
+                        <td class="feature-value"><span class="check-no">✗</span></td>
+                        <td class="feature-value"><span class="check-yes">✓</span></td>
+                        <td class="feature-value"><span class="check-yes">✓</span></td>
+                        <td class="feature-value"><span class="check-yes">✓</span></td>
+                    </tr>
+                    <tr>
+                        <td class="feature-name">Orçamentos personalizados</td>
+                        <td class="feature-value"><span class="check-no">✗</span></td>
+                        <td class="feature-value"><span class="check-no">✗</span></td>
+                        <td class="feature-value"><span class="check-yes">✓</span></td>
+                        <td class="feature-value"><span class="check-yes">✓</span></td>
+                    </tr>
+                    <tr>
+                        <td class="feature-name">Cashback</td>
+                        <td class="feature-value"><span class="check-no">✗</span></td>
+                        <td class="feature-value"><span class="check-no">✗</span></td>
+                        <td class="feature-value">2%</td>
+                        <td class="feature-value">3%</td>
+                    </tr>
+                    <tr>
+                        <td class="feature-name">Suporte</td>
+                        <td class="feature-value">Email</td>
+                        <td class="feature-value">Prioritário</td>
+                        <td class="feature-value">24/7</td>
+                        <td class="feature-value">Dedicado</td>
+                    </tr>
+                    <tr>
+                        <td class="feature-name">Marca própria (White Label)</td>
+                        <td class="feature-value"><span class="check-no">✗</span></td>
+                        <td class="feature-value"><span class="check-no">✗</span></td>
+                        <td class="feature-value"><span class="check-no">✗</span></td>
+                        <td class="feature-value"><span class="check-yes">✓</span></td>
+                    </tr>
+                    <tr>
+                        <td class="feature-name">API de integração</td>
+                        <td class="feature-value"><span class="check-no">✗</span></td>
+                        <td class="feature-value"><span class="check-no">✗</span></td>
+                        <td class="feature-value"><span class="check-yes">✓</span></td>
+                        <td class="feature-value"><span class="check-yes">✓</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- FAQ -->
+        <div class="faq-section">
+            <h2 class="faq-title">❓ Perguntas Frequentes</h2>
+            
+            <div class="faq-item">
+                <div class="faq-question">
+                    💳 Como funciona o pagamento?
+                </div>
+                <p class="faq-answer">
+                    Aceitamos cartão de crédito, débito e PIX. O pagamento é recorrente mensal ou anual, conforme sua escolha. Você pode cancelar a qualquer momento.
+                </p>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">
+                    🔄 Posso trocar de plano depois?
+                </div>
+                <p class="faq-answer">
+                    Sim! Você pode fazer upgrade ou downgrade do seu plano a qualquer momento. O ajuste de valores será feito proporcionalmente.
+                </p>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">
+                    ✈️ O que conta como uma consulta?
+                </div>
+                <p class="faq-answer">
+                    Uma consulta é contada quando você busca passagens em uma companhia aérea específica. Exemplo: Se você busca em 3 companhias, são 3 consultas.
+                </p>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">
+                    💰 Como funciona o cashback?
+                </div>
+                <p class="faq-answer">
+                    O cashback é calculado sobre cada emissão de passagem. O valor fica disponível na sua conta e pode ser usado para pagar futuras consultas ou resgatado.
+                </p>
+            </div>
+
+            <div class="guarantee-badge">
+                <h3>🛡️ Garantia de 30 Dias</h3>
+                <p>Não ficou satisfeito? Devolvemos seu dinheiro, sem perguntas!</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,468 @@
+
+================================================================================
+                    DOCUMENTO TÉCNICO COMPLETO
+                SITE DE BUSCA DE PASSAGENS AÉREAS COM MILHAS
+================================================================================
+
+ÍNDICE:
+1. VISÃO GERAL DO PROJETO
+2. ANÁLISE DO SITE BASE (BUSCA MILHAS)
+3. ARQUITETURA TÉCNICA RECOMENDADA
+4. FUNCIONALIDADES OBRIGATÓRIAS
+5. FLUXOS DO USUÁRIO
+6. REGRAS DE NEGÓCIO
+7. DESIGN E UX/UI
+8. INTEGRAÇÕES NECESSÁRIAS
+9. MONETIZAÇÃO E COMISSÕES
+10. SEGURANÇA E COMPLIANCE
+11. CHECKLIST DE DESENVOLVIMENTO
+12. CRONOGRAMA ESTIMADO
+
+================================================================================
+1. VISÃO GERAL DO PROJETO
+================================================================================
+
+OBJETIVO:
+Desenvolver uma plataforma web de busca e emissão de passagens aéreas utilizando 
+milhas, baseada no modelo do Busca Milhas, mas com identidade visual própria e 
+funcionalidades aprimoradas.
+
+PROPOSTA DE VALOR:
+- Centralizar busca de passagens por milhas em múltiplas companhias aéreas
+- Comparar preços entre milhas vs. dinheiro em tempo real
+- Gerar orçamentos personalizados para agentes de viagem
+- Sistema de comissões e precificação flexível
+- Interface intuitiva para usuários premium e básicos
+
+DIFERENCIAL COMPETITIVO:
+- Design moderno e responsivo
+- Melhor UX/UI que o site base
+- Funcionalidades premium mais acessíveis
+- Sistema de indicação e cashback
+- Suporte multilíngue
+
+================================================================================
+2. ANÁLISE DO SITE BASE (BUSCA MILHAS)
+================================================================================
+
+SITE ANALISADO: https://buscamilhas.com/voy8
+
+FUNCIONALIDADES IDENTIFICADAS:
+
+2.1 SISTEMA DE PLANOS:
+- Plano Inicial: 100 consultas por R$288
+- Plano Avançado: 1000 consultas
+- Consultas contabilizadas por companhia, não por clique
+- Monitoramento de uso (alertas em 80% e 90%)
+- Recursos adicionais: orçamento personalizado
+
+2.2 BUSCA E PRECIFICAÇÃO:
+- Busca simultânea em múltiplas companhias (Gol, Azul, Ibéria, etc.)
+- Três visualizações: Milhas, Tarifado, Precificado
+- Comparação automática milhas vs. dinheiro
+- Filtros: companhia, paradas, bagagem, horários
+- Precificação do milheiro configurável por companhia
+
+2.3 SISTEMA DE COMISSÕES:
+- Comissão percentual ou valor fixo
+- Aplicação por passageiro e por trecho
+- Configuração por faixas de milhas
+
+2.4 ORÇAMENTO PERSONALIZADO:
+- Customização de título, subtítulo, observações
+- Inserção de logo e cores da marca
+- Geração de PDF profissional
+- Salvamento de configurações
+
+2.5 RECURSOS ADICIONAIS:
+- FAQ integrado
+- Suporte humanizado
+- Redirecionamento direto para sites das companhias
+- Sistema de feedback
+
+================================================================================
+3. ARQUITETURA TÉCNICA RECOMENDADA
+================================================================================
+
+3.1 FRONTEND:
+- Framework: React.js ou Next.js
+- UI Library: Material-UI ou Ant Design
+- Estado: Redux ou Zustand
+- Estilização: Styled-components ou Tailwind CSS
+- Responsividade: Mobile-first approach
+
+3.2 BACKEND:
+- Linguagem: Node.js (Express) ou Python (Django/FastAPI)
+- Banco de Dados: PostgreSQL (principal) + Redis (cache)
+- API: RESTful + GraphQL (opcional)
+- Autenticação: JWT + OAuth2
+- Queue System: Bull (Node.js) ou Celery (Python)
+
+3.3 INFRAESTRUTURA:
+- Cloud: AWS ou Google Cloud Platform
+- CDN: CloudFlare
+- Monitoramento: New Relic ou DataDog
+- CI/CD: GitHub Actions ou GitLab CI
+- Containerização: Docker + Kubernetes
+
+3.4 INTEGRAÇÕES:
+- APIs das companhias aéreas (Gol, Azul, LATAM, etc.)
+- Gateway de pagamento (Stripe, PagSeguro, Mercado Pago)
+- Sistema de e-mail (SendGrid, Mailgun)
+- Analytics (Google Analytics, Mixpanel)
+
+================================================================================
+4. FUNCIONALIDADES OBRIGATÓRIAS
+================================================================================
+
+4.1 SISTEMA DE USUÁRIOS:
+- Cadastro/Login (email, Google, Facebook)
+- Perfis: Básico, Premium, Agente, Admin
+- Dashboard personalizado por tipo de usuário
+- Histórico de buscas e emissões
+- Configurações de conta
+
+4.2 BUSCA DE PASSAGENS:
+- Busca por origem/destino/data
+- Seleção múltipla de companhias
+- Busca flexível de datas (+/- 3 dias)
+- Filtros avançados:
+  * Companhia aérea
+  * Número de paradas
+  * Horário (manhã, tarde, noite)
+  * Bagagem incluída
+  * Classe (econômica, executiva)
+  * Preço máximo
+
+4.3 COMPARAÇÃO E PRECIFICAÇÃO:
+- Visualização simultânea: milhas vs. dinheiro
+- Cálculo automático de economia
+- Precificação do milheiro configurável
+- Alertas de melhores ofertas
+- Histórico de preços
+
+4.4 SISTEMA DE PLANOS:
+- Plano Gratuito: 5 consultas/mês
+- Plano Básico: 100 consultas/mês - R$99
+- Plano Premium: 500 consultas/mês - R$299
+- Plano Agente: 1000 consultas/mês - R$499
+- Plano Empresa: Ilimitado - R$999
+
+4.5 ORÇAMENTO PERSONALIZADO:
+- Editor visual de orçamentos
+- Templates pré-definidos
+- Customização de cores e logos
+- Geração de PDF
+- Envio automático por email
+- Histórico de orçamentos
+
+4.6 SISTEMA DE COMISSÕES:
+- Configuração por companhia
+- Comissão percentual ou fixa
+- Relatórios de comissões
+- Pagamento automático
+- Histórico financeiro
+
+4.7 PROGRAMA DE INDICAÇÃO:
+- Link de indicação único
+- Comissão por indicação
+- Dashboard de indicações
+- Gamificação (níveis, badges)
+
+4.8 CASHBACK:
+- Percentual de cashback por emissão
+- Saldo de cashback
+- Resgate em dinheiro ou créditos
+- Histórico de cashback
+
+================================================================================
+5. FLUXOS DO USUÁRIO
+================================================================================
+
+5.1 FLUXO USUÁRIO BÁSICO:
+1. Acesso ao site
+2. Busca sem cadastro (limitada)
+3. Visualização de resultados básicos
+4. Cadastro para ver preços completos
+5. Redirecionamento para companhia
+
+5.2 FLUXO USUÁRIO PREMIUM:
+1. Login na conta
+2. Busca avançada com filtros
+3. Comparação detalhada milhas vs. dinheiro
+4. Geração de orçamento personalizado
+5. Emissão direta ou redirecionamento
+
+5.3 FLUXO AGENTE DE VIAGEM:
+1. Login no painel do agente
+2. Configuração de precificação e comissões
+3. Busca para cliente
+4. Geração de orçamento com marca própria
+5. Envio para cliente
+6. Acompanhamento de conversão
+
+5.4 FLUXO ADMINISTRADOR:
+1. Acesso ao painel admin
+2. Gestão de usuários e planos
+3. Configuração de integrações
+4. Relatórios financeiros
+5. Suporte aos usuários
+
+================================================================================
+6. REGRAS DE NEGÓCIO
+================================================================================
+
+6.1 SISTEMA DE CONSULTAS:
+- Consulta = busca em uma companhia específica
+- Exemplo: busca Gol + Azul = 2 consultas
+- Consultas não utilizadas não acumulam
+- Reset mensal do limite de consultas
+
+6.2 PRECIFICAÇÃO:
+- Milheiro configurável por companhia
+- Faixas de preço por volume de milhas
+- Margem de lucro configurável
+- Preços dinâmicos baseados na demanda
+
+6.3 COMISSÕES:
+- Comissão mínima: R$5 por emissão
+- Comissão máxima: 15% do valor
+- Pagamento mensal (até dia 15)
+- Retenção de 30 dias para estornos
+
+6.4 PROGRAMA DE INDICAÇÃO:
+- Comissão: 20% do primeiro pagamento do indicado
+- Limite: 10 indicações por mês (usuário básico)
+- Sem limite para usuários premium
+- Pagamento junto com comissões regulares
+
+6.5 CASHBACK:
+- Percentual: 1% para básico, 2% para premium
+- Valor mínimo para resgate: R$50
+- Prazo para resgate: 90 dias
+- Conversão: 1 real = 1000 pontos
+
+================================================================================
+7. DESIGN E UX/UI
+================================================================================
+
+7.1 IDENTIDADE VISUAL:
+- Paleta de cores moderna (azul/verde/branco)
+- Tipografia clean (Roboto ou Inter)
+- Ícones consistentes (Feather ou Heroicons)
+- Logo responsivo e memorável
+
+7.2 LAYOUT:
+- Header fixo com navegação principal
+- Sidebar para filtros (desktop)
+- Cards para resultados de busca
+- Footer com links importantes
+- Design mobile-first
+
+7.3 COMPONENTES PRINCIPAIS:
+- Formulário de busca destacado
+- Tabela/cards de resultados
+- Modal de detalhes do voo
+- Dashboard com métricas
+- Formulário de orçamento
+
+7.4 UX MELHORIAS:
+- Loading states animados
+- Feedback visual para ações
+- Tooltips explicativos
+- Breadcrumbs para navegação
+- Busca com autocomplete
+
+7.5 ACESSIBILIDADE:
+- Contraste adequado (WCAG 2.1)
+- Navegação por teclado
+- Screen reader friendly
+- Textos alternativos em imagens
+- Foco visível em elementos
+
+================================================================================
+8. INTEGRAÇÕES NECESSÁRIAS
+================================================================================
+
+8.1 COMPANHIAS AÉREAS:
+- Gol (API oficial ou scraping)
+- Azul (API oficial ou scraping)
+- LATAM (API oficial ou scraping)
+- Avianca (API oficial ou scraping)
+- Ibéria (API oficial ou scraping)
+
+8.2 PAGAMENTOS:
+- Stripe (internacional)
+- Mercado Pago (nacional)
+- PagSeguro (nacional)
+- PIX (obrigatório)
+- Boleto bancário
+
+8.3 COMUNICAÇÃO:
+- SendGrid (emails transacionais)
+- Twilio (SMS)
+- WhatsApp Business API
+- Push notifications (Firebase)
+
+8.4 ANALYTICS:
+- Google Analytics 4
+- Facebook Pixel
+- Hotjar (heatmaps)
+- Mixpanel (eventos)
+
+8.5 SUPORTE:
+- Zendesk ou Intercom
+- Chat ao vivo
+- Base de conhecimento
+- Sistema de tickets
+
+================================================================================
+9. MONETIZAÇÃO E COMISSÕES
+================================================================================
+
+9.1 FONTES DE RECEITA:
+- Assinaturas mensais dos planos
+- Comissões por emissão
+- Taxa de conveniência
+- Programa de afiliados
+- Publicidade (companhias parceiras)
+
+9.2 ESTRUTURA DE COMISSÕES:
+- Gol: 2-5% do valor em milhas
+- Azul: 2-5% do valor em milhas
+- LATAM: 3-6% do valor em milhas
+- Avianca: 2-4% do valor em milhas
+- Ibéria: 3-5% do valor em milhas
+
+9.3 MODELO DE PRECIFICAÇÃO:
+- Milheiro Gol: R$15-25
+- Milheiro Azul: R$18-28
+- Milheiro LATAM: R$20-30
+- Milheiro Avianca: R$16-26
+- Milheiro Ibéria: R$22-32
+
+9.4 METAS FINANCEIRAS:
+- Ano 1: R$500k de receita
+- Ano 2: R$1.5M de receita
+- Ano 3: R$3M de receita
+- Break-even: 18 meses
+
+================================================================================
+10. SEGURANÇA E COMPLIANCE
+================================================================================
+
+10.1 SEGURANÇA DE DADOS:
+- Criptografia SSL/TLS
+- Hash de senhas (bcrypt)
+- Sanitização de inputs
+- Rate limiting
+- CORS configurado
+
+10.2 COMPLIANCE:
+- LGPD (Lei Geral de Proteção de Dados)
+- PCI DSS (pagamentos)
+- Termos de uso
+- Política de privacidade
+- Cookies policy
+
+10.3 BACKUP E RECUPERAÇÃO:
+- Backup diário automatizado
+- Replicação de dados
+- Plano de disaster recovery
+- Monitoramento 24/7
+
+================================================================================
+11. CHECKLIST DE DESENVOLVIMENTO
+================================================================================
+
+FASE 1 - SETUP E INFRAESTRUTURA (2 semanas):
+□ Configuração do ambiente de desenvolvimento
+□ Setup do repositório Git
+□ Configuração do CI/CD
+□ Setup da infraestrutura cloud
+□ Configuração do banco de dados
+
+FASE 2 - BACKEND CORE (4 semanas):
+□ API de autenticação
+□ CRUD de usuários
+□ Sistema de planos
+□ API de busca básica
+□ Integração com primeira companhia
+
+FASE 3 - FRONTEND CORE (4 semanas):
+□ Layout base e componentes
+□ Tela de login/cadastro
+□ Dashboard do usuário
+□ Formulário de busca
+□ Listagem de resultados
+
+FASE 4 - FUNCIONALIDADES AVANÇADAS (6 semanas):
+□ Sistema de comissões
+□ Orçamento personalizado
+□ Programa de indicação
+□ Sistema de cashback
+□ Integrações com mais companhias
+
+FASE 5 - PAGAMENTOS E FINANCEIRO (3 semanas):
+□ Gateway de pagamento
+□ Sistema de assinaturas
+□ Relatórios financeiros
+□ Sistema de faturas
+□ Controle de inadimplência
+
+FASE 6 - TESTES E OTIMIZAÇÃO (3 semanas):
+□ Testes unitários
+□ Testes de integração
+□ Testes de performance
+□ Otimização de queries
+□ Correção de bugs
+
+FASE 7 - DEPLOY E MONITORAMENTO (2 semanas):
+□ Deploy em produção
+□ Configuração de monitoramento
+□ Setup de alertas
+□ Documentação final
+□ Treinamento da equipe
+
+================================================================================
+12. CRONOGRAMA ESTIMADO
+================================================================================
+
+TOTAL: 24 semanas (6 meses)
+
+MÊS 1-2: Setup, Backend Core, Frontend Core
+MÊS 3-4: Funcionalidades Avançadas
+MÊS 5: Pagamentos, Testes, Otimização
+MÊS 6: Deploy, Monitoramento, Ajustes Finais
+
+EQUIPE RECOMENDADA:
+- 1 Tech Lead / Arquiteto
+- 2 Desenvolvedores Backend
+- 2 Desenvolvedores Frontend
+- 1 Designer UX/UI
+- 1 QA / Tester
+- 1 DevOps
+- 1 Product Owner
+
+INVESTIMENTO ESTIMADO:
+- Desenvolvimento: R$300-500k
+- Infraestrutura (1 ano): R$50-100k
+- Licenças e ferramentas: R$20-30k
+- Marketing inicial: R$100-200k
+- TOTAL: R$470-830k
+
+================================================================================
+OBSERVAÇÕES FINAIS
+================================================================================
+
+Este documento serve como base técnica completa para o desenvolvimento do site.
+Todas as funcionalidades foram mapeadas com base na análise do Busca Milhas e
+nas imagens fornecidas do sistema premium.
+
+O projeto deve ser desenvolvido de forma modular, permitindo implementação
+gradual das funcionalidades e escalabilidade futura.
+
+É fundamental manter foco na experiência do usuário e na performance do sistema,
+especialmente nas integrações com as APIs das companhias aéreas.
+
+================================================================================

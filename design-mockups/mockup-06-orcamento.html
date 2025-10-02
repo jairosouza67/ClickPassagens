@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ClickPassagens - Mockup Tela 06: Orçamento Personalizado</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #e0f2fe 100%);
+            min-height: 100vh;
+        }
+
+        /* Navigation */
+        nav {
+            background: white;
+            padding: 1.5rem 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+
+        /* Header */
+        .page-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .page-header h1 {
+            font-size: 2.5rem;
+            color: #1e293b;
+            margin-bottom: 1rem;
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #6366f1 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .page-header p {
+            font-size: 1.2rem;
+            color: #64748b;
+        }
+
+        /* Steps Progress */
+        .steps-container {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 3rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        .steps {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+        }
+
+        .steps::before {
+            content: '';
+            position: absolute;
+            top: 30px;
+            left: 10%;
+            right: 10%;
+            height: 4px;
+            background: #e2e8f0;
+            z-index: 0;
+        }
+
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.8rem;
+            z-index: 1;
+            flex: 1;
+        }
+
+        .step-number {
+            width: 60px;
+            height: 60px;
+            background: white;
+            border: 4px solid #e2e8f0;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 1.5rem;
+            color: #cbd5e1;
+            transition: all 0.3s;
+        }
+
+        .step.active .step-number {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            border-color: #3b82f6;
+            color: white;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+        }
+
+        .step.completed .step-number {
+            background: #10b981;
+            border-color: #10b981;
+            color: white;
+        }
+
+        .step-label {
+            font-weight: 600;
+            color: #cbd5e1;
+            font-size: 0.95rem;
+        }
+
+        .step.active .step-label {
+            color: #1e3a8a;
+        }
+
+        .step.completed .step-label {
+            color: #10b981;
+        }
+
+        /* Form Grid */
+        .form-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+        }
+
+        /* Form Section */
+        .form-section {
+            background: white;
+            border-radius: 24px;
+            padding: 2.5rem;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            color: #1e293b;
+            font-size: 1rem;
+        }
+
+        .required {
+            color: #ef4444;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .helper-text {
+            font-size: 0.85rem;
+            color: #64748b;
+        }
+
+        /* Upload Section */
+        .upload-area {
+            border: 3px dashed #cbd5e1;
+            border-radius: 16px;
+            padding: 3rem;
+            text-align: center;
+            transition: all 0.3s;
+            cursor: pointer;
+            margin-bottom: 2rem;
+        }
+
+        .upload-area:hover {
+            border-color: #3b82f6;
+            background: #f0f9ff;
+        }
+
+        .upload-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .upload-area h3 {
+            font-size: 1.3rem;
+            color: #1e293b;
+            margin-bottom: 0.5rem;
+        }
+
+        .upload-area p {
+            color: #64748b;
+        }
+
+        .uploaded-files {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .file-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: #f8fafc;
+            border-radius: 12px;
+            border: 2px solid #e2e8f0;
+        }
+
+        .file-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .file-icon {
+            font-size: 2rem;
+        }
+
+        .file-details {
+            display: flex;
+            flex-direction: column;
+            gap: 0.2rem;
+        }
+
+        .file-name {
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .file-size {
+            font-size: 0.85rem;
+            color: #64748b;
+        }
+
+        .btn-remove-file {
+            background: #fee2e2;
+            color: #dc2626;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-remove-file:hover {
+            background: #fecaca;
+        }
+
+        /* Preview Section */
+        .preview-section {
+            background: white;
+            border-radius: 24px;
+            padding: 2.5rem;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+            position: sticky;
+            top: 2rem;
+            max-height: calc(100vh - 4rem);
+            overflow-y: auto;
+        }
+
+        .preview-header {
+            text-align: center;
+            padding: 2rem;
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            border-radius: 16px;
+            color: white;
+            margin-bottom: 2rem;
+        }
+
+        .preview-header h3 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .preview-header p {
+            opacity: 0.9;
+        }
+
+        .preview-item {
+            padding: 1.2rem 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .preview-item:last-child {
+            border-bottom: none;
+        }
+
+        .preview-label {
+            font-size: 0.85rem;
+            color: #64748b;
+            margin-bottom: 0.3rem;
+        }
+
+        .preview-value {
+            font-weight: 600;
+            color: #1e293b;
+            font-size: 1.05rem;
+        }
+
+        .price-preview {
+            background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+            border-radius: 16px;
+            padding: 2rem;
+            text-align: center;
+            margin: 2rem 0;
+        }
+
+        .price-preview-label {
+            font-size: 1rem;
+            color: #166534;
+            margin-bottom: 0.5rem;
+        }
+
+        .price-preview-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #15803d;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            color: white;
+            border: none;
+            border-radius: 16px;
+            font-weight: 700;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 14px rgba(59, 130, 246, 0.4);
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.5);
+        }
+
+        .btn-secondary {
+            width: 100%;
+            padding: 1rem;
+            background: white;
+            color: #3b82f6;
+            border: 2px solid #3b82f6;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 1rem;
+        }
+
+        .btn-secondary:hover {
+            background: #f0f9ff;
+        }
+
+        /* Info Box */
+        .info-box {
+            background: #dbeafe;
+            border-left: 4px solid #3b82f6;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .info-box h4 {
+            color: #1e40af;
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .info-box ul {
+            list-style-position: inside;
+            color: #1e3a8a;
+        }
+
+        .info-box li {
+            margin-bottom: 0.3rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            .preview-section {
+                position: static;
+            }
+            .steps {
+                flex-direction: column;
+                gap: 2rem;
+            }
+            .steps::before {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <div class="logo">✈️ ClickPassagens</div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1>Solicite seu <span class="gradient-text">Orçamento Personalizado</span></h1>
+            <p>Preencha os dados abaixo e receba as melhores ofertas em até 24 horas</p>
+        </div>
+
+        <!-- Steps Progress -->
+        <div class="steps-container">
+            <div class="steps">
+                <div class="step completed">
+                    <div class="step-number">✓</div>
+                    <div class="step-label">Dados Pessoais</div>
+                </div>
+                <div class="step active">
+                    <div class="step-number">2</div>
+                    <div class="step-label">Detalhes da Viagem</div>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-label">Preferências</div>
+                </div>
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <div class="step-label">Confirmação</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Form Grid -->
+        <div class="form-grid">
+            <!-- Form Section -->
+            <div class="form-section">
+                <h2 class="section-title">
+                    ✈️ Informações da Viagem
+                </h2>
+
+                <div class="info-box">
+                    <h4>📋 Como funciona?</h4>
+                    <ul>
+                        <li>Preencha o formulário com todos os detalhes</li>
+                        <li>Nossa equipe busca as melhores ofertas</li>
+                        <li>Você recebe até 3 propostas personalizadas</li>
+                        <li>Escolha a melhor opção e finalize a compra</li>
+                    </ul>
+                </div>
+
+                <!-- Trip Details -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>🛫 Origem <span class="required">*</span></label>
+                        <input type="text" placeholder="Ex: São Paulo (GRU)" value="São Paulo (GRU)">
+                    </div>
+                    <div class="form-group">
+                        <label>🛬 Destino <span class="required">*</span></label>
+                        <input type="text" placeholder="Ex: Rio de Janeiro (GIG)" value="Rio de Janeiro (GIG)">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>📅 Data de Ida <span class="required">*</span></label>
+                        <input type="date" value="2025-11-15">
+                    </div>
+                    <div class="form-group">
+                        <label>📅 Data de Volta</label>
+                        <input type="date" value="2025-11-22">
+                        <span class="helper-text">Deixe em branco para voo só de ida</span>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>👥 Número de Passageiros <span class="required">*</span></label>
+                        <select>
+                            <option value="1">1 adulto</option>
+                            <option value="2" selected>2 adultos</option>
+                            <option value="3">3 adultos</option>
+                            <option value="4">4 adultos</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>💺 Classe <span class="required">*</span></label>
+                        <select>
+                            <option value="economy" selected>Econômica</option>
+                            <option value="premium">Premium Economy</option>
+                            <option value="business">Executiva</option>
+                            <option value="first">Primeira Classe</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Preferences -->
+                <h3 class="section-title" style="margin-top: 3rem;">
+                    ⚙️ Preferências
+                </h3>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>✈️ Companhias Preferidas</label>
+                        <select multiple size="4">
+                            <option>Qualquer companhia</option>
+                            <option>LATAM Airlines</option>
+                            <option>Azul Linhas Aéreas</option>
+                            <option>GOL Linhas Aéreas</option>
+                            <option>Avianca Brasil</option>
+                        </select>
+                        <span class="helper-text">Segure Ctrl para selecionar múltiplas</span>
+                    </div>
+                    <div class="form-group">
+                        <label>🔄 Conexões</label>
+                        <select>
+                            <option value="direct">Apenas voos diretos</option>
+                            <option value="1stop" selected>Até 1 conexão</option>
+                            <option value="2stops">Até 2 conexões</option>
+                            <option value="any">Qualquer número</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>💰 Orçamento Máximo (R$)</label>
+                        <input type="number" placeholder="Ex: 2000" value="2000">
+                        <span class="helper-text">Opcional - ajuda a filtrar ofertas</span>
+                    </div>
+                    <div class="form-group">
+                        <label>💎 Possui Milhas?</label>
+                        <select>
+                            <option value="no">Não tenho milhas</option>
+                            <option value="yes" selected>Sim, prefiro usar milhas</option>
+                            <option value="flexible">Flexível</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>📝 Observações Adicionais</label>
+                    <textarea placeholder="Exemplo: Preciso de assento com mais espaço, viajo com animal de estimação, etc.">Preciso de duas malas de 23kg cada.</textarea>
+                </div>
+
+                <!-- Upload Section -->
+                <h3 class="section-title" style="margin-top: 3rem;">
+                    📎 Anexos (Opcional)
+                </h3>
+
+                <div class="upload-area">
+                    <div class="upload-icon">📁</div>
+                    <h3>Arraste arquivos ou clique para enviar</h3>
+                    <p>PNG, JPG, PDF até 10MB cada</p>
+                </div>
+
+                <div class="uploaded-files">
+                    <div class="file-item">
+                        <div class="file-info">
+                            <div class="file-icon">📄</div>
+                            <div class="file-details">
+                                <div class="file-name">passaporte.pdf</div>
+                                <div class="file-size">2.3 MB</div>
+                            </div>
+                        </div>
+                        <button class="btn-remove-file">Remover</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Preview Section -->
+            <div class="preview-section">
+                <div class="preview-header">
+                    <h3>📋 Resumo do Orçamento</h3>
+                    <p>Confira os dados antes de enviar</p>
+                </div>
+
+                <div class="preview-item">
+                    <div class="preview-label">Rota</div>
+                    <div class="preview-value">São Paulo → Rio de Janeiro</div>
+                </div>
+
+                <div class="preview-item">
+                    <div class="preview-label">Período</div>
+                    <div class="preview-value">15/Nov - 22/Nov/2025</div>
+                </div>
+
+                <div class="preview-item">
+                    <div class="preview-label">Passageiros</div>
+                    <div class="preview-value">2 adultos</div>
+                </div>
+
+                <div class="preview-item">
+                    <div class="preview-label">Classe</div>
+                    <div class="preview-value">Econômica</div>
+                </div>
+
+                <div class="preview-item">
+                    <div class="preview-label">Conexões</div>
+                    <div class="preview-value">Até 1 parada</div>
+                </div>
+
+                <div class="preview-item">
+                    <div class="preview-label">Forma de Pagamento</div>
+                    <div class="preview-value">Milhas (preferencial)</div>
+                </div>
+
+                <div class="price-preview">
+                    <div class="price-preview-label">Orçamento Máximo</div>
+                    <div class="price-preview-value">R$ 2.000</div>
+                </div>
+
+                <div class="info-box">
+                    <h4>⏱️ Tempo de Resposta</h4>
+                    <ul>
+                        <li>Confirmação: Imediata</li>
+                        <li>1ª Proposta: 4-8 horas</li>
+                        <li>Propostas finais: até 24h</li>
+                    </ul>
+                </div>
+
+                <button class="btn-submit">
+                    📨 Solicitar Orçamento
+                </button>
+
+                <button class="btn-secondary">
+                    💾 Salvar Rascunho
+                </button>
+
+                <div style="margin-top: 2rem; text-align: center;">
+                    <p style="font-size: 0.9rem; color: #64748b;">
+                        🔒 Seus dados estão protegidos<br>
+                        ✅ 100% gratuito e sem compromisso
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

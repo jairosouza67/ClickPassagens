@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ClickPassagens - Mockup Tela 07: Sistema de Comissões</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #e0f2fe 100%);
+            min-height: 100vh;
+        }
+
+        /* Navigation */
+        nav {
+            background: white;
+            padding: 1.5rem 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .nav-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-avatar {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+
+        /* Header */
+        .page-header {
+            margin-bottom: 3rem;
+        }
+
+        .page-header h1 {
+            font-size: 2.5rem;
+            color: #1e293b;
+            margin-bottom: 0.5rem;
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #6366f1 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .page-header p {
+            font-size: 1.1rem;
+            color: #64748b;
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            transition: all 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+        }
+
+        .stat-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #64748b;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value.money {
+            color: #10b981;
+        }
+
+        .stat-value.count {
+            color: #3b82f6;
+        }
+
+        .stat-change {
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .stat-change.positive {
+            color: #10b981;
+        }
+
+        .stat-change.negative {
+            color: #ef4444;
+        }
+
+        /* Main Grid */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        /* Commission Table */
+        .commission-table-section {
+            background: white;
+            border-radius: 24px;
+            padding: 2.5rem;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .btn-filter {
+            padding: 0.8rem 1.5rem;
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-filter:hover {
+            border-color: #3b82f6;
+            background: #f0f9ff;
+        }
+
+        .commission-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .commission-table thead {
+            background: #f8fafc;
+        }
+
+        .commission-table th {
+            padding: 1.2rem;
+            text-align: left;
+            font-weight: 600;
+            color: #475569;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .commission-table th:first-child {
+            border-radius: 12px 0 0 0;
+        }
+
+        .commission-table th:last-child {
+            border-radius: 0 12px 0 0;
+        }
+
+        .commission-table td {
+            padding: 1.5rem 1.2rem;
+            border-bottom: 1px solid #f1f5f9;
+            color: #1e293b;
+        }
+
+        .commission-table tr:hover {
+            background: #f8fafc;
+        }
+
+        .airline-cell {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .airline-logo-small {
+            width: 45px;
+            height: 45px;
+            background: #f0f9ff;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: #003366;
+        }
+
+        .airline-name {
+            font-weight: 600;
+        }
+
+        .commission-value {
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .commission-money {
+            color: #10b981;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .status-paid {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status-pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-processing {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .btn-action {
+            padding: 0.6rem 1.2rem;
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+        }
+
+        .btn-action:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+        }
+
+        /* Sidebar */
+        .sidebar-section {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .widget {
+            background: white;
+            border-radius: 24px;
+            padding: 2rem;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+        }
+
+        .widget-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Earnings Chart */
+        .chart-container {
+            background: #f8fafc;
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .chart-bars {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 0.5rem;
+            height: 150px;
+            margin-bottom: 1rem;
+        }
+
+        .chart-bar {
+            flex: 1;
+            background: linear-gradient(180deg, #3b82f6 0%, #1e3a8a 100%);
+            border-radius: 8px 8px 0 0;
+            position: relative;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .chart-bar:hover {
+            opacity: 0.8;
+            transform: scaleY(1.05);
+        }
+
+        .chart-bar-label {
+            position: absolute;
+            bottom: -25px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-size: 0.75rem;
+            color: #64748b;
+            font-weight: 600;
+        }
+
+        .chart-legend {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            padding-top: 1rem;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            color: #64748b;
+        }
+
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
+        }
+
+        /* Top Partners */
+        .partners-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .partner-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: #f8fafc;
+            border-radius: 12px;
+            transition: all 0.3s;
+        }
+
+        .partner-item:hover {
+            background: #f0f9ff;
+        }
+
+        .partner-rank {
+            width: 35px;
+            height: 35px;
+            background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            color: white;
+        }
+
+        .partner-info {
+            flex: 1;
+        }
+
+        .partner-name {
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 0.2rem;
+        }
+
+        .partner-sales {
+            font-size: 0.85rem;
+            color: #64748b;
+        }
+
+        .partner-commission {
+            font-weight: 700;
+            color: #10b981;
+            font-size: 1.1rem;
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .action-button {
+            padding: 1.2rem;
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .action-button:hover {
+            background: #f0f9ff;
+            border-color: #3b82f6;
+            transform: translateX(5px);
+        }
+
+        .action-icon {
+            font-size: 1.8rem;
+        }
+
+        /* Commission Config */
+        .config-section {
+            background: white;
+            border-radius: 24px;
+            padding: 2.5rem;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+        }
+
+        .config-row {
+            display: grid;
+            grid-template-columns: 1fr auto auto;
+            gap: 2rem;
+            align-items: center;
+            padding: 1.5rem;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .config-row:last-child {
+            border-bottom: none;
+        }
+
+        .config-info h4 {
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 0.3rem;
+        }
+
+        .config-info p {
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+
+        .config-input {
+            width: 120px;
+            padding: 0.8rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .config-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+        }
+
+        .btn-save {
+            padding: 0.8rem 1.5rem;
+            background: #10b981;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-save:hover {
+            background: #059669;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            .commission-table {
+                font-size: 0.85rem;
+            }
+            .config-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <div class="logo">✈️ ClickPassagens</div>
+            <div class="user-menu">
+                <div class="user-avatar">JA</div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1>Sistema de <span class="gradient-text">Comissões</span></h1>
+            <p>Gerencie suas comissões e acompanhe seus ganhos</p>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">💰</div>
+                <div class="stat-label">Total Este Mês</div>
+                <div class="stat-value money">R$ 12.450</div>
+                <div class="stat-change positive">↑ 23% vs mês anterior</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">✈️</div>
+                <div class="stat-label">Vendas Realizadas</div>
+                <div class="stat-value count">187</div>
+                <div class="stat-change positive">↑ 15 novas vendas</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">⏳</div>
+                <div class="stat-label">Comissões Pendentes</div>
+                <div class="stat-value money">R$ 3.240</div>
+                <div class="stat-change">🕐 Aprovação em 48h</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">📈</div>
+                <div class="stat-label">Média de Comissão</div>
+                <div class="stat-value money">R$ 66,58</div>
+                <div class="stat-change positive">↑ 8% vs média anterior</div>
+            </div>
+        </div>
+
+        <!-- Main Grid -->
+        <div class="main-grid">
+            <!-- Commission Table -->
+            <div class="commission-table-section">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        📋 Histórico de Comissões
+                    </h2>
+                    <button class="btn-filter">🔍 Filtrar</button>
+                </div>
+
+                <table class="commission-table">
+                    <thead>
+                        <tr>
+                            <th>Companhia Aérea</th>
+                            <th>Data</th>
+                            <th>Passageiros</th>
+                            <th>Valor Venda</th>
+                            <th>Comissão</th>
+                            <th>Status</th>
+                            <th>Ação</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <div class="airline-cell">
+                                    <div class="airline-logo-small">GOL</div>
+                                    <span class="airline-name">GOL Linhas Aéreas</span>
+                                </div>
+                            </td>
+                            <td>28/Set</td>
+                            <td>2 pax</td>
+                            <td>R$ 1.850</td>
+                            <td class="commission-value commission-money">R$ 92,50</td>
+                            <td><span class="status-badge status-paid">✓ Pago</span></td>
+                            <td><button class="btn-action">Ver</button></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="airline-cell">
+                                    <div class="airline-logo-small">AZUL</div>
+                                    <span class="airline-name">Azul Linhas Aéreas</span>
+                                </div>
+                            </td>
+                            <td>27/Set</td>
+                            <td>1 pax</td>
+                            <td>R$ 950</td>
+                            <td class="commission-value commission-money">R$ 57,00</td>
+                            <td><span class="status-badge status-processing">⏳ Processando</span></td>
+                            <td><button class="btn-action">Ver</button></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="airline-cell">
+                                    <div class="airline-logo-small">LATAM</div>
+                                    <span class="airline-name">LATAM Airlines</span>
+                                </div>
+                            </td>
+                            <td>26/Set</td>
+                            <td>4 pax</td>
+                            <td>R$ 4.200</td>
+                            <td class="commission-value commission-money">R$ 210,00</td>
+                            <td><span class="status-badge status-paid">✓ Pago</span></td>
+                            <td><button class="btn-action">Ver</button></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="airline-cell">
+                                    <div class="airline-logo-small">GOL</div>
+                                    <span class="airline-name">GOL Linhas Aéreas</span>
+                                </div>
+                            </td>
+                            <td>25/Set</td>
+                            <td>1 pax</td>
+                            <td>R$ 720</td>
+                            <td class="commission-value commission-money">R$ 36,00</td>
+                            <td><span class="status-badge status-pending">⏰ Pendente</span></td>
+                            <td><button class="btn-action">Ver</button></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="airline-cell">
+                                    <div class="airline-logo-small">AVIANCA</div>
+                                    <span class="airline-name">Avianca Brasil</span>
+                                </div>
+                            </td>
+                            <td>24/Set</td>
+                            <td>3 pax</td>
+                            <td>R$ 2.850</td>
+                            <td class="commission-value commission-money">R$ 142,50</td>
+                            <td><span class="status-badge status-paid">✓ Pago</span></td>
+                            <td><button class="btn-action">Ver</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="sidebar-section">
+                <!-- Earnings Chart Widget -->
+                <div class="widget">
+                    <h3 class="widget-title">📊 Ganhos dos Últimos 6 Meses</h3>
+                    <div class="chart-container">
+                        <div class="chart-bars">
+                            <div class="chart-bar" style="height: 60%">
+                                <div class="chart-bar-label">Abr</div>
+                            </div>
+                            <div class="chart-bar" style="height: 75%">
+                                <div class="chart-bar-label">Mai</div>
+                            </div>
+                            <div class="chart-bar" style="height: 55%">
+                                <div class="chart-bar-label">Jun</div>
+                            </div>
+                            <div class="chart-bar" style="height: 85%">
+                                <div class="chart-bar-label">Jul</div>
+                            </div>
+                            <div class="chart-bar" style="height: 90%">
+                                <div class="chart-bar-label">Ago</div>
+                            </div>
+                            <div class="chart-bar" style="height: 100%">
+                                <div class="chart-bar-label">Set</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-legend">
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%)"></div>
+                            <span>Comissões</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Top Partners Widget -->
+                <div class="widget">
+                    <h3 class="widget-title">🏆 Top Parceiros</h3>
+                    <div class="partners-list">
+                        <div class="partner-item">
+                            <div class="partner-rank">1</div>
+                            <div class="partner-info">
+                                <div class="partner-name">Maria Silva</div>
+                                <div class="partner-sales">43 vendas</div>
+                            </div>
+                            <div class="partner-commission">R$ 2.150</div>
+                        </div>
+                        <div class="partner-item">
+                            <div class="partner-rank">2</div>
+                            <div class="partner-info">
+                                <div class="partner-name">João Santos</div>
+                                <div class="partner-sales">38 vendas</div>
+                            </div>
+                            <div class="partner-commission">R$ 1.900</div>
+                        </div>
+                        <div class="partner-item">
+                            <div class="partner-rank">3</div>
+                            <div class="partner-info">
+                                <div class="partner-name">Ana Costa</div>
+                                <div class="partner-sales">31 vendas</div>
+                            </div>
+                            <div class="partner-commission">R$ 1.550</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions Widget -->
+                <div class="widget">
+                    <h3 class="widget-title">⚡ Ações Rápidas</h3>
+                    <div class="quick-actions">
+                        <button class="action-button">
+                            <span class="action-icon">💳</span>
+                            <span>Solicitar Saque</span>
+                        </button>
+                        <button class="action-button">
+                            <span class="action-icon">📄</span>
+                            <span>Gerar Relatório</span>
+                        </button>
+                        <button class="action-button">
+                            <span class="action-icon">📧</span>
+                            <span>Enviar Comprovante</span>
+                        </button>
+                        <button class="action-button">
+                            <span class="action-icon">⚙️</span>
+                            <span>Configurar Comissões</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Commission Configuration -->
+        <div class="config-section">
+            <h2 class="section-title">
+                ⚙️ Configuração de Comissões
+            </h2>
+
+            <div class="config-row">
+                <div class="config-info">
+                    <h4>GOL Linhas Aéreas</h4>
+                    <p>Comissão padrão para voos GOL</p>
+                </div>
+                <input type="text" class="config-input" value="5%" />
+                <button class="btn-save">Salvar</button>
+            </div>
+
+            <div class="config-row">
+                <div class="config-info">
+                    <h4>LATAM Airlines</h4>
+                    <p>Comissão padrão para voos LATAM</p>
+                </div>
+                <input type="text" class="config-input" value="5%" />
+                <button class="btn-save">Salvar</button>
+            </div>
+
+            <div class="config-row">
+                <div class="config-info">
+                    <h4>Azul Linhas Aéreas</h4>
+                    <p>Comissão padrão para voos Azul</p>
+                </div>
+                <input type="text" class="config-input" value="6%" />
+                <button class="btn-save">Salvar</button>
+            </div>
+
+            <div class="config-row">
+                <div class="config-info">
+                    <h4>Avianca Brasil</h4>
+                    <p>Comissão padrão para voos Avianca</p>
+                </div>
+                <input type="text" class="config-input" value="5%" />
+                <button class="btn-save">Salvar</button>
+            </div>
+
+            <div class="config-row">
+                <div class="config-info">
+                    <h4>Ibéria Airlines</h4>
+                    <p>Comissão padrão para voos internacionais</p>
+                </div>
+                <input type="text" class="config-input" value="7%" />
+                <button class="btn-save">Salvar</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
