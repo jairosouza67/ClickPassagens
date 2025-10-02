@@ -134,22 +134,28 @@ export default function AuthModal({ isOpen, onClose }) {
   };
 
   const handleGoogleLogin = async () => {
+    console.log('🔵 AuthModal: Iniciando handleGoogleLogin');
     setIsLoading(true);
     setLocalError('');
     
     try {
+      console.log('🔵 AuthModal: Chamando googleLogin()...');
       const result = await googleLogin();
+      console.log('🔵 AuthModal: Resultado:', result);
       
       if (result.success) {
+        console.log('✅ AuthModal: Login bem-sucedido!');
         setSuccess('Login realizado com sucesso!');
         setTimeout(() => {
           onClose();
           resetForm();
         }, 1000);
       } else {
+        console.log('❌ AuthModal: Erro no login:', result.error);
         setLocalError(result.error);
       }
     } catch (error) {
+      console.error('❌ AuthModal: Exceção capturada:', error);
       setLocalError('Erro ao fazer login com Google');
     } finally {
       setIsLoading(false);

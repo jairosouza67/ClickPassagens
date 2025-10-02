@@ -108,19 +108,25 @@ export async function loginWithEmail(email, password) {
  */
 export async function loginWithGoogle() {
   try {
+    console.log('🔵 Iniciando login com Google...');
+    
     // Detectar se é mobile para usar redirect ao invés de popup
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    console.log('📱 Dispositivo mobile?', isMobile);
     
     let result;
     
     if (isMobile) {
+      console.log('🔄 Usando signInWithRedirect para mobile...');
       // Em mobile, usar signInWithRedirect (mais confiável)
       await signInWithRedirect(auth, googleProvider);
       // O resultado será capturado após o redirect
       return { success: true, redirect: true };
     } else {
+      console.log('🪟 Usando signInWithPopup para desktop...');
       // Em desktop, usar popup
       result = await signInWithPopup(auth, googleProvider);
+      console.log('✅ Popup concluído, resultado:', result);
     }
     
     const user = result.user;
@@ -144,7 +150,32 @@ export async function loginWithGoogle() {
     
     return { success: true, user };
   } catch (error) {
-    console.error('Erro no login com Google:', error);
+    console.error('❌ Erro no login com Google:', error);
+    console.error('Código do erro:', error.code);
+    console.error('Mensagem:', error.message);
+    
+    // Erros específicos
+    if (error.code === 'auth/popup-blocked') {
+      return { 
+        success: false, 
+        error: 'Popup bloqueado! Permita popups para este site e tente novamente.' 
+      };
+    }
+    
+    if (error.code === 'auth/popup-closed-by-user') {
+      return { 
+        success: false, 
+        error: 'Login cancelado. Você fechou a janela de login.' 
+      };
+    }
+    
+    if (error.code === 'auth/cancelled-popup-request') {
+      return { 
+        success: false, 
+        error: 'Solicitação cancelada. Aguarde e tente novamente.' 
+      };
+    }
+    
     return { success: false, error: getErrorMessage(error.code) };
   }
 }
