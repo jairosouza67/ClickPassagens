@@ -143,7 +143,7 @@ export default function HeroSection({ onSearchSubmit }) {
         <div className="hero-content">
           {/* Badge */}
           <div className="hero-badge">
-            <Star className="badge-icon" />
+            <Star className="badge-icon" fill="#fbbf24" />
             <span>#1 Plataforma de Milhas do Brasil</span>
           </div>
 

@@ -1,0 +1,466 @@
+.comparison-page {
+  background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 50%, #1e40af 100%);
+  min-height: 100vh;
+  padding: 2rem 0;
+}
+
+.comparison-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+/* Header */
+.comparison-header {
+  text-align: center;
+  margin-bottom: 3rem;
+  color: white;
+}
+
+.comparison-logo {
+  font-size: 2rem;
+  font-weight: 800;
+  margin-bottom: 1rem;
+  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.comparison-title {
+  font-size: 3rem;
+  font-weight: 800;
+  color: white;
+  margin-bottom: 1rem;
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.gradient-text-green {
+  background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.comparison-subtitle {
+  font-size: 1.2rem;
+  color: #e0f2fe;
+}
+
+/* Toggle */
+.view-toggle {
+  display: flex;
+  justify-content: center;
+  gap: 0;
+  margin-bottom: 3rem;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  padding: 0.5rem;
+  border-radius: 16px;
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.toggle-btn {
+  flex: 1;
+  padding: 1rem 2rem;
+  background: transparent;
+  border: none;
+  border-radius: 12px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  transition: all 0.3s;
+  font-size: 1.1rem;
+}
+
+.toggle-btn.active {
+  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+  color: #1e293b;
+  box-shadow: 0 4px 12px rgba(251, 191, 36, 0.4);
+}
+
+/* Comparison Grid */
+.comparison-grid-comp {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2rem;
+  margin-bottom: 3rem;
+}
+
+.option-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 24px;
+  padding: 2.5rem;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  transition: all 0.4s;
+  border: 3px solid transparent;
+  position: relative;
+}
+
+.option-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+}
+
+.option-card.recommended {
+  border-color: #f59e0b;
+  box-shadow: 0 15px 50px rgba(245, 158, 11, 0.4);
+}
+
+.recommended-badge {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: 0.6rem;
+  background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%);
+  color: #1e293b;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-align: center;
+  letter-spacing: 1px;
+  border-radius: 21px 21px 0 0;
+}
+
+.option-card.recommended {
+  padding-top: 3.5rem;
+}
+
+.option-type {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.option-title {
+  font-size: 2rem;
+  font-weight: 800;
+  text-align: center;
+  margin-bottom: 0.5rem;
+}
+
+.option-miles {
+  color: #1e3a8a;
+}
+
+.option-cash {
+  color: #10b981;
+}
+
+.option-subtitle {
+  text-align: center;
+  color: #64748b;
+  margin-bottom: 2rem;
+}
+
+.price-display {
+  text-align: center;
+  padding: 2rem;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border-radius: 16px;
+  margin-bottom: 2rem;
+}
+
+.price-main {
+  font-size: 3rem;
+  font-weight: 800;
+  margin-bottom: 0.5rem;
+}
+
+.price-main.miles-color {
+  color: #1e3a8a;
+}
+
+.price-main.cash-color {
+  color: #10b981;
+}
+
+.price-sub {
+  color: #64748b;
+  font-size: 1rem;
+}
+
+.savings-badge {
+  display: inline-block;
+  padding: 0.6rem 1.2rem;
+  background: #dcfce7;
+  color: #166534;
+  border-radius: 20px;
+  font-weight: 700;
+  font-size: 1rem;
+  margin-top: 1rem;
+}
+
+.features-list {
+  list-style: none;
+  margin-bottom: 2rem;
+  padding: 0;
+}
+
+.features-list li {
+  padding: 1rem 0;
+  color: #475569;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.features-list li:last-child {
+  border-bottom: none;
+}
+
+.check-yes {
+  color: #10b981;
+}
+
+.check-no {
+  color: #ef4444;
+}
+
+.btn-select-option {
+  width: 100%;
+  padding: 1.5rem;
+  border: none;
+  border-radius: 16px;
+  font-weight: 700;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+}
+
+.btn-miles {
+  background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+  color: white;
+  box-shadow: 0 4px 14px rgba(59, 130, 246, 0.4);
+}
+
+.btn-miles:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.5);
+}
+
+.btn-cash {
+  background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+  color: white;
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4);
+}
+
+.btn-cash:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.5);
+}
+
+/* Comparison Table */
+.comparison-table-section {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 24px;
+  padding: 3rem;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  margin-bottom: 3rem;
+}
+
+.table-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1e293b;
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.table-wrapper-comp {
+  overflow-x: auto;
+}
+
+.comparison-table-comp {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.comparison-table-comp thead {
+  background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+}
+
+.comparison-table-comp th {
+  padding: 1.5rem;
+  color: white;
+  font-weight: 600;
+  text-align: center;
+  font-size: 1.2rem;
+}
+
+.comparison-table-comp th:first-child {
+  text-align: left;
+  border-radius: 12px 0 0 0;
+}
+
+.comparison-table-comp th:last-child {
+  border-radius: 0 12px 0 0;
+}
+
+.comparison-table-comp td {
+  padding: 1.2rem 1.5rem;
+  border-bottom: 1px solid #f1f5f9;
+  text-align: center;
+}
+
+.comparison-table-comp td:first-child {
+  text-align: left;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.comparison-table-comp tr:hover {
+  background: rgba(251, 191, 36, 0.1);
+  transform: scale(1.01);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.value-miles {
+  color: #1e3a8a;
+  font-weight: 700;
+}
+
+.value-cash {
+  color: #10b981;
+  font-weight: 700;
+}
+
+/* Calculator */
+.calculator-section {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 24px;
+  padding: 3rem;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+}
+
+.calculator-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1e293b;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.calculator-subtitle {
+  text-align: center;
+  color: #64748b;
+  margin-bottom: 2rem;
+}
+
+.calculator-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-group label {
+  font-weight: 600;
+  color: #1e293b;
+  font-size: 0.95rem;
+}
+
+.form-group input {
+  padding: 1rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  font-size: 1rem;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #3b82f6;
+}
+
+.calculator-result {
+  padding: 2rem;
+  border-radius: 16px;
+  text-align: center;
+}
+
+.calculator-result.vale-pena {
+  background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+}
+
+.calculator-result.nao-vale {
+  background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+}
+
+.calculator-result h3 {
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+  color: #1e293b;
+}
+
+.result-details {
+  display: flex;
+  justify-content: center;
+  gap: 3rem;
+  flex-wrap: wrap;
+}
+
+.result-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.result-label {
+  color: #64748b;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.result-value {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: #1e3a8a;
+}
+
+.result-value.saving {
+  color: #166534;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .comparison-title {
+    font-size: 2rem;
+  }
+
+  .comparison-grid-comp {
+    grid-template-columns: 1fr;
+  }
+
+  .comparison-table-comp th,
+  .comparison-table-comp td {
+    padding: 0.8rem;
+    font-size: 0.9rem;
+  }
+
+  .calculator-form {
+    grid-template-columns: 1fr;
+  }
+}

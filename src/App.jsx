@@ -20,13 +20,21 @@ import {
   MessageCircle,
   TrendingDown,
   MapPin,
-  CreditCard
+  CreditCard,
+  User
 } from 'lucide-react'
 import BuscaIntegrada from './components/BuscaIntegrada.jsx'
 import PWAInstallButton from './components/PWAInstallButton.jsx'
 import PushNotifications from './components/PushNotifications.jsx'
 import FlightCard from './components/FlightCard.jsx'
 import HeroSection from './components/HeroSection.jsx'
+import ResultsPage from './components/ResultsPage.jsx'
+import PricingPage from './components/PricingPage.jsx'
+import ComparisonPage from './components/ComparisonPage.jsx'
+import QuotePage from './components/QuotePage.jsx'
+import CommissionsPage from './components/CommissionsPage.jsx'
+import DashboardPage from './components/DashboardPage.jsx'
+import CheckoutPage from './components/CheckoutPage.jsx'
 import useGoogleAnalytics, { analytics } from './hooks/useGoogleAnalytics.js'
 import './App.css'
 import './components/HeroSection.css'
@@ -176,6 +184,36 @@ function App() {
                 Resultados
               </button>
               <button 
+                onClick={() => setActiveTab('comparacao')}
+                className={`transition-all duration-300 px-3 py-2 rounded-lg font-medium ${
+                  activeTab === 'comparacao' 
+                    ? 'text-aviation-blue bg-aviation-blue/10 shadow-sm' 
+                    : 'text-gray-700 hover:text-aviation-blue hover:bg-aviation-blue/5'
+                }`}
+              >
+                Comparação
+              </button>
+              <button 
+                onClick={() => setActiveTab('orcamento')}
+                className={`transition-all duration-300 px-3 py-2 rounded-lg font-medium ${
+                  activeTab === 'orcamento' 
+                    ? 'text-aviation-blue bg-aviation-blue/10 shadow-sm' 
+                    : 'text-gray-700 hover:text-aviation-blue hover:bg-aviation-blue/5'
+                }`}
+              >
+                Orçamento
+              </button>
+              <button 
+                onClick={() => setActiveTab('dashboard')}
+                className={`transition-all duration-300 px-3 py-2 rounded-lg font-medium ${
+                  activeTab === 'dashboard' 
+                    ? 'text-aviation-blue bg-aviation-blue/10 shadow-sm' 
+                    : 'text-gray-700 hover:text-aviation-blue hover:bg-aviation-blue/5'
+                }`}
+              >
+                Dashboard
+              </button>
+              <button 
                 onClick={() => setActiveTab('planos')}
                 className={`transition-all duration-300 px-3 py-2 rounded-lg font-medium ${
                   activeTab === 'planos' 
@@ -222,35 +260,18 @@ function App() {
 
           {/* Tab Resultados */}
           <TabsContent value="resultados" className="m-0">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-              {buscaRealizada && resultados.length > 0 ? (
-                <div>
-                  <div className="flex items-center justify-between mb-8">
-                    <div>
-                      <h2 className="text-3xl font-bold text-gray-900">Resultados da Busca</h2>
-                      <p className="text-gray-600 mt-2">Encontramos {resultados.length} opções para você</p>
-                    </div>
-                    <Button 
-                      onClick={() => setActiveTab('busca')}
-                      variant="outline"
-                      className="border-aviation-blue text-aviation-blue hover:bg-aviation-blue hover:text-white"
-                    >
-                      <Search className="w-4 h-4 mr-2" />
-                      Nova Busca
-                    </Button>
-                  </div>
-                  
-                  <div className="grid gap-6">
-                    {resultados.map((resultado, index) => (
-                      <FlightCard 
-                        key={index} 
-                        resultado={resultado}
-                        onSelect={(voo) => console.log('Voo selecionado:', voo)}
-                      />
-                    ))}
-                  </div>
-                </div>
-              ) : (
+            {buscaRealizada && resultados.length > 0 ? (
+              <ResultsPage 
+                results={resultados} 
+                onNewSearch={() => setActiveTab('busca')}
+                onCompare={() => setActiveTab('comparacao')}
+                onCheckout={(flight) => {
+                  console.log('Indo para checkout com voo:', flight);
+                  setActiveTab('checkout');
+                }}
+              />
+            ) : (
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="text-center py-16">
                   <Plane className="mx-auto h-16 w-16 text-gray-400 mb-4" />
                   <h3 className="text-xl font-semibold text-gray-900 mb-2">Nenhuma busca realizada</h3>
@@ -263,97 +284,60 @@ function App() {
                     Fazer Busca
                   </Button>
                 </div>
-              )}
-            </div>
+              </div>
+            )}
           </TabsContent>
 
           {/* Tab Planos */}
           <TabsContent value="planos" className="m-0">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-              <div className="text-center mb-16">
-                <h2 className="text-4xl font-bold text-gray-900 mb-4">
-                  Escolha o <span className="bg-gradient-aviation bg-clip-text text-transparent">Plano Ideal</span>
-                </h2>
-                <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                  Encontre a opção que melhor se adapta às suas necessidades de viagem
-                </p>
-              </div>
+            <PricingPage onSelectPlan={(planId, period) => {
+              console.log('Plano selecionado:', planId, period);
+              // Aqui você pode adicionar lógica para processar a seleção do plano
+            }} />
+          </TabsContent>
 
-              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-                {planos.map((plano) => (
-                  <Card key={plano.nome} className={`relative ${plano.cor} ${plano.popular ? 'ring-2 ring-aviation-gold shadow-2xl scale-105' : 'shadow-lg'} hover:shadow-xl transition-all duration-300`}>
-                    {plano.popular && (
-                      <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                        <Badge className="bg-aviation-gold text-white border-0 px-4 py-1 text-sm font-semibold">
-                          <Star className="w-3 h-3 mr-1" />
-                          Mais Popular
-                        </Badge>
-                      </div>
-                    )}
-                    
-                    <CardHeader className="text-center pb-8">
-                      <CardTitle className="text-2xl font-bold text-gray-900">{plano.nome}</CardTitle>
-                      <div className="mt-4">
-                        <span className="text-4xl font-bold text-gray-900">{plano.preco}</span>
-                        <span className="text-gray-500">{plano.periodo}</span>
-                      </div>
-                      <CardDescription className="text-sm text-gray-600 mt-2">
-                        {plano.consultas}
-                      </CardDescription>
-                    </CardHeader>
-                    
-                    <CardContent className="space-y-4">
-                      <ul className="space-y-3">
-                        {plano.recursos.map((recurso, index) => (
-                          <li key={index} className="flex items-center space-x-3">
-                            <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
-                            <span className="text-gray-700">{recurso}</span>
-                          </li>
-                        ))}
-                      </ul>
-                      
-                      <Button 
-                        className={`w-full mt-6 ${
-                          plano.popular 
-                            ? 'bg-gradient-aviation hover:opacity-90 text-white' 
-                            : 'border-aviation-blue text-aviation-blue hover:bg-aviation-blue hover:text-white'
-                        }`}
-                        variant={plano.popular ? 'default' : 'outline'}
-                      >
-                        Escolher {plano.nome}
-                      </Button>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
+          {/* Tab Comparação */}
+          <TabsContent value="comparacao" className="m-0">
+            <ComparisonPage onSelect={(type) => {
+              console.log('Seleção de comparação:', type);
+              // Aqui você pode adicionar lógica para processar a comparação
+            }} />
+          </TabsContent>
 
-              {/* Seção de recursos adicionais */}
-              <div className="mt-20 grid md:grid-cols-3 gap-8">
-                <div className="text-center">
-                  <div className="bg-gradient-aviation p-4 rounded-xl w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-                    <Shield className="w-8 h-8 text-white" />
-                  </div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">Segurança Total</h3>
-                  <p className="text-gray-600">Transações protegidas e dados criptografados</p>
-                </div>
-                
-                <div className="text-center">
-                  <div className="bg-gradient-aviation p-4 rounded-xl w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-                    <TrendingUp className="w-8 h-8 text-white" />
-                  </div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">Economia Garantida</h3>
-                  <p className="text-gray-600">Até 60% de economia em passagens aéreas</p>
-                </div>
-                
-                <div className="text-center">
-                  <div className="bg-gradient-aviation p-4 rounded-xl w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-                    <Zap className="w-8 h-8 text-white" />
-                  </div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">Busca Rápida</h3>
-                  <p className="text-gray-600">Resultados em tempo real de múltiplas companhias</p>
-                </div>
-              </div>
-            </div>
+          {/* Tab Orçamento */}
+          <TabsContent value="orcamento" className="m-0">
+            <QuotePage onSubmit={(formData) => {
+              console.log('Orçamento enviado:', formData);
+              // Aqui você pode adicionar lógica para processar o orçamento
+            }} />
+          </TabsContent>
+
+          {/* Tab Dashboard */}
+          <TabsContent value="dashboard" className="m-0">
+            <DashboardPage onNavigate={(tab) => setActiveTab(tab)} />
+          </TabsContent>
+
+          {/* Tab Comissões */}
+          <TabsContent value="comissoes" className="m-0">
+            <CommissionsPage />
+          </TabsContent>
+
+          {/* Tab Checkout */}
+          <TabsContent value="checkout" className="m-0">
+            <CheckoutPage 
+              flightData={{
+                origem: 'São Paulo (GRU)',
+                destino: 'Rio de Janeiro (GIG)',
+                data: '15 Jan 2024',
+                passageiros: 1,
+                classe: 'Econômica',
+                preco: 850.00
+              }}
+              onComplete={() => {
+                console.log('Compra finalizada');
+                setActiveTab('dashboard');
+              }}
+            />
           </TabsContent>
 
           {/* Tab Contato */}
@@ -488,7 +472,7 @@ function App() {
 
       {/* Navegação Mobile Inferior - Apenas em dispositivos móveis */}
       <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-50">
-        <div className="grid grid-cols-4 h-16">
+        <div className="grid grid-cols-5 h-16">
           <button 
             onClick={() => setActiveTab('busca')}
             className={`flex flex-col items-center justify-center space-y-1 transition-all duration-200 ${
@@ -510,7 +494,31 @@ function App() {
             }`}
           >
             <MapPin className="w-5 h-5" />
-            <span className="text-xs font-medium">Resultados</span>
+            <span className="text-xs font-medium">Voos</span>
+          </button>
+          
+          <button 
+            onClick={() => setActiveTab('comparacao')}
+            className={`flex flex-col items-center justify-center space-y-1 transition-all duration-200 ${
+              activeTab === 'comparacao' 
+                ? 'text-aviation-blue bg-aviation-blue/10' 
+                : 'text-gray-600 hover:text-aviation-blue hover:bg-gray-50'
+            }`}
+          >
+            <TrendingDown className="w-5 h-5" />
+            <span className="text-xs font-medium">Comparar</span>
+          </button>
+          
+          <button 
+            onClick={() => setActiveTab('dashboard')}
+            className={`flex flex-col items-center justify-center space-y-1 transition-all duration-200 ${
+              activeTab === 'dashboard' 
+                ? 'text-aviation-blue bg-aviation-blue/10' 
+                : 'text-gray-600 hover:text-aviation-blue hover:bg-gray-50'
+            }`}
+          >
+            <User className="w-5 h-5" />
+            <span className="text-xs font-medium">Painel</span>
           </button>
           
           <button 
@@ -523,18 +531,6 @@ function App() {
           >
             <CreditCard className="w-5 h-5" />
             <span className="text-xs font-medium">Planos</span>
-          </button>
-          
-          <button 
-            onClick={() => setActiveTab('contato')}
-            className={`flex flex-col items-center justify-center space-y-1 transition-all duration-200 ${
-              activeTab === 'contato' 
-                ? 'text-aviation-blue bg-aviation-blue/10' 
-                : 'text-gray-600 hover:text-aviation-blue hover:bg-gray-50'
-            }`}
-          >
-            <MessageCircle className="w-5 h-5" />
-            <span className="text-xs font-medium">Contato</span>
           </button>
         </div>
       </div>
