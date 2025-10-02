@@ -40,3 +40,33 @@
   backdrop-filter: blur(10px);
   border: 1px solid rgba(96, 165, 250, 0.2);
 }
+
+/* Header responsivo */
+@media (max-width: 1280px) {
+  header nav {
+    gap: 0.5rem !important;
+  }
+  
+  header nav button {
+    padding: 0.5rem 0.75rem !important;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 1024px) {
+  header nav button {
+    padding: 0.5rem 0.65rem !important;
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 900px) {
+  header nav {
+    gap: 0.25rem !important;
+  }
+  
+  header nav button {
+    padding: 0.4rem 0.5rem !important;
+    font-size: 0.8rem;
+  }
+}

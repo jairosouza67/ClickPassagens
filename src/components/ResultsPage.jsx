@@ -4,7 +4,7 @@ import FlightCard from './FlightCard.jsx'
 import FlightDetailsModal from './FlightDetailsModal.jsx'
 import './ResultsPage.css'
 
-export default function ResultsPage({ results, onNewSearch, onCompare, onCheckout }) {
+export default function ResultsPage({ results, onNewSearch, onCompare, onCheckout, onGenerateQuote }) {
   const [selectedFlight, setSelectedFlight] = useState(null);
   const [filters, setFilters] = useState({
     companhias: [],
@@ -308,6 +308,24 @@ export default function ResultsPage({ results, onNewSearch, onCompare, onCheckou
                   >
                     Ver Detalhes
                   </button>
+                  {onGenerateQuote && (
+                    <button 
+                      className="btn-quote"
+                      onClick={() => onGenerateQuote(result)}
+                      style={{
+                        padding: '12px 24px',
+                        background: 'linear-gradient(135deg, #10b981 0%, #34d399 100%)',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '8px',
+                        fontWeight: '600',
+                        cursor: 'pointer',
+                        transition: 'all 0.3s ease'
+                      }}
+                    >
+                      📋 Gerar Orçamento
+                    </button>
+                  )}
                   <button 
                     className="btn-select"
                     onClick={() => onCheckout && onCheckout(result)}

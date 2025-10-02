@@ -23,8 +23,8 @@ import {
   CreditCard,
   User
 } from 'lucide-react'
+import { AuthProvider, useAuth } from './contexts/AuthContext.jsx'
 import BuscaIntegrada from './components/BuscaIntegrada.jsx'
-import PWAInstallButton from './components/PWAInstallButton.jsx'
 import PushNotifications from './components/PushNotifications.jsx'
 import FlightCard from './components/FlightCard.jsx'
 import HeroSection from './components/HeroSection.jsx'
@@ -35,6 +35,8 @@ import QuotePage from './components/QuotePage.jsx'
 import CommissionsPage from './components/CommissionsPage.jsx'
 import DashboardPage from './components/DashboardPage.jsx'
 import CheckoutPage from './components/CheckoutPage.jsx'
+import AuthModal from './components/AuthModal.jsx'
+import UserMenu from './components/UserMenu.jsx'
 import useGoogleAnalytics, { analytics } from './hooks/useGoogleAnalytics.js'
 import './App.css'
 import './components/HeroSection.css'
@@ -43,6 +45,11 @@ function App() {
   const [activeTab, setActiveTab] = useState('busca')
   const [resultados, setResultados] = useState([])
   const [buscaRealizada, setBuscaRealizada] = useState(false)
+  const [selectedFlight, setSelectedFlight] = useState(null) // Voo selecionado para orçamento
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false) // Estado do modal de login
+
+  // Hook de autenticação
+  const { isAuthenticated, incrementSearches } = useAuth()
 
   // Inicializar Google Analytics
   useGoogleAnalytics();
@@ -100,7 +107,12 @@ function App() {
     if (Array.isArray(resultadosBusca)) {
       setResultados(resultadosBusca)
       setBuscaRealizada(true)
-      setActiveTab('resultados')
+      navegarPara('resultados')
+      
+      // Incrementar contador de buscas do usuário
+      if (isAuthenticated) {
+        incrementSearches()
+      }
       
       // Rastrear busca no Google Analytics
       if (resultadosBusca.length > 0) {
@@ -129,15 +141,16 @@ function App() {
     }, 100)
   }
 
-  const handleGoogleLogin = () => {
-    // Implementar autenticação Google
-    window.open('https://accounts.google.com/oauth/authorize?client_id=YOUR_CLIENT_ID&redirect_uri=YOUR_REDIRECT_URI&scope=email profile&response_type=code', '_blank')
-  }
-
   const voltarPaginaInicial = () => {
     setActiveTab('busca')
     setResultados([])
     setBuscaRealizada(false)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  const navegarPara = (tab) => {
+    setActiveTab(tab)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   return (
@@ -162,20 +175,10 @@ function App() {
               </div>
             </button>
             
-            <nav className="hidden md:flex space-x-8">
+            <nav className="hidden md:flex items-center space-x-4 lg:space-x-6">
               <button 
-                onClick={() => setActiveTab('busca')}
-                className={`transition-all duration-300 px-3 py-2 rounded-lg font-medium ${
-                  activeTab === 'busca' 
-                    ? 'text-aviation-blue bg-aviation-blue/10 shadow-sm' 
-                    : 'text-gray-700 hover:text-aviation-blue hover:bg-aviation-blue/5'
-                }`}
-              >
-                Buscar
-              </button>
-              <button 
-                onClick={() => setActiveTab('resultados')}
-                className={`transition-all duration-300 px-3 py-2 rounded-lg font-medium ${
+                onClick={() => navegarPara('resultados')}
+                className={`transition-all duration-300 px-3 py-2 rounded-lg font-medium whitespace-nowrap ${
                   activeTab === 'resultados' 
                     ? 'text-aviation-blue bg-aviation-blue/10 shadow-sm' 
                     : 'text-gray-700 hover:text-aviation-blue hover:bg-aviation-blue/5'
@@ -184,8 +187,8 @@ function App() {
                 Resultados
               </button>
               <button 
-                onClick={() => setActiveTab('comparacao')}
-                className={`transition-all duration-300 px-3 py-2 rounded-lg font-medium ${
+                onClick={() => navegarPara('comparacao')}
+                className={`transition-all duration-300 px-3 py-2 rounded-lg font-medium whitespace-nowrap ${
                   activeTab === 'comparacao' 
                     ? 'text-aviation-blue bg-aviation-blue/10 shadow-sm' 
                     : 'text-gray-700 hover:text-aviation-blue hover:bg-aviation-blue/5'
@@ -194,8 +197,8 @@ function App() {
                 Comparação
               </button>
               <button 
-                onClick={() => setActiveTab('orcamento')}
-                className={`transition-all duration-300 px-3 py-2 rounded-lg font-medium ${
+                onClick={() => navegarPara('orcamento')}
+                className={`transition-all duration-300 px-3 py-2 rounded-lg font-medium whitespace-nowrap ${
                   activeTab === 'orcamento' 
                     ? 'text-aviation-blue bg-aviation-blue/10 shadow-sm' 
                     : 'text-gray-700 hover:text-aviation-blue hover:bg-aviation-blue/5'
@@ -204,18 +207,8 @@ function App() {
                 Orçamento
               </button>
               <button 
-                onClick={() => setActiveTab('dashboard')}
-                className={`transition-all duration-300 px-3 py-2 rounded-lg font-medium ${
-                  activeTab === 'dashboard' 
-                    ? 'text-aviation-blue bg-aviation-blue/10 shadow-sm' 
-                    : 'text-gray-700 hover:text-aviation-blue hover:bg-aviation-blue/5'
-                }`}
-              >
-                Dashboard
-              </button>
-              <button 
-                onClick={() => setActiveTab('planos')}
-                className={`transition-all duration-300 px-3 py-2 rounded-lg font-medium ${
+                onClick={() => navegarPara('planos')}
+                className={`transition-all duration-300 px-3 py-2 rounded-lg font-medium whitespace-nowrap ${
                   activeTab === 'planos' 
                     ? 'text-aviation-blue bg-aviation-blue/10 shadow-sm' 
                     : 'text-gray-700 hover:text-aviation-blue hover:bg-aviation-blue/5'
@@ -224,27 +217,32 @@ function App() {
                 Planos
               </button>
               <button 
-                onClick={() => setActiveTab('contato')}
-                className={`transition-all duration-300 px-3 py-2 rounded-lg font-medium ${
-                  activeTab === 'contato' 
+                onClick={() => navegarPara('dashboard')}
+                className={`transition-all duration-300 px-3 py-2 rounded-lg font-medium whitespace-nowrap ${
+                  activeTab === 'dashboard' 
                     ? 'text-aviation-blue bg-aviation-blue/10 shadow-sm' 
                     : 'text-gray-700 hover:text-aviation-blue hover:bg-aviation-blue/5'
                 }`}
               >
-                Contato
+                Dashboard
               </button>
             </nav>
 
-            <div className="flex items-center space-x-2 md:space-x-4">
+            <div className="flex items-center space-x-3">
               <PushNotifications />
-              <PWAInstallButton />
-              <Button 
-                onClick={handleGoogleLogin}
-                variant="outline" 
-                className="border-aviation-blue text-aviation-blue hover:bg-aviation-blue hover:text-white transition-colors duration-300"
-              >
-                Login
-              </Button>
+              
+              {/* Exibir UserMenu se autenticado, senão botão Login */}
+              {isAuthenticated ? (
+                <UserMenu onNavigate={navegarPara} />
+              ) : (
+                <Button 
+                  onClick={() => setIsAuthModalOpen(true)}
+                  variant="outline" 
+                  className="border-aviation-blue text-aviation-blue hover:bg-aviation-blue hover:text-white transition-colors duration-300"
+                >
+                  Login
+                </Button>
+              )}
             </div>
           </div>
         </div>
@@ -252,7 +250,7 @@ function App() {
 
       {/* Conteúdo Principal */}
       <main className="flex-1 pb-16 md:pb-0">
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <Tabs value={activeTab} onValueChange={navegarPara} className="w-full">
           {/* Tab Busca */}
           <TabsContent value="busca" className="m-0">
             <HeroSection onSearchSubmit={handleBuscaCompleta} />
@@ -263,11 +261,17 @@ function App() {
             {buscaRealizada && resultados.length > 0 ? (
               <ResultsPage 
                 results={resultados} 
-                onNewSearch={() => setActiveTab('busca')}
-                onCompare={() => setActiveTab('comparacao')}
+                onNewSearch={() => navegarPara('busca')}
+                onCompare={() => navegarPara('comparacao')}
                 onCheckout={(flight) => {
                   console.log('Indo para checkout com voo:', flight);
-                  setActiveTab('checkout');
+                  setSelectedFlight(flight);
+                  navegarPara('checkout');
+                }}
+                onGenerateQuote={(flight) => {
+                  console.log('Gerando orçamento para voo:', flight);
+                  setSelectedFlight(flight);
+                  navegarPara('orcamento');
                 }}
               />
             ) : (
@@ -277,7 +281,7 @@ function App() {
                   <h3 className="text-xl font-semibold text-gray-900 mb-2">Nenhuma busca realizada</h3>
                   <p className="text-gray-600 mb-6">Faça uma busca para ver os resultados aqui</p>
                   <Button 
-                    onClick={() => setActiveTab('busca')}
+                    onClick={() => navegarPara('busca')}
                     className="bg-gradient-aviation hover:opacity-90 text-white"
                   >
                     <Search className="w-4 h-4 mr-2" />
@@ -306,15 +310,22 @@ function App() {
 
           {/* Tab Orçamento */}
           <TabsContent value="orcamento" className="m-0">
-            <QuotePage onSubmit={(formData) => {
-              console.log('Orçamento enviado:', formData);
-              // Aqui você pode adicionar lógica para processar o orçamento
-            }} />
+            <QuotePage 
+              selectedFlight={selectedFlight}
+              onSubmit={(formData) => {
+                console.log('Orçamento enviado:', formData);
+                // Aqui você pode adicionar lógica para processar o orçamento
+              }} 
+              onBack={() => {
+                setSelectedFlight(null);
+                navegarPara('resultados');
+              }}
+            />
           </TabsContent>
 
           {/* Tab Dashboard */}
           <TabsContent value="dashboard" className="m-0">
-            <DashboardPage onNavigate={(tab) => setActiveTab(tab)} />
+            <DashboardPage onNavigate={(tab) => navegarPara(tab)} />
           </TabsContent>
 
           {/* Tab Comissões */}
@@ -335,7 +346,7 @@ function App() {
               }}
               onComplete={() => {
                 console.log('Compra finalizada');
-                setActiveTab('dashboard');
+                navegarPara('dashboard');
               }}
             />
           </TabsContent>
@@ -436,10 +447,40 @@ function App() {
             <div>
               <h3 className="font-semibold mb-4">Produtos</h3>
               <ul className="space-y-2 text-gray-400">
-                <li><a href="#" className="hover:text-white transition-colors">Busca de Passagens</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Comparador de Milhas</a></li>
+                <li>
+                  <button 
+                    onClick={() => {
+                      setActiveTab('busca');
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }}
+                    className="hover:text-white transition-colors text-left"
+                  >
+                    Busca de Passagens
+                  </button>
+                </li>
+                <li>
+                  <button 
+                    onClick={() => {
+                      setActiveTab('comparacao');
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }}
+                    className="hover:text-white transition-colors text-left"
+                  >
+                    Comparador de Milhas
+                  </button>
+                </li>
                 <li><a href="#" className="hover:text-white transition-colors">Alertas de Preço</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Programa de Fidelidade</a></li>
+                <li>
+                  <button 
+                    onClick={() => {
+                      setActiveTab('planos');
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }}
+                    className="hover:text-white transition-colors text-left"
+                  >
+                    Programa de Fidelidade
+                  </button>
+                </li>
               </ul>
             </div>
             
@@ -457,7 +498,17 @@ function App() {
               <h3 className="font-semibold mb-4">Suporte</h3>
               <ul className="space-y-2 text-gray-400">
                 <li><a href="#" className="hover:text-white transition-colors">Central de Ajuda</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Contato</a></li>
+                <li>
+                  <button 
+                    onClick={() => {
+                      setActiveTab('contato');
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }}
+                    className="hover:text-white transition-colors text-left"
+                  >
+                    Contato
+                  </button>
+                </li>
                 <li><a href="#" className="hover:text-white transition-colors">Status do Sistema</a></li>
                 <li><a href="#" className="hover:text-white transition-colors">Reportar Problema</a></li>
               </ul>
@@ -465,7 +516,7 @@ function App() {
           </div>
           
           <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-            <p>&copy; 2024 ClickPassagens. Todos os direitos reservados.</p>
+            <p>&copy; 2025 ClickPassagens. Todos os direitos reservados.</p>
           </div>
         </div>
       </footer>
@@ -474,7 +525,7 @@ function App() {
       <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-50">
         <div className="grid grid-cols-5 h-16">
           <button 
-            onClick={() => setActiveTab('busca')}
+            onClick={() => navegarPara('busca')}
             className={`flex flex-col items-center justify-center space-y-1 transition-all duration-200 ${
               activeTab === 'busca' 
                 ? 'text-aviation-blue bg-aviation-blue/10' 
@@ -486,7 +537,7 @@ function App() {
           </button>
           
           <button 
-            onClick={() => setActiveTab('resultados')}
+            onClick={() => navegarPara('resultados')}
             className={`flex flex-col items-center justify-center space-y-1 transition-all duration-200 ${
               activeTab === 'resultados' 
                 ? 'text-aviation-blue bg-aviation-blue/10' 
@@ -498,7 +549,7 @@ function App() {
           </button>
           
           <button 
-            onClick={() => setActiveTab('comparacao')}
+            onClick={() => navegarPara('comparacao')}
             className={`flex flex-col items-center justify-center space-y-1 transition-all duration-200 ${
               activeTab === 'comparacao' 
                 ? 'text-aviation-blue bg-aviation-blue/10' 
@@ -510,19 +561,7 @@ function App() {
           </button>
           
           <button 
-            onClick={() => setActiveTab('dashboard')}
-            className={`flex flex-col items-center justify-center space-y-1 transition-all duration-200 ${
-              activeTab === 'dashboard' 
-                ? 'text-aviation-blue bg-aviation-blue/10' 
-                : 'text-gray-600 hover:text-aviation-blue hover:bg-gray-50'
-            }`}
-          >
-            <User className="w-5 h-5" />
-            <span className="text-xs font-medium">Painel</span>
-          </button>
-          
-          <button 
-            onClick={() => setActiveTab('planos')}
+            onClick={() => navegarPara('planos')}
             className={`flex flex-col items-center justify-center space-y-1 transition-all duration-200 ${
               activeTab === 'planos' 
                 ? 'text-aviation-blue bg-aviation-blue/10' 
@@ -532,10 +571,35 @@ function App() {
             <CreditCard className="w-5 h-5" />
             <span className="text-xs font-medium">Planos</span>
           </button>
+          
+          <button 
+            onClick={() => navegarPara('dashboard')}
+            className={`flex flex-col items-center justify-center space-y-1 transition-all duration-200 ${
+              activeTab === 'dashboard' 
+                ? 'text-aviation-blue bg-aviation-blue/10' 
+                : 'text-gray-600 hover:text-aviation-blue hover:bg-gray-50'
+            }`}
+          >
+            <User className="w-5 h-5" />
+            <span className="text-xs font-medium">Painel</span>
+          </button>
         </div>
       </div>
+
+      {/* Modal de Autenticação */}
+      <AuthModal 
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+      />
     </div>
   )
 }
 
-export default App
+// Wrapper com AuthProvider
+export default function AppWrapper() {
+  return (
+    <AuthProvider>
+      <App />
+    </AuthProvider>
+  )
+}
