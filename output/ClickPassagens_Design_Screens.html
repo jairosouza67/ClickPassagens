@@ -1,0 +1,1325 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>DESIGN_SCREENS</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css" />
+</head>
+<body>
+<nav id="TOC" role="doc-toc">
+<ul>
+<li><a href="#clickpassagens---design-de-telas-completo"
+id="toc-clickpassagens---design-de-telas-completo">🎨 ClickPassagens -
+Design de Telas Completo</a>
+<ul>
+<li><a href="#documento-de-especificação-visual-e-funcional"
+id="toc-documento-de-especificação-visual-e-funcional">Documento de
+Especificação Visual e Funcional</a></li>
+<li><a href="#índice" id="toc-índice">📋 Índice</a></li>
+<li><a href="#visão-geral" id="toc-visão-geral">�� Visão Geral do
+Projeto</a></li>
+<li><a href="#paleta-de-cores" id="toc-paleta-de-cores">🎨 Paleta de
+Cores e Identidade Visual</a></li>
+<li><a href="#telas-do-sistema" id="toc-telas-do-sistema">📱 Telas do
+Sistema</a></li>
+<li><a href="#componentes-globais" id="toc-componentes-globais">🧩
+Componentes Globais</a></li>
+<li><a href="#responsividade" id="toc-responsividade">📱
+Responsividade</a></li>
+<li><a href="#animações-e-transições" id="toc-animações-e-transições">🎬
+Animações e Transições</a></li>
+<li><a href="#estados-e-feedback" id="toc-estados-e-feedback">🎨 Estados
+e Feedback</a></li>
+<li><a href="#fluxos-de-usuário" id="toc-fluxos-de-usuário">🔄 Fluxos de
+Usuário</a></li>
+<li><a href="#considerações-finais" id="toc-considerações-finais">💡
+Considerações Finais</a></li>
+<li><a href="#exportação-para-powerpointpdf"
+id="toc-exportação-para-powerpointpdf">📄 Exportação para
+PowerPoint/PDF</a></li>
+</ul></li>
+</ul>
+</nav>
+<h1 id="clickpassagens---design-de-telas-completo">🎨 ClickPassagens -
+Design de Telas Completo</h1>
+<h2 id="documento-de-especificação-visual-e-funcional">Documento de
+Especificação Visual e Funcional</h2>
+<p><strong>Versão:</strong> 2.0<br />
+<strong>Data:</strong> 2024<br />
+<strong>Projeto:</strong> ClickPassagens - Plataforma de Busca de
+Passagens Aéreas com Milhas</p>
+<hr />
+<h2 id="índice">📋 Índice</h2>
+<ol type="1">
+<li><a href="#visão-geral">Visão Geral do Projeto</a></li>
+<li><a href="#paleta-de-cores">Paleta de Cores e Identidade
+Visual</a></li>
+<li><a href="#telas-do-sistema">Telas do Sistema</a>
+<ul>
+<li><a href="#tela-1-home">Tela 1: Home/Landing Page</a></li>
+<li><a href="#tela-2-busca">Tela 2: Busca de Passagens</a></li>
+<li><a href="#tela-3-resultados">Tela 3: Resultados da Busca</a></li>
+<li><a href="#tela-4-planos">Tela 4: Planos e Preços</a></li>
+<li><a href="#tela-5-contato">Tela 5: Contato e Suporte</a></li>
+<li><a href="#tela-6-login">Tela 6: Login e Cadastro</a></li>
+<li><a href="#tela-7-dashboard-usuario">Tela 7: Dashboard do
+Usuário</a></li>
+<li><a href="#tela-8-painel-agente">Tela 8: Painel do Agente</a></li>
+<li><a href="#tela-9-admin">Tela 9: Painel Administrativo</a></li>
+<li><a href="#tela-10-orcamento">Tela 10: Orçamento
+Personalizado</a></li>
+<li><a href="#tela-11-indicacoes">Tela 11: Programa de
+Indicações</a></li>
+<li><a href="#tela-12-historico">Tela 12: Histórico e Cashback</a></li>
+</ul></li>
+<li><a href="#componentes-globais">Componentes Globais</a></li>
+<li><a href="#responsividade">Responsividade</a></li>
+</ol>
+<hr />
+<h2 id="visão-geral">�� Visão Geral do Projeto</h2>
+<p>O ClickPassagens é uma plataforma inovadora que permite aos usuários
+comparar preços de passagens aéreas em <strong>dinheiro</strong> e
+<strong>milhas</strong>, facilitando a tomada de decisão e promovendo
+economia de até 70% nas viagens.</p>
+<h3 id="objetivos-do-design">Objetivos do Design</h3>
+<ul>
+<li>✅ <strong>Modernidade</strong>: Interface clean, com gradientes
+suaves e animações elegantes</li>
+<li>✅ <strong>Sofisticação</strong>: Visual premium que transmite
+confiança e profissionalismo</li>
+<li>✅ <strong>Usabilidade</strong>: Navegação intuitiva e fluxos
+otimizados</li>
+<li>✅ <strong>Responsividade</strong>: Adaptação perfeita para desktop,
+tablet e mobile</li>
+<li>✅ <strong>Performance</strong>: Carregamento rápido e transições
+suaves</li>
+</ul>
+<hr />
+<h2 id="paleta-de-cores">🎨 Paleta de Cores e Identidade Visual</h2>
+<h3 id="cores-primárias">Cores Primárias</h3>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode css"><code class="sourceCode css"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>--aviation-blue<span class="in">: #0066CC        /* Azul</span> aviação principal <span class="op">*</span>/</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>--aviation-light-blue<span class="in">: #4A90E2  /* Azul</span> claro para gradientes <span class="op">*</span>/</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>--aviation-gold<span class="in">: #FFC107</span>        <span class="co">/* Dourado para destaques premium */</span></span></code></pre></div>
+<h3 id="cores-secundárias">Cores Secundárias</h3>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode css"><code class="sourceCode css"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>--success-green<span class="in">: #10B981        /* Verde</span> para economia <span class="op">*</span>/</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>--error-red<span class="in">: #EF4444</span>           <span class="co">/* Vermelho para alertas */</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>--warning-orange<span class="in">: #F59E0B</span>      <span class="co">/* Laranja para avisos */</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>--neutral-gray<span class="in">: #6B7280        /* Cinza</span> para textos secundários <span class="op">*</span>/</span></code></pre></div>
+<h3 id="gradientes">Gradientes</h3>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode css"><code class="sourceCode css"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">/* Gradiente Principal */</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>background<span class="in">: linear-gradient(135deg, #0066CC 0%, #4A90E2 100%)</span>;</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co">/* Gradiente de Fundo */</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>background<span class="in">: linear-gradient(to-br, from-blue-50, via-indigo-50, to-purple-50)</span>;</span></code></pre></div>
+<h3 id="tipografia">Tipografia</h3>
+<ul>
+<li><strong>Fonte Principal</strong>: Inter, sans-serif</li>
+<li><strong>Títulos</strong>: 600-700 (Semi-bold a Bold)</li>
+<li><strong>Corpo</strong>: 400-500 (Regular a Medium)</li>
+<li><strong>Tamanhos</strong>:
+<ul>
+<li>H1: 3.75rem (60px)</li>
+<li>H2: 3rem (48px)</li>
+<li>H3: 2.25rem (36px)</li>
+<li>Body: 1rem (16px)</li>
+<li>Small: 0.875rem (14px)</li>
+</ul></li>
+</ul>
+<hr />
+<h2 id="telas-do-sistema">📱 Telas do Sistema</h2>
+<hr />
+<h3 id="tela-1-home">TELA 1: Home/Landing Page</h3>
+<p><strong>Objetivo</strong>: Criar primeira impressão impactante e
+direcionar usuários para busca de passagens</p>
+<h4 id="layout">Layout</h4>
+<pre><code>┌──────────────────────────────────────────────────────────┐
+│ [HEADER]                                                  │
+│ Logo ClickPassagens    [Buscar][Planos][Contato] [Login] │
+├──────────────────────────────────────────────────────────┤
+│                      HERO SECTION                         │
+│                                                           │
+│          ⭐ #1 Plataforma de Milhas do Brasil            │
+│                                                           │
+│              Voe mais, gaste menos                        │
+│                                                           │
+│    A plataforma mais inteligente para encontrar          │
+│    passagens aéreas com milhas. Compare preços           │
+│    em tempo real e economize até 70%                     │
+│                                                           │
+│    [🛫 Buscar Passagens Agora] [Ver Como Funciona]      │
+│                                                           │
+│  ┌─────────┐ ┌─────────┐ ┌─────────┐ ┌─────────┐      │
+│  │  50K+   │ │   70%   │ │  24/7   │ │  100%   │      │
+│  │Passag.  │ │Economia │ │ Suporte │ │Segurança│      │
+│  └─────────┘ └─────────┘ └─────────┘ └─────────┘      │
+│                                                           │
+│         Parceiros de confiança                            │
+│    [Gol] [Azul] [LATAM] [Avianca] [Ibéria]             │
+└──────────────────────────────────────────────────────────┘</code></pre>
+<h4 id="elementos-visuais">Elementos Visuais</h4>
+<ol type="1">
+<li><strong>Background</strong>: Gradiente suave de azul claro a roxo
+claro com elementos flutuantes animados</li>
+<li><strong>Badge de Destaque</strong>: Badge branco com borda azul “#1
+Plataforma”</li>
+<li><strong>Título Principal</strong>: Fonte grande e bold com “gaste
+menos” em gradiente azul</li>
+<li><strong>Estatísticas</strong>: 4 cards com ícones, números grandes e
+labels
+<ul>
+<li>Animação: Destaque rotativo a cada 3 segundos com scale e
+sombra</li>
+</ul></li>
+<li><strong>Companhias</strong>: Pills coloridas com cores das
+companhias (laranja, azul, vermelho, etc.)</li>
+<li><strong>CTAs</strong>:
+<ul>
+<li>Primário: Botão com gradiente azul + ícone de avião</li>
+<li>Secundário: Botão outline azul</li>
+</ul></li>
+</ol>
+<h4 id="animações">Animações</h4>
+<ul>
+<li>Fade-in sequencial dos elementos (0.2s de delay entre cada)</li>
+<li>Floating animation nos elementos de background</li>
+<li>Hover: Scale 1.05 nos botões</li>
+<li>Estatísticas: Highlight rotativo</li>
+</ul>
+<hr />
+<h3 id="tela-2-busca">TELA 2: Busca de Passagens</h3>
+<p><strong>Objetivo</strong>: Permitir busca rápida e intuitiva de
+passagens aéreas</p>
+<h4 id="layout-1">Layout</h4>
+<pre><code>┌──────────────────────────────────────────────────────────┐
+│             FORMULÁRIO DE BUSCA                           │
+│                                                           │
+│  ┌────────────────────────────────────────────────┐     │
+│  │ Voe Mais, Gaste Menos                          │     │
+│  │ Compare preços em milhas e dinheiro            │     │
+│  │ ✓ Mais de 50 companhias                       │     │
+│  │ ✓ Economia garantida                          │     │
+│  │ ✓ Busca em tempo real                         │     │
+│  └────────────────────────────────────────────────┘     │
+│                                                           │
+│  ┌──────────────────────────────────────────────────┐   │
+│  │ CARD DE BUSCA (fundo branco, sombra elegante)   │   │
+│  │                                                   │   │
+│  │ 📍 Origem          📍 Destino                    │   │
+│  │ [São Paulo (GRU)] [Rio de Janeiro (GIG)]        │   │
+│  │                                                   │   │
+│  │ 📅 Data de Ida    📅 Data de Volta (opcional)   │   │
+│  │ [DD/MM/AAAA]      [DD/MM/AAAA]                  │   │
+│  │                                                   │   │
+│  │ 👥 Passageiros    💺 Classe                      │   │
+│  │ [1 Adulto ▼]      [Econômica ▼]                │   │
+│  │                                                   │   │
+│  │ ✈️ Companhias Aéreas (opcional)                 │   │
+│  │ [Todas as companhias ▼]                         │   │
+│  │                                                   │   │
+│  │      [🔍 Buscar Melhores Preços]                │   │
+│  └──────────────────────────────────────────────────┘   │
+│                                                           │
+│           FILTROS AVANÇADOS (expansível)                  │
+│  ┌──────────────────────────────────────────────────┐   │
+│  │ ⚙️ Filtros Avançados [▼]                         │   │
+│  │ • Número de paradas                              │   │
+│  │ • Horário de saída/chegada                       │   │
+│  │ • Bagagem incluída                               │   │
+│  │ • Preço máximo                                   │   │
+│  └──────────────────────────────────────────────────┘   │
+└──────────────────────────────────────────────────────────┘</code></pre>
+<h4 id="elementos-visuais-1">Elementos Visuais</h4>
+<ol type="1">
+<li><strong>Header</strong>: Gradiente azul com título branco e badges
+informativos</li>
+<li><strong>Card Principal</strong>:
+<ul>
+<li>Fundo branco com backdrop-blur</li>
+<li>Border radius 16px</li>
+<li>Sombra suave (shadow-lg)</li>
+<li>Padding generoso</li>
+</ul></li>
+<li><strong>Campos de Formulário</strong>:
+<ul>
+<li>Labels com ícones coloridos</li>
+<li>Inputs com border 2px</li>
+<li>Focus: borda azul animada</li>
+<li>Placeholder em cinza claro</li>
+</ul></li>
+<li><strong>Botão de Busca</strong>:
+<ul>
+<li>Gradiente azul completo</li>
+<li>Largura total</li>
+<li>Ícone de lupa</li>
+<li>Hover: ligeira opacidade</li>
+</ul></li>
+<li><strong>Estados de Loading</strong>:
+<ul>
+<li>Spinner animado com mensagem</li>
+<li>Desabilita formulário durante busca</li>
+</ul></li>
+</ol>
+<h4 id="funcionalidades">Funcionalidades</h4>
+<ul>
+<li>Autocomplete para aeroportos</li>
+<li>Validação em tempo real</li>
+<li>Busca flexível de datas (+/- 3 dias)</li>
+<li>Seleção múltipla de companhias</li>
+<li>Salvamento de buscas recentes</li>
+</ul>
+<hr />
+<h3 id="tela-3-resultados">TELA 3: Resultados da Busca</h3>
+<p><strong>Objetivo</strong>: Exibir resultados comparativos de forma
+clara e atrativa</p>
+<h4 id="layout-2">Layout</h4>
+<pre><code>┌──────────────────────────────────────────────────────────┐
+│  Resultados da Busca                    [Nova Busca]     │
+│  Encontramos 12 opções para você                         │
+│                                                           │
+│  ┌────────────────────────────────────────────────────┐ │
+│  │ FLIGHT CARD 1                                       │ │
+│  │ ┌──────────────────────────────────────┐           │ │
+│  │ │ 🔴 GOL                       📉 -45%  │           │ │
+│  │ │ Direto                                │           │ │
+│  │ └──────────────────────────────────────┘           │ │
+│  │                                                     │ │
+│  │  GRU        ✈️ ─────────────►        GIG          │ │
+│  │  08:30                                 09:45        │ │
+│  │           ⏱️ Duração: 1h 15min                     │ │
+│  │                                                     │ │
+│  │  ┌──────────────┐  ┌──────────────┐               │ │
+│  │  │ 💰 Milhas   │  │ 💳 Dinheiro  │               │ │
+│  │  │ 15.000      │  │ R$ 450,00    │               │ │
+│  │  │ + taxas     │  │ Economia:    │               │ │
+│  │  │             │  │ R$ 120,00    │               │ │
+│  │  └──────────────┘  └──────────────┘               │ │
+│  │                                                     │ │
+│  │        [Selecionar Voo →]                          │ │
+│  │                                                     │ │
+│  │  ⭐ Melhor Oferta (badge no canto)                 │ │
+│  └────────────────────────────────────────────────────┘ │
+│                                                           │
+│  ┌────────────────────────────────────────────────────┐ │
+│  │ FLIGHT CARD 2                                       │ │
+│  │ [Similar ao Card 1]                                 │ │
+│  └────────────────────────────────────────────────────┘ │
+│                                                           │
+│  [Carregar mais resultados]                              │
+└──────────────────────────────────────────────────────────┘</code></pre>
+<h4 id="elementos-visuais-2">Elementos Visuais</h4>
+<ol type="1">
+<li><strong>Header de Resultados</strong>:
+<ul>
+<li>Título bold com contador</li>
+<li>Botão “Nova Busca” alinhado à direita</li>
+</ul></li>
+<li><strong>Flight Card</strong>:
+<ul>
+<li>Card com hover effect (elevação de sombra)</li>
+<li>Header com logo da companhia (colorido)</li>
+<li>Badge de economia em verde (-X%)</li>
+<li>Linha do tempo visual da rota com ícone de avião</li>
+<li>Dois painéis lado a lado: Milhas vs Dinheiro</li>
+<li>Diferenciação visual (milhas com ícone dourado)</li>
+<li>Botão CTA com gradiente e ícone de seta</li>
+<li>Badge “Melhor Oferta” para economias &gt; 30%</li>
+</ul></li>
+<li><strong>Cores das Companhias</strong>:
+<ul>
+<li>GOL: Laranja (#FF6B00)</li>
+<li>Azul: Azul (#0066CC)</li>
+<li>LATAM: Vermelho (#DC0032)</li>
+<li>Avianca: Vermelho (#DC143C)</li>
+</ul></li>
+<li><strong>Animações</strong>:
+<ul>
+<li>Fade-in ao carregar</li>
+<li>Hover: scale 1.02 + sombra aumentada</li>
+<li>Botão: translate da seta no hover</li>
+</ul></li>
+</ol>
+<h4 id="estado-vazio">Estado Vazio</h4>
+<pre><code>┌──────────────────────────────────────────┐
+│                                          │
+│            ✈️ (ícone grande)            │
+│                                          │
+│      Nenhuma busca realizada             │
+│                                          │
+│  Faça uma busca para ver os resultados   │
+│                                          │
+│         [🔍 Fazer Busca]                 │
+│                                          │
+└──────────────────────────────────────────┘</code></pre>
+<hr />
+<h3 id="tela-4-planos">TELA 4: Planos e Preços</h3>
+<p><strong>Objetivo</strong>: Apresentar opções de planos de forma
+atrativa e clara</p>
+<h4 id="layout-3">Layout</h4>
+<pre><code>┌──────────────────────────────────────────────────────────┐
+│            Escolha o Plano Ideal                          │
+│   Encontre a opção que melhor se adapta às suas          │
+│              necessidades de viagem                       │
+│                                                           │
+│ ┌──────┐  ┌──────┐  ┌──────────┐  ┌──────┐             │
+│ │FREE  │  │BÁSICO│  │ PREMIUM  │  │AGENTE│             │
+│ │      │  │      │  │⭐Popular │  │      │             │
+│ │R$ 0  │  │R$ 99 │  │ R$ 299   │  │R$ 499│             │
+│ │/mês  │  │/mês  │  │  /mês    │  │/mês  │             │
+│ │      │  │      │  │          │  │      │             │
+│ │5     │  │100   │  │ 500      │  │1000  │             │
+│ │consul│  │consul│  │consultas │  │consul│             │
+│ │tas   │  │tas   │  │          │  │tas   │             │
+│ │      │  │      │  │          │  │      │             │
+│ │✓Basic│  │✓Avanç│  │✓Todas as │  │✓Painel│             │
+│ │✓Comp │  │✓Filtr│  │ features │  │✓Comiss│             │
+│ │✓Email│  │✓Histó│  │✓Orçament │  │✓Marca │             │
+│ │      │  │✓Prior│  │✓Cashback │  │✓Relat │             │
+│ │      │  │      │  │✓24/7     │  │      │             │
+│ │      │  │      │  │          │  │      │             │
+│ │[Esco │  │[Esco │  │[Escolher]│  │[Esco │             │
+│ │lher] │  │lher] │  │          │  │lher] │             │
+│ └──────┘  └──────┘  └──────────┘  └──────┘             │
+│                                                           │
+│          BENEFÍCIOS ADICIONAIS                            │
+│  ┌───────────┐  ┌───────────┐  ┌───────────┐           │
+│  │ 🛡️        │  │ 📈        │  │ ⚡        │           │
+│  │ Segurança │  │ Economia  │  │ Busca     │           │
+│  │ Total     │  │ Garantida │  │ Rápida    │           │
+│  └───────────┘  └───────────┘  └───────────┘           │
+└──────────────────────────────────────────────────────────┘</code></pre>
+<h4 id="elementos-visuais-3">Elementos Visuais</h4>
+<ol type="1">
+<li><strong>Cards de Plano</strong>:
+<ul>
+<li>Todos com mesma altura e largura</li>
+<li>Bordas coloridas conforme o plano</li>
+<li>Plano Premium:
+<ul>
+<li>Scale 1.05 (maior)</li>
+<li>Ring dourado (2px)</li>
+<li>Sombra mais intensa</li>
+<li>Badge “Mais Popular” no topo</li>
+</ul></li>
+</ul></li>
+<li><strong>Estrutura do Card</strong>:
+<ul>
+<li>Header: Nome do plano</li>
+<li>Preço: Fonte grande (48px) + período</li>
+<li>Consultas: Subtítulo em cinza</li>
+<li>Lista de recursos com checkmarks verdes</li>
+<li>Botão CTA na parte inferior</li>
+</ul></li>
+<li><strong>Cores dos Planos</strong>:
+<ul>
+<li>Free: Border cinza</li>
+<li>Básico: Border azul</li>
+<li>Premium: Border dourado + ring</li>
+<li>Agente: Border roxo</li>
+</ul></li>
+<li><strong>Botões</strong>:
+<ul>
+<li>Premium: Gradiente azul (destaque)</li>
+<li>Outros: Outline azul</li>
+</ul></li>
+<li><strong>Seção de Benefícios</strong>:
+<ul>
+<li>3 cards com ícones grandes</li>
+<li>Background com gradiente azul</li>
+<li>Texto branco</li>
+<li>Hover: elevação de sombra</li>
+</ul></li>
+</ol>
+<hr />
+<h3 id="tela-5-contato">TELA 5: Contato e Suporte</h3>
+<p><strong>Objetivo</strong>: Facilitar comunicação e resolver dúvidas
+dos usuários</p>
+<h4 id="layout-4">Layout</h4>
+<pre><code>┌──────────────────────────────────────────────────────────┐
+│              Entre em Contato                             │
+│   Nossa equipe está pronta para ajudar você a             │
+│         encontrar as melhores ofertas                     │
+│                                                           │
+│ ┌──────────┐  ┌──────────┐  ┌──────────┐               │
+│ │ 📞       │  │ ✉️       │  │ 💬       │               │
+│ │ Telefone │  │ E-mail   │  │ Chat     │               │
+│ │          │  │          │  │ Online   │               │
+│ │Seg-Sex   │  │Resposta  │  │Suporte   │               │
+│ │8h-18h    │  │em 24h    │  │instantân│               │
+│ │          │  │          │  │eo        │               │
+│ │(11)      │  │contato@  │  │          │               │
+│ │99999-9999│  │click.com │  │[Iniciar] │               │
+│ └──────────┘  └──────────┘  └──────────┘               │
+│                                                           │
+│         PERGUNTAS FREQUENTES                              │
+│                                                           │
+│ ┌────────────────────────────────────────────────────┐  │
+│ │ ❓ Como funciona a busca por passagens com milhas? │  │
+│ │ Nossa plataforma compara preços em dinheiro e      │  │
+│ │ milhas de múltiplas companhias aéreas...           │  │
+│ └────────────────────────────────────────────────────┘  │
+│                                                           │
+│ ┌────────────────────────────────────────────────────┐  │
+│ │ ❓ As milhas são transferidas automaticamente?     │  │
+│ │ Não, você precisa ter as milhas em sua conta...    │  │
+│ └────────────────────────────────────────────────────┘  │
+│                                                           │
+│ [+ mais perguntas...]                                     │
+└──────────────────────────────────────────────────────────┘</code></pre>
+<h4 id="elementos-visuais-4">Elementos Visuais</h4>
+<ol type="1">
+<li><strong>Cards de Contato</strong>:
+<ul>
+<li>3 cards em grid</li>
+<li>Ícone grande no topo com fundo gradiente azul</li>
+<li>Título em bold</li>
+<li>Descrição em cinza</li>
+<li>Informação de contato em azul</li>
+<li>Hover: elevação de sombra</li>
+</ul></li>
+<li><strong>FAQ</strong>:
+<ul>
+<li>Cards com pergunta em negrito</li>
+<li>Resposta em texto cinza</li>
+<li>Hover: sombra mais intensa</li>
+<li>Opcional: Accordion para expandir/colapsar</li>
+</ul></li>
+</ol>
+<hr />
+<h3 id="tela-6-login">TELA 6: Login e Cadastro</h3>
+<p><strong>Objetivo</strong>: Autenticação segura e rápida</p>
+<h4 id="layout-login">Layout Login</h4>
+<pre><code>┌──────────────────────────────────────────────────────────┐
+│                                                           │
+│          ┌────────────────────────────┐                  │
+│          │                            │                  │
+│          │  ✈️ ClickPassagens         │                  │
+│          │                            │                  │
+│          │  Bem-vindo de volta!       │                  │
+│          │                            │                  │
+│          │  ┌──────────────────────┐ │                  │
+│          │  │ 📧 E-mail            │ │                  │
+│          │  │ [Digite seu e-mail]  │ │                  │
+│          │  └──────────────────────┘ │                  │
+│          │                            │                  │
+│          │  ┌──────────────────────┐ │                  │
+│          │  │ 🔒 Senha             │ │                  │
+│          │  │ [Digite sua senha]   │ │                  │
+│          │  └──────────────────────┘ │                  │
+│          │                            │                  │
+│          │  [Esqueci minha senha]     │                  │
+│          │                            │                  │
+│          │  [Entrar →]                │                  │
+│          │                            │                  │
+│          │  ────────── ou ──────────  │                  │
+│          │                            │                  │
+│          │  [🔵 Entrar com Google]   │                  │
+│          │  [📘 Entrar com Facebook] │                  │
+│          │                            │                  │
+│          │  Não tem conta?            │                  │
+│          │  [Cadastre-se]             │                  │
+│          │                            │                  │
+│          └────────────────────────────┘                  │
+│                                                           │
+└──────────────────────────────────────────────────────────┘</code></pre>
+<h4 id="layout-cadastro">Layout Cadastro</h4>
+<pre><code>┌──────────────────────────────────────────────────────────┐
+│                                                           │
+│          ┌────────────────────────────┐                  │
+│          │  Criar sua conta           │                  │
+│          │                            │                  │
+│          │  [Nome completo]           │                  │
+│          │  [E-mail]                  │                  │
+│          │  [Telefone]                │                  │
+│          │  [Senha]                   │                  │
+│          │  [Confirmar senha]         │                  │
+│          │                            │                  │
+│          │  ☐ Aceito os termos de uso │                  │
+│          │                            │                  │
+│          │  [Criar Conta →]           │                  │
+│          │                            │                  │
+│          │  ────────── ou ──────────  │                  │
+│          │                            │                  │
+│          │  [Cadastro com Google]     │                  │
+│          │  [Cadastro com Facebook]   │                  │
+│          │                            │                  │
+│          │  Já tem conta? [Entrar]    │                  │
+│          └────────────────────────────┘                  │
+│                                                           │
+└──────────────────────────────────────────────────────────┘</code></pre>
+<h4 id="elementos-visuais-5">Elementos Visuais</h4>
+<ol type="1">
+<li><strong>Card Central</strong>:
+<ul>
+<li>Centralizado verticalmente e horizontalmente</li>
+<li>Background branco com sombra forte</li>
+<li>Border radius 24px</li>
+<li>Max-width: 400px</li>
+<li>Padding generoso</li>
+</ul></li>
+<li><strong>Logo</strong>: Ícone de avião + nome em gradiente</li>
+<li><strong>Campos</strong>:
+<ul>
+<li>Ícones à esquerda</li>
+<li>Border 2px cinza</li>
+<li>Focus: borda azul com transição</li>
+</ul></li>
+<li><strong>Botões Social</strong>:
+<ul>
+<li>Cores das redes sociais</li>
+<li>Ícones à esquerda</li>
+<li>Texto branco</li>
+</ul></li>
+<li><strong>Links</strong>: Azul com hover sublinhado</li>
+<li><strong>Validação</strong>:
+<ul>
+<li>Mensagens de erro em vermelho abaixo dos campos</li>
+<li>Checkmarks verdes para campos válidos</li>
+</ul></li>
+</ol>
+<hr />
+<h3 id="tela-7-dashboard-usuario">TELA 7: Dashboard do Usuário</h3>
+<p><strong>Objetivo</strong>: Central do usuário para gerenciar suas
+atividades</p>
+<h4 id="layout-5">Layout</h4>
+<pre><code>┌──────────────────────────────────────────────────────────┐
+│ [HEADER]                                                  │
+│ Logo           [Dashboard][Histórico][Perfil]    [👤User]│
+├──────────────────────────────────────────────────────────┤
+│                                                           │
+│  Bem-vindo, João! 👋                                     │
+│                                                           │
+│  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐       │
+│  │ Consultas   │ │ Economia    │ │ Cashback    │       │
+│  │ 45/100      │ │ R$ 2.340    │ │ R$ 120,50   │       │
+│  │ este mês    │ │ total       │ │ disponível  │       │
+│  └─────────────┘ └─────────────┘ └─────────────┘       │
+│                                                           │
+│  ÚLTIMAS BUSCAS                                           │
+│  ┌────────────────────────────────────────────────────┐ │
+│  │ GRU → GIG | 15/03/2024 | R$ 450 | 15.000 milhas  │ │
+│  │ [Ver detalhes] [Buscar novamente]                 │ │
+│  └────────────────────────────────────────────────────┘ │
+│                                                           │
+│  PRÓXIMAS VIAGENS                                         │
+│  ┌────────────────────────────────────────────────────┐ │
+│  │ 🗓️ 20/03/2024 - Rio de Janeiro                    │ │
+│  │ GOL - Voo 1234 - 08:30                            │ │
+│  │ [Baixar voucher] [Adicionar ao calendário]        │ │
+│  └────────────────────────────────────────────────────┘ │
+│                                                           │
+│  ALERTAS DE PREÇO                                         │
+│  ┌────────────────────────────────────────────────────┐ │
+│  │ 🔔 GRU → MIA | Preço caiu R$ 500 → R$ 380       │ │
+│  │ [Ver oferta]                                       │ │
+│  └────────────────────────────────────────────────────┘ │
+└──────────────────────────────────────────────────────────┘</code></pre>
+<h4 id="elementos-visuais-6">Elementos Visuais</h4>
+<ol type="1">
+<li><strong>Cabeçalho com Saudação</strong>:
+<ul>
+<li>Título com nome do usuário</li>
+<li>Emoji de mão acenando</li>
+</ul></li>
+<li><strong>Cards de Estatísticas</strong>:
+<ul>
+<li>3 cards em linha</li>
+<li>Número grande em destaque</li>
+<li>Label em cinza</li>
+<li>Barra de progresso para consultas</li>
+</ul></li>
+<li><strong>Seções</strong>:
+<ul>
+<li>Últimas Buscas: Lista de cards clicáveis</li>
+<li>Próximas Viagens: Cards com informações de voo</li>
+<li>Alertas: Notificações com badge</li>
+</ul></li>
+<li><strong>Ações Rápidas</strong>:
+<ul>
+<li>Botões de ação em cada card</li>
+<li>Links destacados em azul</li>
+</ul></li>
+</ol>
+<hr />
+<h3 id="tela-8-painel-agente">TELA 8: Painel do Agente</h3>
+<p><strong>Objetivo</strong>: Ferramenta profissional para agentes de
+viagem</p>
+<h4 id="layout-6">Layout</h4>
+<pre><code>┌──────────────────────────────────────────────────────────┐
+│ [HEADER AGENTE]                                           │
+│ Logo      [Dashboard][Clientes][Orçamentos][Comissões]   │
+├──────────────────────────────────────────────────────────┤
+│                                                           │
+│  Painel do Agente 💼                                     │
+│                                                           │
+│  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐  │
+│  │Clientes  │ │Orçamentos│ │Comissões │ │Conversão │  │
+│  │  124     │ │    45    │ │ R$ 8.450 │ │   32%    │  │
+│  │ativos    │ │pendentes │ │este mês  │ │taxa      │  │
+│  └──────────┘ └──────────┘ └──────────┘ └──────────┘  │
+│                                                           │
+│  AÇÕES RÁPIDAS                                            │
+│  [+ Novo Orçamento] [+ Novo Cliente] [Buscar Passagem]   │
+│                                                           │
+│  ORÇAMENTOS RECENTES                                      │
+│  ┌────────────────────────────────────────────────────┐ │
+│  │ Cliente: Maria Silva                               │ │
+│  │ Destino: GRU → MIA                                │ │
+│  │ Valor: R$ 3.450 | Status: 🟡 Pendente            │ │
+│  │ [Editar] [Enviar] [Duplicar]                      │ │
+│  └────────────────────────────────────────────────────┘ │
+│                                                           │
+│  CONFIGURAÇÕES DA AGÊNCIA                                 │
+│  ┌────────────────────────────────────────────────────┐ │
+│  │ Logo da Agência: [Upload]                         │ │
+│  │ Cores da Marca: [#0066CC] [#4A90E2]              │ │
+│  │ Comissões: [Configurar por companhia]             │ │
+│  │ Termos Personalizados: [Editar]                   │ │
+│  └────────────────────────────────────────────────────┘ │
+└──────────────────────────────────────────────────────────┘</code></pre>
+<h4 id="elementos-visuais-7">Elementos Visuais</h4>
+<ol type="1">
+<li><strong>Header Diferenciado</strong>:
+<ul>
+<li>Badge “Agente” em roxo</li>
+<li>Menu com opções específicas</li>
+</ul></li>
+<li><strong>Estatísticas de Negócio</strong>:
+<ul>
+<li>4 cards com métricas de performance</li>
+<li>Ícones de negócio</li>
+</ul></li>
+<li><strong>Tabela de Orçamentos</strong>:
+<ul>
+<li>Status coloridos (verde=aprovado, amarelo=pendente,
+vermelho=recusado)</li>
+<li>Ações inline</li>
+</ul></li>
+<li><strong>Editor de Marca</strong>:
+<ul>
+<li>Upload de logo</li>
+<li>Color pickers</li>
+<li>Preview em tempo real</li>
+</ul></li>
+</ol>
+<hr />
+<h3 id="tela-9-admin">TELA 9: Painel Administrativo</h3>
+<p><strong>Objetivo</strong>: Controle total do sistema para
+administradores</p>
+<h4 id="layout-7">Layout</h4>
+<pre><code>┌──────────────────────────────────────────────────────────┐
+│ [HEADER ADMIN]                                            │
+│ Logo  [Dashboard][Usuários][Planos][Relatórios][Config]  │
+├──────────────────────────────────────────────────────────┤
+│                                                           │
+│  Dashboard Administrativo ⚙️                              │
+│                                                           │
+│  ┌──────┐ ┌──────┐ ┌──────┐ ┌──────┐ ┌──────┐          │
+│  │Users │ │Buscas│ │Renda │ │APIs  │ │Erros │          │
+│  │1.245 │ │8.942 │ │R$45K │ │ 99%  │ │  2   │          │
+│  │total │ │hoje  │ │mês   │ │uptime│ │hoje  │          │
+│  └──────┘ └──────┘ └──────┘ └──────┘ └──────┘          │
+│                                                           │
+│  GRÁFICOS E MÉTRICAS                                      │
+│  ┌────────────────────────────────────────────────────┐ │
+│  │ 📊 Buscas por Dia (última semana)                 │ │
+│  │ [Gráfico de linha]                                 │ │
+│  └────────────────────────────────────────────────────┘ │
+│                                                           │
+│  ┌────────────────────────────────────────────────────┐ │
+│  │ 💰 Receita por Plano                              │ │
+│  │ [Gráfico de pizza]                                 │ │
+│  └────────────────────────────────────────────────────┘ │
+│                                                           │
+│  GESTÃO DE USUÁRIOS                                       │
+│  [Filtros] [Buscar] [+ Novo Usuário]                     │
+│  ┌────────────────────────────────────────────────────┐ │
+│  │ Nome        │ Email         │ Plano   │ Status    │ │
+│  │ João Silva  │ joao@...      │ Premium │ ✅ Ativo  │ │
+│  │ [Editar] [Suspender] [Deletar]                    │ │
+│  └────────────────────────────────────────────────────┘ │
+│                                                           │
+│  CONFIGURAÇÕES DO SISTEMA                                 │
+│  ┌────────────────────────────────────────────────────┐ │
+│  │ APIs Ativas: [GOL][Azul][LATAM][Avianca]         │ │
+│  │ Valor do Milheiro: [Configurar por companhia]     │ │
+│  │ Manutenção: [Agendar downtime]                    │ │
+│  └────────────────────────────────────────────────────┘ │
+└──────────────────────────────────────────────────────────┘</code></pre>
+<h4 id="elementos-visuais-8">Elementos Visuais</h4>
+<ol type="1">
+<li><strong>Métricas de Sistema</strong>:
+<ul>
+<li>5 cards com números grandes</li>
+<li>Cores: verde (sucesso), vermelho (erro), azul (neutro)</li>
+</ul></li>
+<li><strong>Gráficos</strong>:
+<ul>
+<li>Biblioteca de charts (Chart.js ou Recharts)</li>
+<li>Interativos com tooltips</li>
+</ul></li>
+<li><strong>Tabelas</strong>:
+<ul>
+<li>Paginação</li>
+<li>Ordenação por coluna</li>
+<li>Ações inline</li>
+<li>Badges de status</li>
+</ul></li>
+</ol>
+<hr />
+<h3 id="tela-10-orcamento">TELA 10: Orçamento Personalizado</h3>
+<p><strong>Objetivo</strong>: Criar orçamentos profissionais com marca
+própria</p>
+<h4 id="layout-8">Layout</h4>
+<pre><code>┌──────────────────────────────────────────────────────────┐
+│  Editor de Orçamento                                      │
+│                                                           │
+│  ┌──────────────────┐  ┌────────────────────────────┐   │
+│  │ EDITOR           │  │ PREVIEW                     │   │
+│  │                  │  │ ┌────────────────────────┐ │   │
+│  │ Logo da Agência  │  │ │ [LOGO]                 │ │   │
+│  │ [Upload/URL]     │  │ │                        │ │   │
+│  │                  │  │ │ Orçamento de Viagem    │ │   │
+│  │ Título           │  │ │                        │ │   │
+│  │ [Orçamento...]   │  │ │ Cliente: Maria Silva   │ │   │
+│  │                  │  │ │                        │ │   │
+│  │ Subtítulo        │  │ │ GRU ──✈️──► MIA       │ │   │
+│  │ [Viagem para...] │  │ │ 20/03/2024             │ │   │
+│  │                  │  │ │                        │ │   │
+│  │ Cliente          │  │ │ 💰 R$ 3.450,00        │ │   │
+│  │ [Nome]           │  │ │ 💎 45.000 milhas      │ │   │
+│  │                  │  │ │                        │ │   │
+│  │ Cores da Marca   │  │ │ Detalhes do voo:      │ │   │
+│  │ Primária [🎨]    │  │ │ • GOL - Voo 1234      │ │   │
+│  │ Secundária [🎨]  │  │ │ • Saída: 08:30        │ │   │
+│  │                  │  │ │ • Bagagem inclusa     │ │   │
+│  │ Observações      │  │ │                        │ │   │
+│  │ [Textarea]       │  │ │ Observações:          │ │   │
+│  │                  │  │ │ [Texto personalizado] │ │   │
+│  │                  │  │ │                        │ │   │
+│  │ [Gerar PDF]      │  │ │ [Logo da agência]     │ │   │
+│  │ [Enviar Email]   │  │ │ contato@agencia.com   │ │   │
+│  └──────────────────┘  │ └────────────────────────┘ │   │
+│                        └────────────────────────────┘   │
+└──────────────────────────────────────────────────────────┘</code></pre>
+<h4 id="elementos-visuais-9">Elementos Visuais</h4>
+<ol type="1">
+<li><strong>Layout Split</strong>:
+<ul>
+<li>Editor à esquerda (40%)</li>
+<li>Preview à direita (60%)</li>
+</ul></li>
+<li><strong>Editor</strong>:
+<ul>
+<li>Campos de formulário</li>
+<li>Upload de imagem</li>
+<li>Color pickers</li>
+<li>Textarea para observações</li>
+</ul></li>
+<li><strong>Preview</strong>:
+<ul>
+<li>Simulação em tempo real</li>
+<li>Estilo de documento profissional</li>
+<li>Cores personalizadas aplicadas</li>
+</ul></li>
+<li><strong>Ações</strong>:
+<ul>
+<li>Gerar PDF (download)</li>
+<li>Enviar por email</li>
+<li>Salvar template</li>
+</ul></li>
+</ol>
+<hr />
+<h3 id="tela-11-indicacoes">TELA 11: Programa de Indicações</h3>
+<p><strong>Objetivo</strong>: Incentivar e gerenciar programa de
+afiliados</p>
+<h4 id="layout-9">Layout</h4>
+<pre><code>┌──────────────────────────────────────────────────────────┐
+│  Programa de Indicações 🎁                                │
+│                                                           │
+│  Ganhe R$ 50 por cada amigo que se cadastrar!            │
+│                                                           │
+│  SEU LINK DE INDICAÇÃO                                    │
+│  ┌────────────────────────────────────────────────────┐ │
+│  │ https://clickpassagens.me/ref/JOAO123             │ │
+│  │                              [📋 Copiar] [🔗Comp] │ │
+│  └────────────────────────────────────────────────────┘ │
+│                                                           │
+│  SUAS ESTATÍSTICAS                                        │
+│  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐  │
+│  │Indicações│ │Cadastros │ │Comissão  │ │Saldo     │  │
+│  │    45    │ │    12    │ │ R$ 600   │ │ R$ 450   │  │
+│  │enviadas  │ │completos │ │total     │ │disponível│  │
+│  └──────────┘ └──────────┘ └──────────┘ └──────────┘  │
+│                                                           │
+│  INDICAÇÕES RECENTES                                      │
+│  ┌────────────────────────────────────────────────────┐ │
+│  │ 📧 maria@email.com                                 │ │
+│  │ Status: ✅ Cadastro completo                       │ │
+│  │ Comissão: R$ 50,00 (pago)                         │ │
+│  │ Data: 10/03/2024                                   │ │
+│  └────────────────────────────────────────────────────┘ │
+│                                                           │
+│  ┌────────────────────────────────────────────────────┐ │
+│  │ 📧 joao@email.com                                  │ │
+│  │ Status: 🟡 Pendente confirmação                   │ │
+│  │ Comissão: R$ 0,00                                  │ │
+│  │ Data: 12/03/2024                                   │ │
+│  └────────────────────────────────────────────────────┘ │
+│                                                           │
+│  [Solicitar Resgate]                                      │
+└──────────────────────────────────────────────────────────┘</code></pre>
+<h4 id="elementos-visuais-10">Elementos Visuais</h4>
+<ol type="1">
+<li><strong>Link de Indicação</strong>:
+<ul>
+<li>Box com fundo cinza claro</li>
+<li>Botões de copiar e compartilhar</li>
+<li>Tooltip “Link copiado!” ao clicar</li>
+</ul></li>
+<li><strong>Estatísticas</strong>:
+<ul>
+<li>4 cards coloridos</li>
+<li>Ícones relevantes</li>
+<li>Números em destaque</li>
+</ul></li>
+<li><strong>Lista de Indicações</strong>:
+<ul>
+<li>Cards com informações completas</li>
+<li>Status coloridos (verde, amarelo, cinza)</li>
+<li>Histórico de comissões</li>
+</ul></li>
+<li><strong>Botão de Resgate</strong>:
+<ul>
+<li>Destaque quando saldo disponível</li>
+<li>Desabilitado quando saldo insuficiente</li>
+</ul></li>
+</ol>
+<hr />
+<h3 id="tela-12-historico">TELA 12: Histórico e Cashback</h3>
+<p><strong>Objetivo</strong>: Transparência total nas transações e
+benefícios</p>
+<h4 id="layout-10">Layout</h4>
+<pre><code>┌──────────────────────────────────────────────────────────┐
+│  Histórico e Cashback 💰                                  │
+│                                                           │
+│  SALDO DE CASHBACK                                        │
+│  ┌────────────────────────────────────────────────────┐ │
+│  │                                                     │ │
+│  │      💎 R$ 245,80                                  │ │
+│  │      Saldo disponível                               │ │
+│  │                                                     │ │
+│  │      [Resgatar Cashback]                           │ │
+│  │      Mínimo: R$ 100,00                             │ │
+│  └────────────────────────────────────────────────────┘ │
+│                                                           │
+│  HISTÓRICO DE BUSCAS                                      │
+│  [Filtrar por data] [Filtrar por companhia] [Exportar]   │
+│                                                           │
+│  ┌────────────────────────────────────────────────────┐ │
+│  │ 📅 15/03/2024                                      │ │
+│  │ GRU → GIG | GOL | R$ 450,00                       │ │
+│  │ Cashback: R$ 9,00 (2%)                            │ │
+│  │ [Ver detalhes] [Buscar novamente]                 │ │
+│  └────────────────────────────────────────────────────┘ │
+│                                                           │
+│  ┌────────────────────────────────────────────────────┐ │
+│  │ 📅 10/03/2024                                      │ │
+│  │ GRU → MIA | LATAM | R$ 2.340,00                   │ │
+│  │ Cashback: R$ 46,80 (2%)                           │ │
+│  │ [Ver detalhes]                                     │ │
+│  └────────────────────────────────────────────────────┘ │
+│                                                           │
+│  HISTÓRICO DE RESGATES                                    │
+│  ┌────────────────────────────────────────────────────┐ │
+│  │ 📅 01/03/2024                                      │ │
+│  │ Resgate via PIX: R$ 190,00                        │ │
+│  │ Status: ✅ Processado                              │ │
+│  └────────────────────────────────────────────────────┘ │
+└──────────────────────────────────────────────────────────┘</code></pre>
+<h4 id="elementos-visuais-11">Elementos Visuais</h4>
+<ol type="1">
+<li><strong>Card de Saldo</strong>:
+<ul>
+<li>Destaque visual com gradiente</li>
+<li>Número grande</li>
+<li>Botão de resgate prominent</li>
+<li>Informação de valor mínimo</li>
+</ul></li>
+<li><strong>Filtros</strong>:
+<ul>
+<li>Dropdowns e date pickers</li>
+<li>Botão de exportar para CSV/PDF</li>
+</ul></li>
+<li><strong>Cards de Histórico</strong>:
+<ul>
+<li>Timeline visual</li>
+<li>Informações resumidas</li>
+<li>Badges de status</li>
+<li>Ações secundárias</li>
+</ul></li>
+</ol>
+<hr />
+<h2 id="componentes-globais">🧩 Componentes Globais</h2>
+<h3 id="header-cabeçalho">Header (Cabeçalho)</h3>
+<pre><code>┌──────────────────────────────────────────────────────────┐
+│ [LOGO ClickPassagens]    [Nav Links]      [User Actions] │
+│                                                           │
+│ • Background: Branco com blur e transparência            │
+│ • Sticky: Fixo no topo ao rolar                          │
+│ • Shadow: Sombra suave                                   │
+│ • Logo: Clicável, volta à home                           │
+│ • Nav: Hover com background azul claro                   │
+│ • User: Avatar + dropdown menu                           │
+└──────────────────────────────────────────────────────────┘</code></pre>
+<h3 id="footer-rodapé">Footer (Rodapé)</h3>
+<pre><code>┌──────────────────────────────────────────────────────────┐
+│                     FOOTER                                │
+│ Background: Cinza escuro (#1F2937)                       │
+│                                                           │
+│ [LOGO]          [Produtos]    [Empresa]    [Suporte]     │
+│ ClickPass.      • Busca       • Sobre      • Central     │
+│                 • Comparador  • Termos     • Contato     │
+│ Descrição       • Alertas     • Privac.    • Status      │
+│ da empresa      • Fidelidade                • Reportar   │
+│                                                           │
+│ ─────────────────────────────────────────────────────────│
+│ © 2024 ClickPassagens. Todos os direitos reservados.    │
+└──────────────────────────────────────────────────────────┘</code></pre>
+<h3 id="navegação-mobile">Navegação Mobile</h3>
+<pre><code>┌──────────────────────────────────────────────────────────┐
+│                  [NAVEGAÇÃO INFERIOR]                     │
+│ ┌───────┐ ┌───────┐ ┌───────┐ ┌───────┐                │
+│ │ 🔍    │ │ 📍    │ │ 💳    │ │ 💬    │                │
+│ │Buscar │ │Result │ │Planos │ │Contato│                │
+│ └───────┘ └───────┘ └───────┘ └───────┘                │
+│                                                           │
+│ • Fixed: Fixo na parte inferior                          │
+│ • Apenas mobile (oculto em desktop)                      │
+│ • Active: Ícone e texto em azul + fundo azul claro      │
+│ • Grid: 4 colunas iguais                                 │
+└──────────────────────────────────────────────────────────┘</code></pre>
+<h3 id="botões">Botões</h3>
+<p><strong>Botão Primário (CTA)</strong></p>
+<div class="sourceCode" id="cb21"><pre
+class="sourceCode css"><code class="sourceCode css"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>background<span class="in">: linear-gradient(135deg, #0066CC, #4A90E2)</span>;</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>color<span class="in">: white</span>;</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>padding<span class="in">: 12px 32px;</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>border-radius<span class="in">: 12px;</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>font-weight<span class="in">: 600;</span></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>box-shadow<span class="in">: 0 4px 14px rgba(0, 102, 204, 0.3)</span>;</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>transition<span class="in">: all</span> 0<span class="fu">.3s</span>;</span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>hover<span class="in">:</span></span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>  opacity<span class="in">: 0.9;</span></span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>  transform<span class="in">: scale(1.05)</span>;</span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>  box-shadow<span class="in">: 0 6px 20px rgba(0, 102, 204, 0.4)</span>;</span></code></pre></div>
+<p><strong>Botão Secundário (Outline)</strong></p>
+<div class="sourceCode" id="cb22"><pre
+class="sourceCode css"><code class="sourceCode css"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>background<span class="in">: transparent</span>;</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>border<span class="in">: 2px solid</span> #0066CC;</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>color<span class="in">: #0066CC;</span></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>padding<span class="in">: 12px 32px;</span></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>border-radius<span class="in">: 12px;</span></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>font-weight<span class="in">: 600;</span></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>transition<span class="in">: all</span> 0<span class="fu">.3s</span>;</span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>hover<span class="in">:</span></span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>  background<span class="in">: #0066CC;</span></span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>  color<span class="in">: white</span>;</span></code></pre></div>
+<h3 id="cards">Cards</h3>
+<div class="sourceCode" id="cb23"><pre
+class="sourceCode css"><code class="sourceCode css"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>background<span class="in">: white</span>;</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>border-radius<span class="in">: 16px;</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>padding<span class="in">: 24px;</span></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>box-shadow<span class="in">: 0 4px 6px rgba(0, 0, 0, 0.1)</span>;</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>transition<span class="in">: all</span> 0<span class="fu">.3s</span>;</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>hover<span class="in">:</span></span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>  box-shadow<span class="in">: 0 10px 25px rgba(0, 0, 0, 0.15)</span>;</span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>  transform<span class="in">: translateY(-4px)</span>;</span></code></pre></div>
+<h3 id="inputs">Inputs</h3>
+<div class="sourceCode" id="cb24"><pre
+class="sourceCode css"><code class="sourceCode css"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>border<span class="in">: 2px solid</span> <span class="pp">#E5E7EB</span>;</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>border-radius<span class="in">: 8px;</span></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>padding<span class="in">: 12px 16px;</span></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>font-size<span class="in">: 16px;</span></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>transition<span class="in">: border-color</span> 0<span class="fu">.3s</span>;</span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>focus<span class="in">:</span></span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>  border-color<span class="in">: #0066CC;</span></span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>  outline<span class="in">: none</span>;</span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a>  box-shadow<span class="in">: 0 0 0 3px rgba(0, 102, 204, 0.1)</span>;</span></code></pre></div>
+<hr />
+<h2 id="responsividade">📱 Responsividade</h2>
+<h3 id="breakpoints">Breakpoints</h3>
+<div class="sourceCode" id="cb25"><pre
+class="sourceCode css"><code class="sourceCode css"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co">/* Mobile First */</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>mobile<span class="in">: default</span>         <span class="co">/* 0-639px */</span></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>tablet<span class="in">: 640px          /* 640px-1023px</span> <span class="op">*</span>/</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>desktop<span class="in">: 1024px        /* 1024px+ */</span></span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>wide<span class="in">: 1280px           /* 1280px+ */</span></span></code></pre></div>
+<h3 id="adaptações-por-dispositivo">Adaptações por Dispositivo</h3>
+<h4 id="mobile-640px">Mobile (&lt; 640px)</h4>
+<ul>
+<li><strong>Header</strong>: Logo menor, menu hambúrguer</li>
+<li><strong>Hero</strong>: Título 2.5rem, stack vertical dos botões</li>
+<li><strong>Cards</strong>: 1 coluna, padding reduzido</li>
+<li><strong>Flight Cards</strong>: Layout vertical, informações
+simplificadas</li>
+<li><strong>Planos</strong>: 1 coluna com scroll</li>
+<li><strong>Footer</strong>: Links em accordion</li>
+<li><strong>Navegação</strong>: Bottom navigation bar</li>
+</ul>
+<h4 id="tablet-640px---1023px">Tablet (640px - 1023px)</h4>
+<ul>
+<li><strong>Header</strong>: Logo médio, menu visível</li>
+<li><strong>Hero</strong>: Título 3.5rem, botões lado a lado</li>
+<li><strong>Cards</strong>: 2 colunas</li>
+<li><strong>Flight Cards</strong>: Layout horizontal compacto</li>
+<li><strong>Planos</strong>: 2 colunas</li>
+<li><strong>Footer</strong>: 2 colunas</li>
+</ul>
+<h4 id="desktop-1024px">Desktop (1024px+)</h4>
+<ul>
+<li><strong>Header</strong>: Full menu, logo grande</li>
+<li><strong>Hero</strong>: Título 4rem, layout completo</li>
+<li><strong>Cards</strong>: 3-4 colunas</li>
+<li><strong>Flight Cards</strong>: Layout completo com todos os
+detalhes</li>
+<li><strong>Planos</strong>: 4 colunas</li>
+<li><strong>Footer</strong>: 4 colunas completas</li>
+</ul>
+<hr />
+<h2 id="animações-e-transições">🎬 Animações e Transições</h2>
+<h3 id="animações-globais">Animações Globais</h3>
+<div class="sourceCode" id="cb26"><pre
+class="sourceCode css"><code class="sourceCode css"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co">/* Fade In */</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="im">@keyframes</span> fade-in {</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>  from { <span class="kw">opacity</span>: <span class="dv">0</span><span class="op">;</span> <span class="kw">transform</span>: translateY(<span class="dv">20</span><span class="dt">px</span>)<span class="op">;</span> }</span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>  to { <span class="kw">opacity</span>: <span class="dv">1</span><span class="op">;</span> <span class="kw">transform</span>: translateY(<span class="dv">0</span>)<span class="op">;</span> }</span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a><span class="co">/* Float */</span></span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a><span class="im">@keyframes</span> float {</span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a>  0%<span class="op">,</span> 100% { <span class="kw">transform</span>: translateY(<span class="dv">0</span>)<span class="op">;</span> }</span>
+<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a>  50% { <span class="kw">transform</span>: translateY(<span class="dv">-20</span><span class="dt">px</span>)<span class="op">;</span> }</span>
+<span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb26-12"><a href="#cb26-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-13"><a href="#cb26-13" aria-hidden="true" tabindex="-1"></a><span class="co">/* Pulse */</span></span>
+<span id="cb26-14"><a href="#cb26-14" aria-hidden="true" tabindex="-1"></a><span class="im">@keyframes</span> pulse {</span>
+<span id="cb26-15"><a href="#cb26-15" aria-hidden="true" tabindex="-1"></a>  0%<span class="op">,</span> 100% { <span class="kw">transform</span>: <span class="fu">scale(</span><span class="dv">1</span><span class="fu">)</span><span class="op">;</span> }</span>
+<span id="cb26-16"><a href="#cb26-16" aria-hidden="true" tabindex="-1"></a>  50% { <span class="kw">transform</span>: <span class="fu">scale(</span><span class="dv">1.05</span><span class="fu">)</span><span class="op">;</span> }</span>
+<span id="cb26-17"><a href="#cb26-17" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<h3 id="micro-interações">Micro-interações</h3>
+<ul>
+<li><strong>Hover em botões</strong>: Scale 1.05 + sombra aumentada</li>
+<li><strong>Hover em cards</strong>: translateY(-4px) + sombra</li>
+<li><strong>Click em inputs</strong>: Animação de foco com border</li>
+<li><strong>Loading</strong>: Spinner com rotação suave</li>
+<li><strong>Sucesso</strong>: Checkmark com animação de scale</li>
+<li><strong>Erro</strong>: Shake animation</li>
+</ul>
+<hr />
+<h2 id="estados-e-feedback">🎨 Estados e Feedback</h2>
+<h3 id="loading-states">Loading States</h3>
+<pre><code>┌──────────────────────────────┐
+│                              │
+│     ⚪ ⚪ ⚪                  │
+│                              │
+│   Buscando passagens...      │
+│                              │
+└──────────────────────────────┘</code></pre>
+<h3 id="success-states">Success States</h3>
+<pre><code>┌──────────────────────────────┐
+│       ✅                     │
+│   Operação realizada          │
+│   com sucesso!               │
+└──────────────────────────────┘</code></pre>
+<h3 id="error-states">Error States</h3>
+<pre><code>┌──────────────────────────────┐
+│       ❌                     │
+│   Algo deu errado            │
+│   Tente novamente            │
+│   [Tentar novamente]         │
+└──────────────────────────────┘</code></pre>
+<h3 id="empty-states">Empty States</h3>
+<pre><code>┌──────────────────────────────┐
+│       📭                     │
+│   Nenhum resultado           │
+│   encontrado                 │
+│   [Fazer nova busca]         │
+└──────────────────────────────┘</code></pre>
+<hr />
+<h2 id="fluxos-de-usuário">🔄 Fluxos de Usuário</h2>
+<h3 id="fluxo-principal-busca-de-passagens">Fluxo Principal: Busca de
+Passagens</h3>
+<ol type="1">
+<li><strong>Home</strong> → Usuário clica em “Buscar Passagens”</li>
+<li><strong>Busca</strong> → Preenche formulário e clica em
+“Buscar”</li>
+<li><strong>Loading</strong> → Mostra spinner durante 2-5 segundos</li>
+<li><strong>Resultados</strong> → Exibe cards de voos ordenados por
+melhor economia</li>
+<li><strong>Seleção</strong> → Usuário clica em “Selecionar Voo”</li>
+<li><strong>Login</strong> (se não autenticado) → Modal de
+login/cadastro</li>
+<li><strong>Confirmação</strong> → Modal com detalhes e opção de gerar
+orçamento</li>
+<li><strong>Redirecionamento</strong> → Link para site da companhia
+aérea</li>
+</ol>
+<h3 id="fluxo-secundário-cadastro-premium">Fluxo Secundário: Cadastro
+Premium</h3>
+<ol type="1">
+<li><strong>Home/Planos</strong> → Usuário visualiza planos</li>
+<li><strong>Seleção</strong> → Clica em “Escolher Premium”</li>
+<li><strong>Cadastro</strong> → Formulário de cadastro completo</li>
+<li><strong>Pagamento</strong> → Gateway de pagamento seguro</li>
+<li><strong>Confirmação</strong> → Email de boas-vindas + acesso ao
+dashboard</li>
+<li><strong>Dashboard</strong> → Primeiro acesso com tutorial</li>
+</ol>
+<hr />
+<h2 id="considerações-finais">💡 Considerações Finais</h2>
+<h3 id="princípios-de-design">Princípios de Design</h3>
+<ol type="1">
+<li><strong>Clareza</strong>: Informação hierarquizada e fácil de
+entender</li>
+<li><strong>Consistência</strong>: Padrões visuais mantidos em todo o
+sistema</li>
+<li><strong>Feedback</strong>: Resposta visual para toda ação do
+usuário</li>
+<li><strong>Acessibilidade</strong>: Contraste adequado, textos
+legíveis, navegação por teclado</li>
+<li><strong>Performance</strong>: Carregamento rápido, animações
+suaves</li>
+</ol>
+<h3 id="melhorias-futuras">Melhorias Futuras</h3>
+<ul class="task-list">
+<li><label><input type="checkbox" />Dark mode</label></li>
+<li><label><input type="checkbox" />Personalização de tema</label></li>
+<li><label><input type="checkbox" />Mais opções de idioma (EN,
+ES)</label></li>
+<li><label><input type="checkbox" />Integração com assistente
+virtual</label></li>
+<li><label><input type="checkbox" />Realidade aumentada para visualizar
+destinos</label></li>
+<li><label><input type="checkbox" />Gamificação (badges,
+níveis)</label></li>
+<li><label><input type="checkbox" />Social features (compartilhar
+viagens)</label></li>
+</ul>
+<hr />
+<h2 id="exportação-para-powerpointpdf">📄 Exportação para
+PowerPoint/PDF</h2>
+<p>Este documento pode ser convertido para PowerPoint ou PDF usando
+ferramentas como:</p>
+<ol type="1">
+<li><strong>Pandoc</strong>:
+<code>pandoc DESIGN_SCREENS.md -o design_screens.pptx</code></li>
+<li><strong>Marp</strong>: Para apresentações com markdown</li>
+<li><strong>Markdown to PDF</strong>: Várias ferramentas online</li>
+<li><strong>Notion</strong>: Import e export como PDF</li>
+<li><strong>VS Code + Extension</strong>: Markdown PDF</li>
+</ol>
+<h3 id="estrutura-sugerida-para-apresentação">Estrutura Sugerida para
+Apresentação</h3>
+<p><strong>Slide 1</strong>: Capa com logo e título <strong>Slides
+2-3</strong>: Visão geral e objetivos <strong>Slide 4</strong>: Paleta
+de cores <strong>Slides 5-16</strong>: Uma tela por slide com
+screenshots/mockups <strong>Slide 17</strong>: Componentes globais
+<strong>Slide 18</strong>: Responsividade <strong>Slide 19</strong>:
+Próximos passos</p>
+<hr />
+<p><strong>Documento criado por</strong>: ClickPassagens Team<br />
+<strong>Última atualização</strong>: 2024<br />
+<strong>Versão</strong>: 2.0 - Design Sofisticado e Moderno</p>
+<p>🚀 <strong>ClickPassagens - Voe mais, gaste menos!</strong> ✈️</p>
+</body>
+</html>
