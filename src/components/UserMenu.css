@@ -295,7 +295,7 @@
 
   .user-menu {
     position: relative;
-    z-index: 100;
+    z-index: 1; /* Relativo ao parent (header) */
   }
 
   .user-menu-trigger {
@@ -303,6 +303,8 @@
     border-width: 1.5px;
     position: relative;
     min-width: auto;
+    background: rgba(59, 130, 246, 0.1);
+    border-color: rgba(59, 130, 246, 0.3);
   }
   
   .user-avatar {

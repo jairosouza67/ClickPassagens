@@ -158,20 +158,20 @@ function App() {
       {/* Header */}
       <header className="bg-white/80 backdrop-blur-md shadow-lg border-b border-white/20 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
+          <div className="flex justify-between items-center h-16 mobile-header">
             <button 
               onClick={voltarPaginaInicial}
-              className="flex items-center space-x-3 hover:opacity-80 hover:scale-105 transition-all duration-300 cursor-pointer group"
+              className="flex items-center space-x-2 sm:space-x-3 hover:opacity-80 transition-all duration-300 cursor-pointer group logo-button"
               title="Voltar à página inicial"
             >
-              <div className="bg-gradient-aviation p-2 rounded-xl shadow-lg group-hover:shadow-xl transition-shadow duration-300">
-                <Plane className="h-6 w-6 text-white" />
+              <div className="bg-gradient-aviation p-1.5 sm:p-2 rounded-xl shadow-lg group-hover:shadow-xl transition-shadow duration-300 logo-icon">
+                <Plane className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
               </div>
-              <div>
-                <span className="text-2xl font-bold bg-gradient-aviation bg-clip-text text-transparent group-hover:opacity-80 transition-opacity duration-300">
+              <div className="logo-text">
+                <span className="text-lg sm:text-2xl font-bold bg-gradient-aviation bg-clip-text text-transparent group-hover:opacity-80 transition-opacity duration-300">
                   ClickPassagens
                 </span>
-                <div className="text-xs text-gray-500 font-medium">Voe mais, gaste menos</div>
+                <div className="text-[0.6rem] sm:text-xs text-gray-500 font-medium hidden sm:block">Voe mais, gaste menos</div>
               </div>
             </button>
             
