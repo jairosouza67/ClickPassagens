@@ -5,6 +5,7 @@ import './UserMenu.css';
 
 export default function UserMenu({ onNavigate }) {
   const [isOpen, setIsOpen] = useState(false);
+  const [imageError, setImageError] = useState(false);
   const menuRef = useRef(null);
   const { currentUser, userData, logout } = useAuth();
 
@@ -21,6 +22,11 @@ export default function UserMenu({ onNavigate }) {
       return () => document.removeEventListener('mousedown', handleClickOutside);
     }
   }, [isOpen]);
+  
+  // Reset error quando usuário muda
+  useEffect(() => {
+    setImageError(false);
+  }, [currentUser?.photoURL]);
 
   const handleLogout = async () => {
     const result = await logout();
@@ -60,14 +66,28 @@ export default function UserMenu({ onNavigate }) {
   };
 
   return (
-    <div className="user-menu" ref={menuRef}>
-      <button 
-        className="user-menu-trigger"
-        onClick={() => setIsOpen(!isOpen)}
-      >
-        <div className="user-avatar">
-          {currentUser.photoURL ? (
-            <img src={currentUser.photoURL} alt={displayName} />
+    <>
+      {/* Overlay para mobile */}
+      {isOpen && (
+        <div 
+          className="user-menu-overlay"
+          onClick={() => setIsOpen(false)}
+        />
+      )}
+      
+      <div className="user-menu" ref={menuRef}>
+        <button 
+          className="user-menu-trigger"
+          onClick={() => setIsOpen(!isOpen)}
+        >
+          <div className="user-avatar">
+          {currentUser?.photoURL && !imageError ? (
+            <img 
+              src={currentUser.photoURL} 
+              alt={displayName}
+              onError={() => setImageError(true)}
+              referrerPolicy="no-referrer"
+            />
           ) : (
             <span>{userInitial}</span>
           )}
@@ -91,8 +111,13 @@ export default function UserMenu({ onNavigate }) {
         <div className="user-menu-dropdown">
           <div className="user-menu-header">
             <div className="user-menu-avatar-large">
-              {currentUser.photoURL ? (
-                <img src={currentUser.photoURL} alt={displayName} />
+              {currentUser?.photoURL && !imageError ? (
+                <img 
+                  src={currentUser.photoURL} 
+                  alt={displayName}
+                  onError={() => setImageError(true)}
+                  referrerPolicy="no-referrer"
+                />
               ) : (
                 <span>{userInitial}</span>
               )}
@@ -173,6 +198,7 @@ export default function UserMenu({ onNavigate }) {
           </button>
         </div>
       )}
-    </div>
+      </div>
+    </>
   );
 }
