@@ -3,7 +3,7 @@
    ============================================ */
 
 .hero-section {
-    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 50%, #f1f5f9 100%);
+    background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 50%, #bfdbfe 100%);
     padding: 4rem 2rem 6rem;
     position: relative;
     overflow: hidden;
@@ -29,16 +29,15 @@
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
     padding: 0.6rem 1.8rem;
     border-radius: 50px;
     font-size: 14px;
     font-weight: 600;
     color: #ffffff;
-    box-shadow: 0 4px 20px rgba(59, 130, 246, 0.3);
+    box-shadow: 0 4px 20px rgba(96, 165, 250, 0.4);
     margin-bottom: 2rem;
     animation: fadeInDown 0.8s ease-out;
-    border: 2px solid rgba(255, 255, 255, 0.3);
 }
 
 .badge-icon {
@@ -52,13 +51,12 @@
     font-weight: 800;
     line-height: 1.2;
     margin-bottom: 1.5rem;
-    color: #0f172a;
+    color: #1e293b;
     animation: fadeInUp 0.8s ease-out 0.2s both;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .gradient-text {
-    background: linear-gradient(135deg, #2563eb 0%, #3b82f6 50%, #60a5fa 100%);
+    background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 50%, #93c5fd 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -67,7 +65,7 @@
 
 .hero-subtitle {
     font-size: 1.5rem;
-    color: #475569;
+    color: #334155;
     line-height: 1.7;
     margin-bottom: 2rem;
     animation: fadeInUp 0.8s ease-out 0.4s both;
@@ -75,7 +73,7 @@
 }
 
 .hero-subtitle strong {
-    color: #2563eb;
+    color: #3b82f6;
     font-weight: 700;
 }
 
@@ -88,7 +86,7 @@
 
 .btn-primary-hero {
     padding: 1.1rem 2.8rem;
-    background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+    background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%);
     color: white;
     border: none;
     border-radius: 14px;
@@ -99,19 +97,20 @@
     align-items: center;
     gap: 10px;
     transition: all 0.3s ease;
-    box-shadow: 0 8px 24px rgba(37, 99, 235, 0.35);
+    box-shadow: 0 8px 24px rgba(59, 130, 246, 0.35);
 }
 
 .btn-primary-hero:hover {
     transform: translateY(-3px);
-    box-shadow: 0 12px 32px rgba(37, 99, 235, 0.45);
+    box-shadow: 0 12px 32px rgba(59, 130, 246, 0.45);
+    background: linear-gradient(135deg, #60a5fa 0%, #93c5fd 100%);
 }
 
 .btn-secondary-hero {
     padding: 1.1rem 2.8rem;
     background: white;
-    color: #2563eb;
-    border: 2px solid #2563eb;
+    color: #3b82f6;
+    border: 2px solid #60a5fa;
     border-radius: 14px;
     font-size: 1.1rem;
     font-weight: 700;
@@ -121,9 +120,9 @@
 }
 
 .btn-secondary-hero:hover {
-    background: #dbeafe;
+    background: #eff6ff;
     border-color: #3b82f6;
-    color: #1e40af;
+    color: #2563eb;
 }
 
 .btn-icon {
@@ -136,10 +135,9 @@
     background: white;
     border-radius: 24px;
     padding: 2.5rem;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.02);
+    box-shadow: 0 10px 40px rgba(59, 130, 246, 0.15);
     position: relative;
     animation: fadeInRight 0.8s ease-out 0.8s both;
-    border: 1px solid #e2e8f0;
 }
 
 .search-card-hero::before {
@@ -149,7 +147,7 @@
     left: 0;
     right: 0;
     height: 5px;
-    background: linear-gradient(90deg, #2563eb 0%, #3b82f6 50%, #60a5fa 100%);
+    background: linear-gradient(90deg, #3b82f6 0%, #60a5fa 50%, #93c5fd 100%);
     border-radius: 24px 24px 0 0;
 }
 
@@ -164,13 +162,13 @@
 .search-header-icon {
     width: 24px;
     height: 24px;
-    color: #3b82f6;
+    color: #60a5fa;
 }
 
 .search-card-header h3 {
     font-size: 1.5rem;
     font-weight: 700;
-    color: #0f172a;
+    color: #1e293b;
     margin: 0;
 }
 
@@ -190,7 +188,7 @@
 .form-group-hero label {
     font-size: 0.9rem;
     font-weight: 600;
-    color: #0f172a;
+    color: #1e293b;
     display: flex;
     align-items: center;
     gap: 6px;
@@ -199,13 +197,13 @@
 .label-icon {
     width: 16px;
     height: 16px;
-    color: #3b82f6;
+    color: #60a5fa;
 }
 
 .form-group-hero input,
 .form-group-hero select {
     padding: 1rem;
-    border: 2px solid #cbd5e1;
+    border: 2px solid #dbeafe;
     border-radius: 12px;
     font-size: 1rem;
     transition: all 0.3s ease;
@@ -217,15 +215,15 @@
 .form-group-hero input:focus,
 .form-group-hero select:focus {
     outline: none;
-    border-color: #3b82f6;
+    border-color: #60a5fa;
     background: white;
-    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
+    box-shadow: 0 0 0 4px rgba(96, 165, 250, 0.15);
 }
 
 .btn-search-hero {
     grid-column: 1 / -1;
     padding: 1.3rem;
-    background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+    background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%);
     color: white;
     border: none;
     border-radius: 14px;
@@ -238,12 +236,13 @@
     gap: 10px;
     transition: all 0.3s ease;
     margin-top: 1rem;
-    box-shadow: 0 8px 24px rgba(37, 99, 235, 0.35);
+    box-shadow: 0 8px 24px rgba(59, 130, 246, 0.35);
 }
 
 .btn-search-hero:hover {
     transform: translateY(-2px);
-    box-shadow: 0 12px 32px rgba(37, 99, 235, 0.45);
+    box-shadow: 0 12px 32px rgba(59, 130, 246, 0.45);
+    background: linear-gradient(135deg, #60a5fa 0%, #93c5fd 100%);
 }
 
 .btn-search-hero:disabled {
@@ -282,15 +281,15 @@
     padding: 2.5rem 2rem;
     border-radius: 20px;
     text-align: center;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+    box-shadow: 0 4px 20px rgba(59, 130, 246, 0.1);
     transition: all 0.3s ease;
-    border: 2px solid #f1f5f9;
+    border: 2px solid #dbeafe;
 }
 
 .stat-card-hero:hover {
     transform: translateY(-5px);
-    box-shadow: 0 12px 40px rgba(0,0,0,0.12);
-    border-color: #3b82f6;
+    box-shadow: 0 12px 40px rgba(59, 130, 246, 0.2);
+    border-color: #60a5fa;
 }
 
 .stat-icon-hero {
@@ -301,14 +300,14 @@
 .stat-icon-hero-svg {
     width: 48px;
     height: 48px;
-    color: #3b82f6;
+    color: #60a5fa;
     margin: 0 auto 1rem;
 }
 
 .stat-number-hero {
     font-size: 2.8rem;
     font-weight: 800;
-    background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+    background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -317,7 +316,7 @@
 
 .stat-label-hero {
     font-size: 1rem;
-    color: #475569;
+    color: #334155;
     font-weight: 600;
 }
 
@@ -349,17 +348,18 @@
     padding: 1.5rem 2.5rem;
     background: white;
     border-radius: 16px;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+    box-shadow: 0 4px 16px rgba(59, 130, 246, 0.1);
     font-weight: 700;
     font-size: 1.2rem;
     transition: all 0.3s ease;
     cursor: pointer;
-    border: 2px solid #f1f5f9;
+    border: 2px solid #dbeafe;
 }
 
 .airline-logo-hero:hover {
     transform: translateY(-5px);
-    box-shadow: 0 12px 32px rgba(0,0,0,0.12);
+    box-shadow: 0 12px 32px rgba(59, 130, 246, 0.2);
+    border-color: #60a5fa;
 }
 
 /* Airline Brand Colors */

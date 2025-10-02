@@ -16,27 +16,27 @@
 
 /* Melhorias de contraste e legibilidade */
 .bg-gradient-to-br {
-  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
 }
 
 .bg-gradient-aviation {
-  background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+  background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%);
 }
 
 .text-aviation-blue {
-  color: #2563eb;
+  color: #3b82f6;
 }
 
 .border-aviation-blue {
-  border-color: #2563eb;
+  border-color: #60a5fa;
 }
 
 .hover\:bg-aviation-blue:hover {
-  background-color: #2563eb;
+  background-color: #3b82f6;
 }
 
 .glass-effect {
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.5);
+  border: 1px solid rgba(96, 165, 250, 0.2);
 }
