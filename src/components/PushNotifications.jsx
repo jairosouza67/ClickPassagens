@@ -116,26 +116,26 @@ export default function PushNotifications() {
   }
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center">
       {subscription ? (
         <Button
           onClick={unsubscribeUser}
           variant="outline"
           size="sm"
-          className="gap-2"
+          className="w-10 h-10 p-0 flex items-center justify-center"
+          title="Desativar notificações"
         >
-          <BellOff className="h-4 w-4" />
-          <span className="hidden sm:inline">Desativar notificações</span>
+          <BellOff className="h-5 w-5" />
         </Button>
       ) : (
         <Button
           onClick={subscribeUser}
           variant="default"
           size="sm"
-          className="gap-2 bg-blue-600 hover:bg-blue-700"
+          className="w-10 h-10 p-0 flex items-center justify-center bg-blue-600 hover:bg-blue-700"
+          title="Ativar notificações"
         >
-          <Bell className="h-4 w-4" />
-          <span className="hidden sm:inline">Ativar notificações</span>
+          <Bell className="h-5 w-5" />
         </Button>
       )}
     </div>

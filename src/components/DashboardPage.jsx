@@ -1,9 +1,13 @@
 import React, { useState } from 'react';
 import { Home, Search, FileText, Settings, DollarSign, LogOut, Bell, Calendar, TrendingUp } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext.jsx';
 import './DashboardPage.css';
 
 const DashboardPage = ({ onNavigate }) => {
   const [activeMenu, setActiveMenu] = useState('home');
+  
+  // Obter dados do usuário autenticado
+  const { currentUser, userData, logout } = useAuth();
 
   const handleMenuClick = (menuId) => {
     setActiveMenu(menuId);
@@ -21,6 +25,13 @@ const DashboardPage = ({ onNavigate }) => {
       }
     }
   };
+  
+  const handleLogout = async () => {
+    const result = await logout();
+    if (result.success && onNavigate) {
+      onNavigate('busca');
+    }
+  };
 
   const menuItems = [
     { id: 'home', icon: <Home size={20} />, label: 'Início' },
@@ -30,11 +41,34 @@ const DashboardPage = ({ onNavigate }) => {
     { id: 'configuracoes', icon: <Settings size={20} />, label: 'Configurações' }
   ];
 
+  // Estatísticas com dados reais do usuário
   const quickStats = [
-    { icon: '🔍', label: 'Buscas Realizadas', value: '156', color: '#3b82f6' },
-    { icon: '💰', label: 'Economia Total', value: 'R$ 8.450', color: '#10b981' },
-    { icon: '✈️', label: 'Viagens Marcadas', value: '12', color: '#f59e0b' },
-    { icon: '⭐', label: 'Pontos Acumulados', value: '24.500', color: '#8b5cf6' }
+    { 
+      icon: '🔍', 
+      label: 'Buscas Realizadas', 
+      value: userData?.searches || 0, 
+      color: '#3b82f6' 
+    },
+    { 
+      icon: '�', 
+      label: 'Orçamentos Gerados', 
+      value: userData?.quotes || 0, 
+      color: '#10b981' 
+    },
+    { 
+      icon: '⭐', 
+      label: 'Plano Atual', 
+      value: userData?.plan === 'free' ? 'Gratuito' : 
+             userData?.plan === 'basic' ? 'Básico' :
+             userData?.plan === 'premium' ? 'Premium' : 'Enterprise',
+      color: '#f59e0b' 
+    },
+    { 
+      icon: '📅', 
+      label: 'Membro Desde', 
+      value: userData?.createdAt ? new Date(userData.createdAt).toLocaleDateString('pt-BR', { month: 'short', year: 'numeric' }) : 'Recente',
+      color: '#8b5cf6' 
+    }
   ];
 
   const recentSearches = [
@@ -47,6 +81,19 @@ const DashboardPage = ({ onNavigate }) => {
     { destino: 'Miami', data: '15/12/2024', voo: 'G3 1234', status: 'Confirmado' },
     { destino: 'Lisboa', data: '20/01/2025', voo: 'TP 8091', status: 'Confirmado' }
   ];
+  
+  // Obter nome e iniciais do usuário
+  const displayName = userData?.displayName || currentUser?.displayName || currentUser?.email?.split('@')[0] || 'Usuário';
+  const userInitials = displayName.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
+  
+  // Nome do plano formatado
+  const planNames = {
+    free: 'Plano Gratuito',
+    basic: 'Plano Básico',
+    premium: 'Plano Premium',
+    enterprise: 'Plano Enterprise'
+  };
+  const planName = planNames[userData?.plan] || 'Plano Gratuito';
 
   return (
     <div className="dashboard-page">
@@ -55,10 +102,16 @@ const DashboardPage = ({ onNavigate }) => {
         <div className="logo-sidebar-dash">✈️ ClickPassagens</div>
 
         <div className="user-profile-dash">
-          <div className="user-avatar-large-dash">JD</div>
+          <div className="user-avatar-large-dash">
+            {currentUser?.photoURL ? (
+              <img src={currentUser.photoURL} alt={displayName} style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} />
+            ) : (
+              userInitials
+            )}
+          </div>
           <div className="user-details-dash">
-            <div className="user-name-dash">João Doido</div>
-            <div className="user-plan-dash">Plano Premium</div>
+            <div className="user-name-dash">{displayName}</div>
+            <div className="user-plan-dash">{planName}</div>
           </div>
         </div>
 
@@ -73,7 +126,7 @@ const DashboardPage = ({ onNavigate }) => {
               <span>{item.label}</span>
             </button>
           ))}
-          <button className="nav-link-dash logout">
+          <button className="nav-link-dash logout" onClick={handleLogout}>
             <LogOut size={20} />
             <span>Sair</span>
           </button>
@@ -85,7 +138,7 @@ const DashboardPage = ({ onNavigate }) => {
         {/* Top Bar */}
         <div className="top-bar-dash">
           <div className="welcome-message-dash">
-            <h1>Bem-vindo de volta, <span className="gradient-text">João</span>!</h1>
+            <h1>Bem-vindo de volta, <span className="gradient-text">{displayName.split(' ')[0]}</span>!</h1>
             <p>Aqui está o resumo da sua conta</p>
           </div>
           <div className="top-actions-dash">
