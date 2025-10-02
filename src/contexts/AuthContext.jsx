@@ -4,6 +4,7 @@ import {
   registerWithEmail,
   loginWithEmail,
   loginWithGoogle,
+  handleRedirectResult,
   logout as firebaseLogout,
   resetPassword as firebaseResetPassword,
   getUserData,
@@ -26,6 +27,15 @@ export function AuthProvider({ children }) {
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [authError, setAuthError] = useState(null);
+
+  // Capturar resultado do redirect (para login Google em mobile)
+  useEffect(() => {
+    handleRedirectResult().then(result => {
+      if (result.success && result.user) {
+        console.log('Login com Google via redirect concluído!');
+      }
+    });
+  }, []);
 
   // Listener para mudanças na autenticação
   useEffect(() => {

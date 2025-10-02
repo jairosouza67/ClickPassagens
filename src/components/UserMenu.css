@@ -18,7 +18,7 @@
     bottom: 0;
     background: rgba(0, 0, 0, 0.5);
     backdrop-filter: blur(4px);
-    z-index: 999;
+    z-index: 9998;
     animation: fadeIn 0.2s ease;
   }
   
@@ -295,7 +295,6 @@
 
   .user-menu {
     position: relative;
-    z-index: 1; /* Relativo ao parent (header) */
   }
 
   .user-menu-trigger {
@@ -305,6 +304,7 @@
     min-width: auto;
     background: rgba(59, 130, 246, 0.1);
     border-color: rgba(59, 130, 246, 0.3);
+    z-index: 10000; /* Acima de tudo para garantir clicabilidade */
   }
   
   .user-avatar {
@@ -332,7 +332,10 @@
     max-height: calc(100vh - 160px);
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
-    z-index: 1001; /* Acima do overlay (1000) */
+    z-index: 9999; /* Bem acima do overlay e header */
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
   }
   
   /* Animação diferente para mobile */

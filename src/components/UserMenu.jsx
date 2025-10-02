@@ -78,7 +78,10 @@ export default function UserMenu({ onNavigate }) {
       <div className="user-menu" ref={menuRef}>
         <button 
           className="user-menu-trigger"
-          onClick={() => setIsOpen(!isOpen)}
+          onClick={() => {
+            console.log('🔘 Avatar clicado! isOpen:', isOpen, '→', !isOpen);
+            setIsOpen(!isOpen);
+          }}
         >
           <div className="user-avatar">
           {currentUser?.photoURL && !imageError ? (
@@ -108,7 +111,8 @@ export default function UserMenu({ onNavigate }) {
       </button>
 
       {isOpen && (
-        <div className="user-menu-dropdown">
+        <div className="user-menu-dropdown" style={{ border: '3px solid red' }}>
+          {console.log('✅ Dropdown renderizado! isOpen =', isOpen)}
           <div className="user-menu-header">
             <div className="user-menu-avatar-large">
               {currentUser?.photoURL && !imageError ? (

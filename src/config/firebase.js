@@ -13,6 +13,8 @@ import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
   GoogleAuthProvider,
   signOut,
   onAuthStateChanged,
@@ -32,6 +34,18 @@ const firebaseConfig = {
   messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
   appId: import.meta.env.VITE_FIREBASE_APP_ID
 };
+
+// Validar configuração
+if (!firebaseConfig.apiKey || !firebaseConfig.projectId) {
+  console.error('❌ ERRO: Variáveis do Firebase não configuradas!');
+  console.error('Verifique se o arquivo .env possui as variáveis VITE_FIREBASE_*');
+  throw new Error('Firebase configuration is missing. Check your .env file.');
+}
+
+console.log('✅ Firebase configurado com sucesso!', {
+  projectId: firebaseConfig.projectId,
+  authDomain: firebaseConfig.authDomain
+});
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
@@ -94,7 +108,21 @@ export async function loginWithEmail(email, password) {
  */
 export async function loginWithGoogle() {
   try {
-    const result = await signInWithPopup(auth, googleProvider);
+    // Detectar se é mobile para usar redirect ao invés de popup
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    
+    let result;
+    
+    if (isMobile) {
+      // Em mobile, usar signInWithRedirect (mais confiável)
+      await signInWithRedirect(auth, googleProvider);
+      // O resultado será capturado após o redirect
+      return { success: true, redirect: true };
+    } else {
+      // Em desktop, usar popup
+      result = await signInWithPopup(auth, googleProvider);
+    }
+    
     const user = result.user;
     
     // Verificar se é novo usuário
@@ -117,6 +145,43 @@ export async function loginWithGoogle() {
     return { success: true, user };
   } catch (error) {
     console.error('Erro no login com Google:', error);
+    return { success: false, error: getErrorMessage(error.code) };
+  }
+}
+
+/**
+ * Capturar resultado do redirect (para login Google em mobile)
+ */
+export async function handleRedirectResult() {
+  try {
+    const result = await getRedirectResult(auth);
+    
+    if (result) {
+      const user = result.user;
+      
+      // Verificar se é novo usuário
+      const userDoc = await getDoc(doc(db, 'users', user.uid));
+      
+      if (!userDoc.exists()) {
+        // Criar documento para novo usuário
+        await setDoc(doc(db, 'users', user.uid), {
+          uid: user.uid,
+          email: user.email,
+          displayName: user.displayName || '',
+          createdAt: new Date().toISOString(),
+          photoURL: user.photoURL || '',
+          plan: 'free',
+          searches: 0,
+          quotes: 0
+        });
+      }
+      
+      return { success: true, user };
+    }
+    
+    return { success: false, noResult: true };
+  } catch (error) {
+    console.error('Erro ao processar redirect:', error);
     return { success: false, error: getErrorMessage(error.code) };
   }
 }
