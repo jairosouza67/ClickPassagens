@@ -1,125 +1,332 @@
-import { useState, useEffect } from 'react'
-import { Button } from './ui/button.jsx'
-import { Badge } from './ui/badge.jsx'
-import { Plane, Star, TrendingUp, Shield, Clock, Users } from 'lucide-react'
+import { useState } from 'react'
+import { Plane, MapPin, Calendar, Users, Star, TrendingUp, Shield, Sparkles, Loader2 } from 'lucide-react'
+import { API_URL } from '../config.js'
 
-export default function HeroSection({ onSearchClick }) {
-  const [currentStat, setCurrentStat] = useState(0)
-  
-  const stats = [
-    { number: "50K+", label: "Passageiros Atendidos", icon: Users },
-    { number: "70%", label: "Economia Média", icon: TrendingUp },
-    { number: "24/7", label: "Suporte Disponível", icon: Clock },
-    { number: "100%", label: "Segurança Garantida", icon: Shield }
-  ]
+const API_BASE_URL = `${API_URL}/api`
 
-  const companhias = [
-    { nome: 'Gol', color: 'bg-orange-500', textColor: 'text-white' },
-    { nome: 'Azul', color: 'bg-blue-600', textColor: 'text-white' },
-    { nome: 'LATAM', color: 'bg-red-600', textColor: 'text-white' },
-    { nome: 'Avianca', color: 'bg-red-500', textColor: 'text-white' },
-    { nome: 'Ibéria', color: 'bg-green-600', textColor: 'text-white' }
-  ]
+export default function HeroSection({ onSearchSubmit }) {
+  const [searchData, setSearchData] = useState({
+    origem: '',
+    destino: '',
+    data_ida: '',
+    data_volta: '',
+    passageiros: 1,
+    classe: 'economica'
+  })
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentStat((prev) => (prev + 1) % stats.length)
-    }, 3000)
-    return () => clearInterval(interval)
-  }, [])
+  const [loading, setLoading] = useState(false)
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target
+    setSearchData(prev => ({
+      ...prev,
+      [name]: value
+    }))
+  }
+
+  const gerarResultadosEstaticos = (dadosBusca) => {
+    const companhiasBase = [
+      { codigo: 'G3', nome: 'Gol', valor_milheiro: 45, ativa: true },
+      { codigo: 'AD', nome: 'Azul', valor_milheiro: 50, ativa: true },
+      { codigo: 'LA', nome: 'LATAM', valor_milheiro: 48, ativa: true },
+      { codigo: 'O6', nome: 'Avianca', valor_milheiro: 46, ativa: true },
+      { codigo: 'TP', nome: 'TAP', valor_milheiro: 52, ativa: true }
+    ]
+
+    const resultados = []
+    const precoBase = calcularPrecoBase(dadosBusca.origem, dadosBusca.destino)
+    const duracao = calcularDuracaoVoo(dadosBusca.origem, dadosBusca.destino)
+
+    companhiasBase.forEach((companhia, index) => {
+      for (let i = 0; i < 2; i++) {
+        const variacao = 1 + (Math.random() * 0.4 - 0.2)
+        const preco = Math.round(precoBase * variacao)
+        const milhas = Math.round((preco / companhia.valor_milheiro) * 1000)
+        const economia = Math.round(((preco - (milhas * companhia.valor_milheiro / 1000)) / preco) * 100)
+        const hora = 6 + (index * 3) + (i * 6)
+
+        resultados.push({
+          id: `${companhia.codigo}-${index}-${i}`,
+          companhia: {
+            id: companhia.codigo,
+            nome: companhia.nome,
+            codigo: companhia.codigo,
+            ativa: true,
+            valor_milheiro: companhia.valor_milheiro
+          },
+          voo_numero: `${companhia.codigo}${1000 + index * 100 + i}`,
+          horario_saida: `${hora.toString().padStart(2, '0')}:${(index * 15).toString().padStart(2, '0')}`,
+          horario_chegada: `${((hora + duracao) % 24).toString().padStart(2, '0')}:${((index * 15) + 30).toString().padStart(2, '0')}`,
+          milhas_necessarias: milhas,
+          preco_dinheiro: Math.round(preco * 100) / 100,
+          economia_calculada: economia,
+          paradas: index === 0 ? 'Direto' : index === 1 ? 'Direto' : '1 parada',
+          disponivel: true,
+          origem: dadosBusca.origem,
+          destino: dadosBusca.destino,
+          duracao: `PT${duracao}H${index % 2 === 0 ? 0 : 30}M`,
+          data: dadosBusca.data_ida
+        })
+      }
+    })
+
+    return resultados
+  }
+
+  const calcularPrecoBase = (origem, destino) => {
+    const rotasDomesticas = ['GRU', 'GIG', 'BSB', 'CGH', 'SDU', 'SSA', 'FOR', 'REC', 'POA', 'CWB']
+    if (rotasDomesticas.includes(origem?.toUpperCase()) && rotasDomesticas.includes(destino?.toUpperCase())) {
+      return 350
+    }
+    return 1200
+  }
+
+  const calcularDuracaoVoo = (origem, destino) => {
+    const rotasDomesticas = ['GRU', 'GIG', 'BSB', 'CGH', 'SDU', 'SSA', 'FOR', 'REC', 'POA', 'CWB']
+    if (rotasDomesticas.includes(origem?.toUpperCase()) && rotasDomesticas.includes(destino?.toUpperCase())) {
+      return 2
+    }
+    return 8
+  }
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    
+    if (!searchData.origem || !searchData.destino || !searchData.data_ida) {
+      alert('Por favor, preencha origem, destino e data de ida')
+      return
+    }
+
+    setLoading(true)
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/busca/buscar`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...searchData,
+          usuario_id: 1
+        })
+      })
+
+      if (!response.ok) {
+        throw new Error(`Erro HTTP: ${response.status}`)
+      }
+
+      const data = await response.json()
+
+      if (data.success && data.data.resultados) {
+        const resultadosProcessados = data.data.resultados
+        if (onSearchSubmit) {
+          onSearchSubmit(resultadosProcessados)
+        }
+      } else {
+        throw new Error('Formato de resposta inválido')
+      }
+    } catch (error) {
+      console.error('Erro na busca, usando dados estáticos:', error)
+      const resultadosEstaticos = gerarResultadosEstaticos(searchData)
+      if (onSearchSubmit) {
+        onSearchSubmit(resultadosEstaticos)
+      }
+    } finally {
+      setLoading(false)
+    }
+  }
 
   return (
-    <div className="relative overflow-hidden bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
-      {/* Background Pattern */}
-      <div className="absolute inset-0 opacity-5">
-        <div className="absolute top-10 left-10 w-72 h-72 bg-aviation-blue rounded-full mix-blend-multiply filter blur-xl animate-float"></div>
-        <div className="absolute top-32 right-10 w-72 h-72 bg-aviation-light-blue rounded-full mix-blend-multiply filter blur-xl animate-float" style={{animationDelay: '2s'}}></div>
-        <div className="absolute bottom-10 left-1/2 w-72 h-72 bg-aviation-gold rounded-full mix-blend-multiply filter blur-xl animate-float" style={{animationDelay: '4s'}}></div>
+    <div className="hero-section">
+      {/* Hero Content */}
+      <div className="hero-container">
+        <div className="hero-content">
+          {/* Badge */}
+          <div className="hero-badge">
+            <Star className="badge-icon" />
+            <span>#1 Plataforma de Milhas do Brasil</span>
+          </div>
+
+          {/* Main Title */}
+          <h1 className="hero-title">
+            Voe mais, <span className="gradient-text">gaste menos</span>
+          </h1>
+
+          {/* Subtitle */}
+          <p className="hero-subtitle">
+            A plataforma mais inteligente para encontrar passagens aéreas com milhas. 
+            Compare preços em tempo real e economize até <strong>70%</strong> nas suas viagens.
+          </p>
+
+          {/* CTA Buttons - Desktop */}
+          <div className="hero-cta desktop-only">
+            <button className="btn-primary-hero" type="button">
+              <Plane className="btn-icon" />
+              Buscar Passagens Agora
+            </button>
+            <button className="btn-secondary-hero" type="button">
+              Ver Como Funciona
+            </button>
+          </div>
+        </div>
+
+        {/* Search Card */}
+        <div className="search-card-hero">
+          <div className="search-card-header">
+            <Sparkles className="search-header-icon" />
+            <h3>Encontre sua próxima viagem</h3>
+          </div>
+
+          <form onSubmit={handleSubmit} className="search-form-hero">
+            {/* Origem */}
+            <div className="form-group-hero">
+              <label>
+                <MapPin className="label-icon" />
+                Origem
+              </label>
+              <input
+                type="text"
+                name="origem"
+                placeholder="Ex: GRU, CGH, GIG"
+                value={searchData.origem}
+                onChange={handleInputChange}
+                required
+              />
+            </div>
+
+            {/* Destino */}
+            <div className="form-group-hero">
+              <label>
+                <MapPin className="label-icon" />
+                Destino
+              </label>
+              <input
+                type="text"
+                name="destino"
+                placeholder="Ex: BSB, SSA, FOR"
+                value={searchData.destino}
+                onChange={handleInputChange}
+                required
+              />
+            </div>
+
+            {/* Data Ida */}
+            <div className="form-group-hero">
+              <label>
+                <Calendar className="label-icon" />
+                Data de Ida
+              </label>
+              <input
+                type="date"
+                name="data_ida"
+                value={searchData.data_ida}
+                onChange={handleInputChange}
+                required
+              />
+            </div>
+
+            {/* Data Volta */}
+            <div className="form-group-hero">
+              <label>
+                <Calendar className="label-icon" />
+                Data de Volta
+              </label>
+              <input
+                type="date"
+                name="data_volta"
+                value={searchData.data_volta}
+                onChange={handleInputChange}
+              />
+            </div>
+
+            {/* Passageiros */}
+            <div className="form-group-hero">
+              <label>
+                <Users className="label-icon" />
+                Passageiros
+              </label>
+              <select
+                name="passageiros"
+                value={searchData.passageiros}
+                onChange={handleInputChange}
+              >
+                <option value="1">1 Passageiro</option>
+                <option value="2">2 Passageiros</option>
+                <option value="3">3 Passageiros</option>
+                <option value="4">4 Passageiros</option>
+                <option value="5">5+ Passageiros</option>
+              </select>
+            </div>
+
+            {/* Classe */}
+            <div className="form-group-hero">
+              <label>Classe</label>
+              <select
+                name="classe"
+                value={searchData.classe}
+                onChange={handleInputChange}
+              >
+                <option value="economica">Econômica</option>
+                <option value="executiva">Executiva</option>
+                <option value="primeira">Primeira Classe</option>
+              </select>
+            </div>
+
+            {/* Submit Button */}
+            <button type="submit" className="btn-search-hero" disabled={loading}>
+              {loading ? (
+                <>
+                  <Loader2 className="btn-icon animate-spin" />
+                  Buscando...
+                </>
+              ) : (
+                <>
+                  <Plane className="btn-icon" />
+                  Buscar Voos Agora
+                </>
+              )}
+            </button>
+          </form>
+        </div>
       </div>
 
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-32">
-        <div className="text-center space-y-8">
-          {/* Badge */}
-          <div className="animate-fade-in">
-            <Badge variant="secondary" className="px-4 py-2 text-sm font-medium bg-white/80 backdrop-blur-sm border border-aviation-blue/20">
-              <Star className="w-4 h-4 mr-2 text-aviation-gold" />
-              #1 Plataforma de Milhas do Brasil
-            </Badge>
+      {/* Stats Section */}
+      <div className="stats-section-hero">
+        <div className="stats-grid-hero">
+          <div className="stat-card-hero">
+            <div className="stat-icon-hero">👥</div>
+            <div className="stat-number-hero">50K+</div>
+            <div className="stat-label-hero">Passageiros Atendidos</div>
           </div>
-
-          {/* Main Heading */}
-          <div className="space-y-4 animate-fade-in" style={{animationDelay: '0.2s'}}>
-            <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-gray-900 leading-tight">
-              Voe mais,{' '}
-              <span className="bg-gradient-aviation bg-clip-text text-transparent">
-                gaste menos
-              </span>
-            </h1>
-            <p className="text-xl md:text-2xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
-              A plataforma mais inteligente para encontrar passagens aéreas com milhas. 
-              Compare preços em tempo real e economize até{' '}
-              <span className="font-bold text-aviation-blue">70%</span> nas suas viagens.
-            </p>
+          <div className="stat-card-hero">
+            <TrendingUp className="stat-icon-hero-svg" />
+            <div className="stat-number-hero">70%</div>
+            <div className="stat-label-hero">Economia Média</div>
           </div>
-
-          {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center animate-fade-in" style={{animationDelay: '0.4s'}}>
-            <Button 
-              size="lg" 
-              className="bg-gradient-aviation hover:opacity-90 text-white px-8 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
-              onClick={onSearchClick}
-            >
-              <Plane className="w-5 h-5 mr-2" />
-              Buscar Passagens Agora
-            </Button>
-            <Button 
-              variant="outline" 
-              size="lg"
-              className="px-8 py-4 text-lg font-semibold rounded-xl border-2 border-aviation-blue text-aviation-blue hover:bg-aviation-blue hover:text-white transition-all duration-300"
-            >
-              Ver Como Funciona
-            </Button>
+          <div className="stat-card-hero">
+            <div className="stat-icon-hero">⏰</div>
+            <div className="stat-number-hero">24/7</div>
+            <div className="stat-label-hero">Suporte Disponível</div>
           </div>
-
-          {/* Stats */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-16 animate-fade-in" style={{animationDelay: '0.6s'}}>
-            {stats.map((stat, index) => {
-              const Icon = stat.icon
-              return (
-                <div 
-                  key={index}
-                  className={`p-6 rounded-2xl glass-effect transition-all duration-500 ${
-                    currentStat === index ? 'scale-105 shadow-lg' : ''
-                  }`}
-                >
-                  <Icon className="w-8 h-8 text-aviation-blue mx-auto mb-2" />
-                  <div className="text-3xl font-bold text-gray-900">{stat.number}</div>
-                  <div className="text-sm text-gray-600 mt-1">{stat.label}</div>
-                </div>
-              )
-            })}
-          </div>
-
-          {/* Companhias Parceiras */}
-          <div className="mt-16 animate-fade-in" style={{animationDelay: '0.8s'}}>
-            <p className="text-gray-500 text-sm mb-6 font-medium">Parceiros de confiança</p>
-            <div className="flex flex-wrap justify-center items-center gap-6">
-              {companhias.map((companhia, index) => (
-                <div 
-                  key={index} 
-                  className={`${companhia.color} ${companhia.textColor} px-6 py-3 rounded-full font-semibold text-sm shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105`}
-                >
-                  {companhia.nome}
-                </div>
-              ))}
-            </div>
+          <div className="stat-card-hero">
+            <Shield className="stat-icon-hero-svg" />
+            <div className="stat-number-hero">100%</div>
+            <div className="stat-label-hero">Segurança Garantida</div>
           </div>
         </div>
       </div>
 
-      {/* Decorative Elements */}
-      <div className="absolute top-1/4 left-0 w-1 h-32 bg-gradient-to-b from-aviation-blue to-transparent"></div>
-      <div className="absolute top-1/3 right-0 w-1 h-32 bg-gradient-to-b from-aviation-light-blue to-transparent"></div>
+      {/* Airlines Section */}
+      <div className="airlines-section-hero">
+        <p className="airlines-title">Parceiros de confiança</p>
+        <div className="airlines-grid-hero">
+          <div className="airline-logo-hero gol">GOL</div>
+          <div className="airline-logo-hero azul">AZUL</div>
+          <div className="airline-logo-hero latam">LATAM</div>
+          <div className="airline-logo-hero avianca">AVIANCA</div>
+          <div className="airline-logo-hero tap">TAP</div>
+        </div>
+      </div>
     </div>
   )
 }

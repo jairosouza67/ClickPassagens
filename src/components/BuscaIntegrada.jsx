@@ -216,7 +216,7 @@ export default function BuscaIntegrada({ onBuscaCompleta }) {
   ]
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
+    <div className="busca-integrada min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
       {/* Hero Section */}
       <div className="relative overflow-hidden bg-gradient-aviation">
         <div className="absolute inset-0 bg-black/20"></div>

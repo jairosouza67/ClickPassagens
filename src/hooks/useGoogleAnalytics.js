@@ -1,17 +1,16 @@
 import { useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
 
 // ID do Google Analytics (você precisa criar uma propriedade GA4)
 const GA_MEASUREMENT_ID = 'G-XXXXXXXXXX'; // Substituir com seu ID real
 
 /**
- * Hook para inicializar e rastrear páginas com Google Analytics 4
+ * Hook para inicializar Google Analytics 4
+ * Como usamos sistema de tabs (não react-router), o tracking de page views
+ * é feito manualmente via eventos em App.jsx
  */
 export const useGoogleAnalytics = () => {
-  const location = useLocation();
-
   useEffect(() => {
-    // Carrega o script do Google Analytics
+    // Carrega o script do Google Analytics apenas uma vez
     if (!window.gtag) {
       const script = document.createElement('script');
       script.src = `https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`;
@@ -24,20 +23,10 @@ export const useGoogleAnalytics = () => {
       };
       window.gtag('js', new Date());
       window.gtag('config', GA_MEASUREMENT_ID, {
-        send_page_view: false // Desativa page view automático
+        send_page_view: false // Desativa page view automático, usamos eventos customizados
       });
     }
   }, []);
-
-  useEffect(() => {
-    // Rastreia mudanças de página
-    if (window.gtag) {
-      window.gtag('event', 'page_view', {
-        page_path: location.pathname + location.search,
-        page_title: document.title
-      });
-    }
-  }, [location]);
 };
 
 /**
