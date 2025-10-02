@@ -78,9 +78,12 @@ export default function UserMenu({ onNavigate }) {
       <div className="user-menu" ref={menuRef}>
         <button 
           className="user-menu-trigger"
-          onClick={() => {
-            console.log('🔘 Avatar clicado! isOpen:', isOpen, '→', !isOpen);
-            setIsOpen(!isOpen);
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            const newState = !isOpen;
+            console.log('🔘 CLIQUE NO AVATAR! Estado:', isOpen, '→', newState);
+            setIsOpen(newState);
           }}
         >
           <div className="user-avatar">
@@ -111,8 +114,32 @@ export default function UserMenu({ onNavigate }) {
       </button>
 
       {isOpen && (
-        <div className="user-menu-dropdown" style={{ border: '3px solid red' }}>
-          {console.log('✅ Dropdown renderizado! isOpen =', isOpen)}
+        <div className="user-menu-dropdown user-menu-mobile">
+          {/* Botão fechar mobile */}
+          <button 
+            onClick={() => setIsOpen(false)}
+            className="mobile-close-btn"
+            style={{
+              position: 'absolute',
+              top: '1rem',
+              right: '1rem',
+              width: '40px',
+              height: '40px',
+              borderRadius: '50%',
+              background: 'rgba(255, 255, 255, 0.1)',
+              border: '2px solid rgba(255, 255, 255, 0.3)',
+              color: 'white',
+              fontSize: '1.5rem',
+              cursor: 'pointer',
+              zIndex: 100,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}
+          >
+            ✕
+          </button>
+          
           <div className="user-menu-header">
             <div className="user-menu-avatar-large">
               {currentUser?.photoURL && !imageError ? (
