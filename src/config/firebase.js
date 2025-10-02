@@ -21,14 +21,16 @@ import {
 } from 'firebase/auth';
 import { getFirestore, doc, setDoc, getDoc, updateDoc } from 'firebase/firestore';
 
-// Configuração do Firebase - ClickPassagens
+// Firebase Configuration
+// ⚠️ IMPORTANTE: As credenciais agora vêm do arquivo .env
+// Nunca exponha suas credenciais diretamente no código!
 const firebaseConfig = {
-  apiKey: "AIzaSyAHGETZ-5oIu51ttPOex7gSIinQAzlnu4M",
-  authDomain: "clickpassagens-3d23e.firebaseapp.com",
-  projectId: "clickpassagens-3d23e",
-  storageBucket: "clickpassagens-3d23e.firebasestorage.app",
-  messagingSenderId: "178000173795",
-  appId: "1:178000173795:web:f42eaa06ae75a58e7543d6"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID
 };
 
 // Initialize Firebase
