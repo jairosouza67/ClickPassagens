@@ -70,3 +70,56 @@
     font-size: 0.8rem;
   }
 }
+
+/* Mobile - garantir espaçamento adequado no header */
+@media (max-width: 768px) {
+  /* Header mobile */
+  .mobile-header {
+    padding: 0.5rem 0;
+    gap: 0.5rem;
+  }
+  
+  .logo-button {
+    flex-shrink: 1;
+    min-width: 0;
+    max-width: 60%;
+  }
+  
+  .logo-button:hover {
+    transform: none !important;
+  }
+  
+  .logo-icon {
+    flex-shrink: 0;
+  }
+  
+  .logo-text {
+    overflow: hidden;
+  }
+  
+  .logo-text span {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+  }
+  
+  /* Garantir que UserMenu não sobreponha */
+  .mobile-header > div:last-child {
+    flex-shrink: 0;
+    position: relative;
+    z-index: 10;
+  }
+  
+  /* Esconder navegação desktop no mobile */
+  header nav.hidden.md\:flex {
+    display: none !important;
+  }
+}
+
+/* Tablets e telas médias */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .logo-text span {
+    font-size: 1.5rem;
+  }
+}
