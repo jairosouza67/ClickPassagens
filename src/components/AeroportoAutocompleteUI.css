@@ -1,0 +1,32 @@
+/* Autocomplete UI Styles */
+.autocomplete-wrapper-ui {
+  position: relative;
+}
+
+.autocomplete-wrapper-ui input::-webkit-calendar-picker-indicator {
+  display: none;
+}
+
+.autocomplete-wrapper-ui input {
+  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+/* Scrollbar para suggestions */
+.autocomplete-wrapper-ui ul::-webkit-scrollbar {
+  width: 8px;
+}
+
+.autocomplete-wrapper-ui ul::-webkit-scrollbar-track {
+  background: #f3f4f6;
+}
+
+.autocomplete-wrapper-ui ul::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+.autocomplete-wrapper-ui ul::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}

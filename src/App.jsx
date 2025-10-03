@@ -103,10 +103,15 @@ function App() {
   ]
 
   const handleBuscaCompleta = (resultadosBusca) => {
-    console.log('Resultados recebidos:', resultadosBusca)
+    console.log('🎯 handleBuscaCompleta chamado!')
+    console.log('📊 Resultados recebidos:', resultadosBusca)
+    console.log('📊 É array?', Array.isArray(resultadosBusca))
+    console.log('📊 Quantidade:', resultadosBusca?.length)
+    
     if (Array.isArray(resultadosBusca)) {
       setResultados(resultadosBusca)
       setBuscaRealizada(true)
+      console.log('✅ Estado atualizado - navegando para resultados')
       navegarPara('resultados')
       
       // Incrementar contador de buscas do usuário
