@@ -8,10 +8,10 @@ import { Badge } from './ui/badge.jsx'
 import { Loader2, Search, Plane, Clock, MapPin, Users, Calendar, ArrowUpDown, CheckCircle, AlertTriangle } from 'lucide-react'
 import FlightCard from './FlightCard.jsx'
 import { API_URL } from '../config.js'
+import AeroportoAutocompleteUI from './AeroportoAutocompleteUI'
+import DatePickerInputUI from './DatePickerInputUI'
 
 const API_BASE_URL = `${API_URL}/api`
-const FRONTEND_MODE = (import.meta.env.VITE_APP_MODE || 'development').toLowerCase()
-const ALLOW_FAKE_RESULTS = (import.meta.env.VITE_ENABLE_FAKE_RESULTS || (FRONTEND_MODE === 'demo' ? 'true' : 'false')).toLowerCase() === 'true'
 
 export default function BuscaIntegrada({ onBuscaCompleta }) {
   const [searchData, setSearchData] = useState({
@@ -120,88 +120,16 @@ export default function BuscaIntegrada({ onBuscaCompleta }) {
     } catch (error) {
       console.error('Erro na busca:', error)
       const mensagem = error?.message || 'Não foi possível concluir a busca por voos reais.'
-      if (ALLOW_FAKE_RESULTS) {
-        const resultadosEstaticos = gerarResultadosEstaticos(searchData)
-        setResultados(resultadosEstaticos)
-        setBuscaRealizada(true)
-        setErrorMessage(`${mensagem} Exibindo dados de demonstração porque VITE_ENABLE_FAKE_RESULTS está ativado.`)
-        if (onBuscaCompleta) {
-          onBuscaCompleta(resultadosEstaticos)
-        }
-      } else {
-        setResultados([])
-        setBuscaRealizada(false)
-        setErrorMessage(mensagem)
-        if (onBuscaCompleta) {
-          onBuscaCompleta([])
-        }
+      // Removido fallback para dados simulados - sempre usa API real
+      setResultados([])
+      setBuscaRealizada(false)
+      setErrorMessage(mensagem + ' Verifique sua conexão e tente novamente.')
+      if (onBuscaCompleta) {
+        onBuscaCompleta([])
       }
     } finally {
       setLoading(false)
     }
-  }
-
-  const gerarResultadosEstaticos = (dadosBusca) => {
-    const companhiasEstaticas = [
-      { codigo: 'G3', nome: 'Gol', valor_milheiro: 18.0 },
-      { codigo: 'AD', nome: 'Azul', valor_milheiro: 20.0 },
-      { codigo: 'LA', nome: 'LATAM', valor_milheiro: 22.0 },
-      { codigo: 'AV', nome: 'Avianca', valor_milheiro: 19.0 },
-      { codigo: 'IB', nome: 'Ibéria', valor_milheiro: 24.0 }
-    ]
-
-    const precoBase = calcularPrecoBase(dadosBusca.origem, dadosBusca.destino)
-    const duracao = calcularDuracaoVoo(dadosBusca.origem, dadosBusca.destino)
-    const resultados = []
-
-    companhiasEstaticas.forEach((companhia, index) => {
-      for (let i = 0; i < 2; i++) {
-        const variacao = 1 + (i * 0.15)
-        const preco = precoBase * variacao * (companhia.valor_milheiro / 20)
-        const milhas = Math.round(preco * 45)
-        const economia = Math.round(preco * 0.2)
-        const hora = 6 + (index * 2) + (i * 4)
-
-        resultados.push({
-          companhia: {
-            id: companhia.codigo,
-            nome: companhia.nome,
-            codigo: companhia.codigo,
-            ativa: true,
-            valor_milheiro: companhia.valor_milheiro
-          },
-          voo_numero: `${companhia.codigo}${1000 + index * 100 + i}`,
-          horario_saida: `${hora.toString().padStart(2, '0')}:${(index * 15).toString().padStart(2, '0')}`,
-          horario_chegada: `${((hora + duracao) % 24).toString().padStart(2, '0')}:${((index * 15) + 30).toString().padStart(2, '0')}`,
-          milhas_necessarias: milhas,
-          preco_dinheiro: Math.round(preco * 100) / 100,
-          economia_calculada: economia,
-          paradas: index === 0 ? 'Direto' : index === 1 ? 'Direto' : '1 parada',
-          disponivel: true,
-          origem: dadosBusca.origem,
-          destino: dadosBusca.destino,
-          duracao: `PT${duracao}H${index % 2 === 0 ? 0 : 30}M`
-        })
-      }
-    })
-
-    return resultados
-  }
-
-  const calcularPrecoBase = (origem, destino) => {
-    const rotasDomesticas = ['GRU', 'GIG', 'BSB', 'CGH', 'SDU', 'SSA', 'FOR', 'REC', 'POA', 'CWB']
-    if (rotasDomesticas.includes(origem) && rotasDomesticas.includes(destino)) {
-      return 350 // Voos domésticos
-    }
-    return 1200 // Voos internacionais
-  }
-
-  const calcularDuracaoVoo = (origem, destino) => {
-    const rotasDomesticas = ['GRU', 'GIG', 'BSB', 'CGH', 'SDU', 'SSA', 'FOR', 'REC', 'POA', 'CWB']
-    if (rotasDomesticas.includes(origem) && rotasDomesticas.includes(destino)) {
-      return 2 // 2 horas para voos domésticos
-    }
-    return 8 // 8 horas para voos internacionais
   }
 
   const novaBusca = () => {
@@ -290,76 +218,42 @@ export default function BuscaIntegrada({ onBuscaCompleta }) {
             <form onSubmit={(e) => { e.preventDefault(); realizarBusca(); }} className="space-y-6">
               {/* Origem e Destino */}
               <div className="grid md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <Label htmlFor="origem" className="text-sm font-medium text-gray-700 flex items-center">
-                    <MapPin className="w-4 h-4 mr-2 text-aviation-blue" />
-                    Origem
-                  </Label>
-                  <Select value={searchData.origem} onValueChange={(value) => setSearchData(prev => ({ ...prev, origem: value }))}>
-                    <SelectTrigger className="h-12 border-2 border-gray-200 focus:border-aviation-blue transition-colors">
-                      <SelectValue placeholder="Selecione a origem" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {aeroportos.map(aeroporto => (
-                        <SelectItem key={aeroporto.codigo} value={aeroporto.codigo}>
-                          {aeroporto.nome}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+                <AeroportoAutocompleteUI
+                  label="Origem"
+                  name="origem"
+                  value={searchData.origem}
+                  onChange={(value) => setSearchData(prev => ({ ...prev, origem: value }))}
+                  placeholder="Digite o aeroporto"
+                  required
+                />
 
-                <div className="space-y-2">
-                  <Label htmlFor="destino" className="text-sm font-medium text-gray-700 flex items-center">
-                    <MapPin className="w-4 h-4 mr-2 text-aviation-blue" />
-                    Destino
-                  </Label>
-                  <Select value={searchData.destino} onValueChange={(value) => setSearchData(prev => ({ ...prev, destino: value }))}>
-                    <SelectTrigger className="h-12 border-2 border-gray-200 focus:border-aviation-blue transition-colors">
-                      <SelectValue placeholder="Selecione o destino" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {aeroportos.map(aeroporto => (
-                        <SelectItem key={aeroporto.codigo} value={aeroporto.codigo}>
-                          {aeroporto.nome}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+                <AeroportoAutocompleteUI
+                  label="Destino"
+                  name="destino"
+                  value={searchData.destino}
+                  onChange={(value) => setSearchData(prev => ({ ...prev, destino: value }))}
+                  placeholder="Digite o aeroporto"
+                  required
+                />
               </div>
 
               {/* Datas */}
               <div className="grid md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <Label htmlFor="data_ida" className="text-sm font-medium text-gray-700 flex items-center">
-                    <Calendar className="w-4 h-4 mr-2 text-aviation-blue" />
-                    Data de ida
-                  </Label>
-                  <Input
-                    id="data_ida"
-                    type="date"
-                    value={searchData.data_ida}
-                    onChange={(e) => setSearchData(prev => ({ ...prev, data_ida: e.target.value }))}
-                    className="h-12 border-2 border-gray-200 focus:border-aviation-blue transition-colors"
-                    min={new Date().toISOString().split('T')[0]}
-                  />
-                </div>
+                <DatePickerInputUI
+                  label="Data de ida"
+                  name="data_ida"
+                  value={searchData.data_ida}
+                  onChange={(e) => setSearchData(prev => ({ ...prev, data_ida: e.target.value }))}
+                  required
+                />
 
-                <div className="space-y-2">
-                  <Label htmlFor="data_volta" className="text-sm font-medium text-gray-700 flex items-center">
-                    <Calendar className="w-4 h-4 mr-2 text-aviation-blue" />
-                    Data de volta (opcional)
-                  </Label>
-                  <Input
-                    id="data_volta"
-                    type="date"
-                    value={searchData.data_volta}
-                    onChange={(e) => setSearchData(prev => ({ ...prev, data_volta: e.target.value }))}
-                    className="h-12 border-2 border-gray-200 focus:border-aviation-blue transition-colors"
-                    min={searchData.data_ida || new Date().toISOString().split('T')[0]}
-                  />
-                </div>
+                <DatePickerInputUI
+                  label="Data de volta (opcional)"
+                  name="data_volta"
+                  value={searchData.data_volta}
+                  onChange={(e) => setSearchData(prev => ({ ...prev, data_volta: e.target.value }))}
+                  minDate={searchData.data_ida || new Date().toISOString().split('T')[0]}
+                />
               </div>
 
               {/* Passageiros e Classe */}

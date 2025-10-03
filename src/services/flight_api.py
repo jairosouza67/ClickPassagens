@@ -5,9 +5,10 @@ Suporta Amadeus, SkyScanner e outras APIs
 import os
 import requests
 import json
+import logging
 from datetime import datetime, timedelta
 from typing import List, Dict, Optional
-from flask import current_app
+from flask import current_app, has_app_context
 from decouple import config
 from src.models.milhas import db, AmadeusRateLimitLog
 
@@ -19,6 +20,16 @@ def _str_to_bool(value: Optional[str], default: bool = False) -> bool:
     if isinstance(value, bool):
         return value
     return str(value).strip().lower() in {'1', 'true', 'yes', 'on'}
+
+
+def _log(level: str, message: str, exc_info: bool = False):
+    """Helper para logging que funciona dentro e fora do contexto Flask"""
+    if has_app_context():
+        logger = current_app.logger
+        getattr(logger, level)(message, exc_info=exc_info)
+    else:
+        logger = logging.getLogger(__name__)
+        getattr(logger, level)(message, exc_info=exc_info)
 
 
 class FlightAPIService:
@@ -41,6 +52,7 @@ class FlightAPIService:
     def get_amadeus_token(self) -> Optional[str]:
         """Obtém token de acesso da API Amadeus"""
         if not self.amadeus_api_key or not self.amadeus_api_secret:
+            _log('error', "Credenciais Amadeus não configuradas")
             return None
 
         if (
@@ -48,6 +60,7 @@ class FlightAPIService:
             and self.amadeus_token_expiration
             and datetime.utcnow() < self.amadeus_token_expiration
         ):
+            _log('debug', "Usando token Amadeus em cache")
             return self.amadeus_token
             
         url = f"{self.amadeus_base_url}/v1/security/oauth2/token"
@@ -61,7 +74,10 @@ class FlightAPIService:
         }
         
         try:
+            _log('info', f"Solicitando novo token Amadeus de {url}")
             response = requests.post(url, headers=headers, data=data, timeout=10)
+            _log('info', f"Token Response Status: {response.status_code}")
+            
             if response.status_code == 200:
                 token_data = response.json()
                 self.amadeus_token = token_data.get('access_token')
@@ -71,9 +87,12 @@ class FlightAPIService:
                         self.amadeus_token_expiration = datetime.utcnow() + timedelta(seconds=int(expires_in) - 60)
                     except (TypeError, ValueError):
                         self.amadeus_token_expiration = None
+                _log('info', f"Token Amadeus obtido com sucesso (expira em {expires_in}s)")
                 return self.amadeus_token
+            else:
+                _log('error', f"Erro ao obter token: {response.status_code} - {response.text[:200]}")
         except Exception as e:
-            print(f"Erro ao obter token Amadeus: {e}")
+            _log('error', f"Erro ao obter token Amadeus: {e}", exc_info=True)
         
         return None
     
@@ -81,6 +100,7 @@ class FlightAPIService:
                               data_volta: str = None, passageiros: int = 1) -> List[Dict]:
         """Busca voos usando a API Amadeus"""
         if not self.get_amadeus_token():
+            _log('error', "Falha ao obter token Amadeus")
             return []
         
         url = f"{self.amadeus_base_url}/v2/shopping/flight-offers"
@@ -100,13 +120,22 @@ class FlightAPIService:
             params['returnDate'] = data_volta
         
         try:
+            _log('info', f"Chamando Amadeus API: {origem} -> {destino} em {data_ida}")
             response = requests.get(url, headers=headers, params=params, timeout=30)
             self._log_rate_limit(response.headers, endpoint='flight-offers', status_code=response.status_code)
+            
+            _log('info', f"Amadeus Response Status: {response.status_code}")
+            
             if response.status_code == 200:
                 data = response.json()
-                return self.parse_amadeus_response(data)
+                _log('info', f"Amadeus Response Data: {len(data.get('data', []))} offers encontradas")
+                resultados = self.parse_amadeus_response(data)
+                _log('info', f"Parse resultou em {len(resultados)} voos")
+                return resultados
+            else:
+                _log('error', f"Amadeus API retornou status {response.status_code}: {response.text[:500]}")
         except Exception as e:
-            print(f"Erro na busca Amadeus: {e}")
+            _log('error', f"Erro na busca Amadeus: {e}", exc_info=True)
         
         return []
     
@@ -278,26 +307,32 @@ class FlightAPIService:
     def search_flights(self, origem: str, destino: str, data_ida: str, 
                       data_volta: str = None, passageiros: int = 1) -> List[Dict]:
         """Método principal para busca de voos"""
-        print(f"Buscando voos reais: {origem} -> {destino} em {data_ida}")
+        _log('info', f"Buscando voos reais: {origem} -> {destino} em {data_ida}")
+        _log('info', f"Modo: {self.mode}, Allow Fallback: {self.allow_fallback}")
 
         providers_errors: List[str] = []
 
         if self.amadeus_api_key and self.amadeus_api_secret:
+            _log('info', "Credenciais Amadeus configuradas, tentando busca...")
             resultados = self.search_flights_amadeus(origem, destino, data_ida, data_volta, passageiros)
             if resultados:
-                print(f"Encontrados {len(resultados)} voos via Amadeus")
+                _log('info', f"Encontrados {len(resultados)} voos via Amadeus")
                 return resultados
             providers_errors.append('Amadeus não retornou resultados válidos para a busca solicitada.')
+            _log('warning', f"Amadeus não retornou resultados")
         else:
             providers_errors.append('Credenciais da API Amadeus não configuradas.')
+            _log('error', "Credenciais Amadeus NÃO configuradas!")
 
         if not self.allow_fallback:
             detalhes = ' '.join(providers_errors) if providers_errors else 'Nenhum provedor real disponível.'
-            raise RuntimeError(f"Não foi possível obter voos reais. {detalhes} Configure as credenciais corretas ou ajuste FLIGHT_API_ALLOW_FALLBACK.")
+            error_msg = f"Não foi possível obter voos reais. {detalhes} Configure as credenciais corretas ou ajuste FLIGHT_API_ALLOW_FALLBACK."
+            _log('error', error_msg)
+            raise RuntimeError(error_msg)
 
-        print("Usando dados de fallback realistas")
+        _log('warning', "Usando dados de fallback realistas")
         if providers_errors:
-            print("Motivo do fallback:", ' | '.join(providers_errors))
+            _log('warning', "Motivo do fallback: " + ' | '.join(providers_errors))
         return self.search_flights_fallback(origem, destino, data_ida, data_volta, passageiros)
 
     def _log_rate_limit(self, headers: Dict[str, str], endpoint: str, status_code: Optional[int] = None) -> None:

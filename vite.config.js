@@ -16,6 +16,9 @@ export default defineConfig({
     emptyOutDir: true,
   },
   server: {
+    host: '0.0.0.0',  // Escutar em todos os endereços de rede
+    port: 5173,        // Porta padrão
+    strictPort: false, // Tentar outra porta se 5173 estiver ocupada
     proxy: {
       '/api': {
         target: 'http://localhost:5001',

@@ -1,6 +1,8 @@
 import { useState } from 'react'
-import { Plane, MapPin, Calendar, Users, Star, TrendingUp, Shield, Sparkles, Loader2, AlertTriangle } from 'lucide-react'
+import { Plane, Users, Star, TrendingUp, Shield, Sparkles, Loader2, AlertTriangle } from 'lucide-react'
 import { API_URL } from '../config.js'
+import AeroportoAutocomplete from './AeroportoAutocomplete'
+import DatePickerInput from './DatePickerInput'
 
 const API_BASE_URL = `${API_URL}/api`
 
@@ -36,17 +38,27 @@ export default function HeroSection({ onSearchSubmit }) {
     setLoading(true)
     setErrorMessage(null)
 
+    const requestUrl = `${API_BASE_URL}/busca/buscar`
+    const requestBody = {
+      ...searchData,
+      usuario_id: 1
+    }
+
+    console.log('🔍 Iniciando busca...')
+    console.log('📍 URL:', requestUrl)
+    console.log('📦 Body:', requestBody)
+
     try {
-      const response = await fetch(`${API_BASE_URL}/busca/buscar`, {
+      const response = await fetch(requestUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          ...searchData,
-          usuario_id: 1
-        })
+        body: JSON.stringify(requestBody)
       })
+
+      console.log('📡 Response status:', response.status)
+      console.log('📡 Response ok:', response.ok)
 
       if (!response.ok) {
         const message = response.headers.get('content-type')?.includes('application/json')
@@ -56,16 +68,23 @@ export default function HeroSection({ onSearchSubmit }) {
       }
 
       const data = await response.json()
+      console.log('📥 Dados recebidos:', data)
+      console.log('📥 Success:', data.success)
+      console.log('📥 Resultados count:', data.data?.resultados?.length)
 
       if (data.success && data.data.resultados) {
         const resultadosProcessados = data.data.resultados
         if (!Array.isArray(resultadosProcessados) || resultadosProcessados.length === 0) {
+          console.warn('⚠️ Nenhum resultado encontrado')
           setErrorMessage('Nenhum voo real foi encontrado para os parâmetros informados. Tente ajustar sua busca.')
           if (onSearchSubmit) {
             onSearchSubmit([])
           }
-        } else if (onSearchSubmit) {
-          onSearchSubmit(resultadosProcessados)
+        } else {
+          console.log('✅ Chamando onSearchSubmit com', resultadosProcessados.length, 'resultados')
+          if (onSearchSubmit) {
+            onSearchSubmit(resultadosProcessados)
+          }
         }
       } else if (data.error) {
         throw new Error(data.error)
@@ -73,14 +92,15 @@ export default function HeroSection({ onSearchSubmit }) {
         throw new Error('Formato de resposta inválido')
       }
     } catch (error) {
-      console.error('Erro na busca por voos reais:', error)
+      console.error('❌ Erro na busca por voos reais:', error)
       const mensagem = error?.message || 'Não foi possível concluir a busca de voos.'
-      setErrorMessage(mensagem)
+      setErrorMessage(mensagem + ' Verifique sua conexão e tente novamente.')
       if (onSearchSubmit) {
         onSearchSubmit([])
       }
     } finally {
       setLoading(false)
+      console.log('🏁 Busca finalizada')
     }
   }
 
@@ -137,65 +157,42 @@ export default function HeroSection({ onSearchSubmit }) {
 
           <form onSubmit={handleSubmit} className="search-form-hero">
             {/* Origem */}
-            <div className="form-group-hero">
-              <label>
-                <MapPin className="label-icon" />
-                Origem
-              </label>
-              <input
-                type="text"
-                name="origem"
-                placeholder="Ex: GRU, CGH, GIG"
-                value={searchData.origem}
-                onChange={handleInputChange}
-                required
-              />
-            </div>
+            <AeroportoAutocomplete
+              label="Origem"
+              name="origem"
+              value={searchData.origem}
+              onChange={handleInputChange}
+              placeholder="Ex: GRU, CGH, GIG"
+              required
+            />
 
             {/* Destino */}
-            <div className="form-group-hero">
-              <label>
-                <MapPin className="label-icon" />
-                Destino
-              </label>
-              <input
-                type="text"
-                name="destino"
-                placeholder="Ex: BSB, SSA, FOR"
-                value={searchData.destino}
-                onChange={handleInputChange}
-                required
-              />
-            </div>
+            <AeroportoAutocomplete
+              label="Destino"
+              name="destino"
+              value={searchData.destino}
+              onChange={handleInputChange}
+              placeholder="Ex: BSB, SSA, FOR"
+              required
+            />
 
             {/* Data Ida */}
-            <div className="form-group-hero">
-              <label>
-                <Calendar className="label-icon" />
-                Data de Ida
-              </label>
-              <input
-                type="date"
-                name="data_ida"
-                value={searchData.data_ida}
-                onChange={handleInputChange}
-                required
-              />
-            </div>
+            <DatePickerInput
+              label="Data de Ida"
+              name="data_ida"
+              value={searchData.data_ida}
+              onChange={handleInputChange}
+              required
+            />
 
             {/* Data Volta */}
-            <div className="form-group-hero">
-              <label>
-                <Calendar className="label-icon" />
-                Data de Volta
-              </label>
-              <input
-                type="date"
-                name="data_volta"
-                value={searchData.data_volta}
-                onChange={handleInputChange}
-              />
-            </div>
+            <DatePickerInput
+              label="Data de Volta"
+              name="data_volta"
+              value={searchData.data_volta}
+              onChange={handleInputChange}
+              minDate={searchData.data_ida}
+            />
 
             {/* Passageiros */}
             <div className="form-group-hero">
