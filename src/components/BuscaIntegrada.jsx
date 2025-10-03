@@ -5,12 +5,13 @@ import { Input } from './ui/input.jsx'
 import { Label } from './ui/label.jsx'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select.jsx'
 import { Badge } from './ui/badge.jsx'
-import { Loader2, Search, Plane, Clock, MapPin, Users, Calendar, ArrowUpDown, CheckCircle } from 'lucide-react'
+import { Loader2, Search, Plane, Clock, MapPin, Users, Calendar, ArrowUpDown, CheckCircle, AlertTriangle } from 'lucide-react'
 import FlightCard from './FlightCard.jsx'
 import { API_URL } from '../config.js'
 
 const API_BASE_URL = `${API_URL}/api`
-const APP_MODE = import.meta.env.MODE || 'development'
+const FRONTEND_MODE = (import.meta.env.VITE_APP_MODE || 'development').toLowerCase()
+const ALLOW_FAKE_RESULTS = (import.meta.env.VITE_ENABLE_FAKE_RESULTS || (FRONTEND_MODE === 'demo' ? 'true' : 'false')).toLowerCase() === 'true'
 
 export default function BuscaIntegrada({ onBuscaCompleta }) {
   const [searchData, setSearchData] = useState({
@@ -26,6 +27,7 @@ export default function BuscaIntegrada({ onBuscaCompleta }) {
   const [resultados, setResultados] = useState([])
   const [loading, setLoading] = useState(false)
   const [buscaRealizada, setBuscaRealizada] = useState(false)
+  const [errorMessage, setErrorMessage] = useState(null)
 
   // Carregar companhias ao montar o componente
   useEffect(() => {
@@ -49,25 +51,15 @@ export default function BuscaIntegrada({ onBuscaCompleta }) {
     console.log('Iniciando busca com dados:', searchData)
     
     if (!searchData.origem || !searchData.destino || !searchData.data_ida) {
-      alert('Por favor, preencha origem, destino e data de ida')
+      setErrorMessage('Por favor, preencha origem, destino e data de ida para continuar a busca por voos reais.')
       return
     }
 
     setLoading(true)
     setBuscaRealizada(false)
+    setErrorMessage(null)
 
     try {
-      // Se estiver em produção sem backend, usar dados estáticos
-      if (APP_MODE === 'production' && !API_BASE_URL.includes('http')) {
-        const resultadosEstaticos = gerarResultadosEstaticos(searchData);
-        setResultados(resultadosEstaticos);
-        setBuscaRealizada(true);
-        if (onBuscaCompleta) {
-          onBuscaCompleta(resultadosEstaticos);
-        }
-        return;
-      }
-
       const url = `${API_BASE_URL}/busca/buscar`;
       console.log('Fazendo requisição para:', url)
       
@@ -88,7 +80,16 @@ export default function BuscaIntegrada({ onBuscaCompleta }) {
       console.log('Status da resposta:', response.status)
 
       if (!response.ok) {
-        throw new Error(`Erro HTTP: ${response.status}`)
+        let mensagemErro = `Erro HTTP: ${response.status}`
+        if (response.headers.get('content-type')?.includes('application/json')) {
+          try {
+            const payload = await response.json()
+            mensagemErro = payload.error || mensagemErro
+          } catch (parseError) {
+            console.error('Falha ao interpretar erro da API:', parseError)
+          }
+        }
+        throw new Error(mensagemErro)
       }
 
       const data = await response.json()
@@ -97,12 +98,20 @@ export default function BuscaIntegrada({ onBuscaCompleta }) {
       if (data.success && data.data.resultados) {
         const resultadosProcessados = data.data.resultados
         console.log('Resultados processados:', resultadosProcessados)
-        
-        setResultados(resultadosProcessados)
-        setBuscaRealizada(true)
-        
-        if (onBuscaCompleta) {
-          onBuscaCompleta(resultadosProcessados)
+        if (!Array.isArray(resultadosProcessados) || resultadosProcessados.length === 0) {
+          setResultados([])
+          setBuscaRealizada(false)
+          setErrorMessage('Nenhum voo real foi encontrado para os parâmetros informados. Tente ajustar datas ou aeroportos.')
+          if (onBuscaCompleta) {
+            onBuscaCompleta([])
+          }
+        } else {
+          setResultados(resultadosProcessados)
+          setBuscaRealizada(true)
+          setErrorMessage(null)
+          if (onBuscaCompleta) {
+            onBuscaCompleta(resultadosProcessados)
+          }
         }
       } else {
         console.error('Resposta sem resultados:', data)
@@ -110,14 +119,22 @@ export default function BuscaIntegrada({ onBuscaCompleta }) {
       }
     } catch (error) {
       console.error('Erro na busca:', error)
-      alert(`Erro na busca: ${error.message}. Usando dados de exemplo.`)
-      
-      // Fallback para dados estáticos
-      const resultadosEstaticos = gerarResultadosEstaticos(searchData);
-      setResultados(resultadosEstaticos);
-      setBuscaRealizada(true);
-      if (onBuscaCompleta) {
-        onBuscaCompleta(resultadosEstaticos);
+      const mensagem = error?.message || 'Não foi possível concluir a busca por voos reais.'
+      if (ALLOW_FAKE_RESULTS) {
+        const resultadosEstaticos = gerarResultadosEstaticos(searchData)
+        setResultados(resultadosEstaticos)
+        setBuscaRealizada(true)
+        setErrorMessage(`${mensagem} Exibindo dados de demonstração porque VITE_ENABLE_FAKE_RESULTS está ativado.`)
+        if (onBuscaCompleta) {
+          onBuscaCompleta(resultadosEstaticos)
+        }
+      } else {
+        setResultados([])
+        setBuscaRealizada(false)
+        setErrorMessage(mensagem)
+        if (onBuscaCompleta) {
+          onBuscaCompleta([])
+        }
       }
     } finally {
       setLoading(false)
@@ -261,6 +278,15 @@ export default function BuscaIntegrada({ onBuscaCompleta }) {
           </CardHeader>
           
           <CardContent className="p-8">
+            {errorMessage && (
+              <div className="mb-6 flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 p-4 text-red-800 shadow-sm">
+                <AlertTriangle className="w-5 h-5 flex-shrink-0 text-red-500" />
+                <div>
+                  <span className="font-semibold text-red-700 block">Atenção</span>
+                  <span className="text-sm leading-relaxed">{errorMessage}</span>
+                </div>
+              </div>
+            )}
             <form onSubmit={(e) => { e.preventDefault(); realizarBusca(); }} className="space-y-6">
               {/* Origem e Destino */}
               <div className="grid md:grid-cols-2 gap-6">

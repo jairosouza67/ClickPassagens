@@ -2,7 +2,7 @@ from flask import Blueprint, request, jsonify
 from datetime import datetime, time
 import json
 import random
-from src.models.milhas import db, BuscaPassagem, ResultadoBusca, CompanhiaAerea, Usuario, StatusBusca
+from src.models.milhas import db, BuscaPassagem, ResultadoBusca, CompanhiaAerea, Usuario, StatusBusca, AmadeusRateLimitLog
 from src.services.flight_api import FlightAPIService
 
 busca_bp = Blueprint('busca', __name__)
@@ -16,6 +16,27 @@ def listar_companhias():
             'success': True,
             'data': [companhia.to_dict() for companhia in companhias]
         })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@busca_bp.route('/limite/amadeus', methods=['GET'])
+def obter_limite_amadeus():
+    """Retorna o status do limite de requisições da API Amadeus"""
+    try:
+        limite_atual = AmadeusRateLimitLog.query.order_by(AmadeusRateLimitLog.created_at.desc()).first()
+        historico = AmadeusRateLimitLog.query.order_by(AmadeusRateLimitLog.created_at.desc()).limit(20).all()
+
+        return jsonify({
+            'success': True,
+            'data': {
+                'atual': limite_atual.to_dict() if limite_atual else None,
+                'historico': [registro.to_dict() for registro in historico]
+            }
+        })
+
     except Exception as e:
         return jsonify({
             'success': False,
