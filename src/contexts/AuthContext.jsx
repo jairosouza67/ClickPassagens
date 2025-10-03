@@ -28,31 +28,47 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
   const [authError, setAuthError] = useState(null);
 
-  // Capturar resultado do redirect (para login Google em mobile)
+  // Capturar resultado do redirect (para login Google em mobile/desktop)
   useEffect(() => {
+    console.log('🔄 AuthContext: Verificando redirect result...');
     handleRedirectResult().then(result => {
+      console.log('🔄 AuthContext: Redirect result:', result);
       if (result.success && result.user) {
-        console.log('Login com Google via redirect concluído!');
+        console.log('✅ Login com Google via redirect concluído!', result.user);
+        // O onAuthStateChanged já vai pegar o usuário automaticamente
+      } else if (result.error) {
+        console.error('❌ Erro no redirect:', result.error);
+        setAuthError(result.error);
       }
+    }).catch(error => {
+      console.error('❌ Exceção ao processar redirect:', error);
     });
   }, []);
 
   // Listener para mudanças na autenticação
   useEffect(() => {
+    console.log('🎧 AuthContext: Registrando listener onAuthChange...');
     const unsubscribe = onAuthChange(async (user) => {
+      console.log('🔔 AuthContext: onAuthChange disparado! Usuário:', user ? user.email : 'null');
       setCurrentUser(user);
       
       if (user) {
+        console.log('📥 AuthContext: Carregando dados do Firestore para:', user.uid);
         // Carregar dados do Firestore
         const result = await getUserData(user.uid);
         if (result.success) {
+          console.log('✅ AuthContext: Dados carregados:', result.data);
           setUserData(result.data);
+        } else {
+          console.log('⚠️ AuthContext: Erro ao carregar dados:', result.error);
         }
       } else {
+        console.log('🚪 AuthContext: Usuário deslogado, limpando dados');
         setUserData(null);
       }
       
       setLoading(false);
+      console.log('✅ AuthContext: Loading = false');
     });
 
     return unsubscribe;

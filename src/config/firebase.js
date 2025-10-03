@@ -185,15 +185,20 @@ export async function loginWithGoogle() {
  */
 export async function handleRedirectResult() {
   try {
+    console.log('🔄 firebase.js: Chamando getRedirectResult...');
     const result = await getRedirectResult(auth);
+    console.log('🔄 firebase.js: getRedirectResult retornou:', result);
     
     if (result) {
       const user = result.user;
+      console.log('✅ firebase.js: Usuário do redirect:', user.email);
       
       // Verificar se é novo usuário
       const userDoc = await getDoc(doc(db, 'users', user.uid));
+      console.log('📄 firebase.js: Documento do usuário existe?', userDoc.exists());
       
       if (!userDoc.exists()) {
+        console.log('📝 firebase.js: Criando novo documento de usuário...');
         // Criar documento para novo usuário
         await setDoc(doc(db, 'users', user.uid), {
           uid: user.uid,
@@ -205,14 +210,19 @@ export async function handleRedirectResult() {
           searches: 0,
           quotes: 0
         });
+        console.log('✅ firebase.js: Documento criado com sucesso!');
       }
       
+      console.log('✅ firebase.js: handleRedirectResult - Login bem-sucedido!');
       return { success: true, user };
     }
     
+    console.log('⚠️ firebase.js: Nenhum resultado de redirect (normal se não houve redirect)');
     return { success: false, noResult: true };
   } catch (error) {
-    console.error('Erro ao processar redirect:', error);
+    console.error('❌ firebase.js: Erro ao processar redirect:', error);
+    console.error('Código do erro:', error.code);
+    console.error('Mensagem:', error.message);
     return { success: false, error: getErrorMessage(error.code) };
   }
 }
