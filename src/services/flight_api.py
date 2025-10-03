@@ -7,7 +7,19 @@ import requests
 import json
 from datetime import datetime, timedelta
 from typing import List, Dict, Optional
+from flask import current_app
 from decouple import config
+from src.models.milhas import db, AmadeusRateLimitLog
+
+
+def _str_to_bool(value: Optional[str], default: bool = False) -> bool:
+    """Converte strings de configuração em booleano."""
+    if value is None:
+        return default
+    if isinstance(value, bool):
+        return value
+    return str(value).strip().lower() in {'1', 'true', 'yes', 'on'}
+
 
 class FlightAPIService:
     def __init__(self):
@@ -16,12 +28,27 @@ class FlightAPIService:
         self.skyscanner_api_key = config('SKYSCANNER_API_KEY', default='')
         self.amadeus_base_url = config('AMADEUS_BASE_URL', default='https://test.api.amadeus.com')
         self.amadeus_token = None
-        self.mode = config('FLIGHT_API_MODE', default='development')
+        self.amadeus_token_expiration = None
+        self.mode = config('FLIGHT_API_MODE', default='development').lower()
+        self.rate_limit_alert_threshold = int(config('AMADEUS_RATE_LIMIT_ALERT_THRESHOLD', default='100'))
+
+        allow_fallback_default = 'false' if self.mode in {'production', 'real', 'live'} else 'true'
+        self.allow_fallback = _str_to_bool(
+            config('FLIGHT_API_ALLOW_FALLBACK', default=allow_fallback_default),
+            default=allow_fallback_default.lower() in {'1', 'true', 'yes', 'on'}
+        )
         
     def get_amadeus_token(self) -> Optional[str]:
         """Obtém token de acesso da API Amadeus"""
         if not self.amadeus_api_key or not self.amadeus_api_secret:
             return None
+
+        if (
+            self.amadeus_token
+            and self.amadeus_token_expiration
+            and datetime.utcnow() < self.amadeus_token_expiration
+        ):
+            return self.amadeus_token
             
         url = f"{self.amadeus_base_url}/v1/security/oauth2/token"
         headers = {
@@ -38,6 +65,12 @@ class FlightAPIService:
             if response.status_code == 200:
                 token_data = response.json()
                 self.amadeus_token = token_data.get('access_token')
+                expires_in = token_data.get('expires_in')
+                if expires_in:
+                    try:
+                        self.amadeus_token_expiration = datetime.utcnow() + timedelta(seconds=int(expires_in) - 60)
+                    except (TypeError, ValueError):
+                        self.amadeus_token_expiration = None
                 return self.amadeus_token
         except Exception as e:
             print(f"Erro ao obter token Amadeus: {e}")
@@ -68,6 +101,7 @@ class FlightAPIService:
         
         try:
             response = requests.get(url, headers=headers, params=params, timeout=30)
+            self._log_rate_limit(response.headers, endpoint='flight-offers', status_code=response.status_code)
             if response.status_code == 200:
                 data = response.json()
                 return self.parse_amadeus_response(data)
@@ -245,14 +279,83 @@ class FlightAPIService:
                       data_volta: str = None, passageiros: int = 1) -> List[Dict]:
         """Método principal para busca de voos"""
         print(f"Buscando voos reais: {origem} -> {destino} em {data_ida}")
-        
-        # Tentar APIs reais primeiro
-        if self.mode == 'production' and self.amadeus_api_key:
+
+        providers_errors: List[str] = []
+
+        if self.amadeus_api_key and self.amadeus_api_secret:
             resultados = self.search_flights_amadeus(origem, destino, data_ida, data_volta, passageiros)
             if resultados:
                 print(f"Encontrados {len(resultados)} voos via Amadeus")
                 return resultados
-        
-        # Fallback para dados realistas
+            providers_errors.append('Amadeus não retornou resultados válidos para a busca solicitada.')
+        else:
+            providers_errors.append('Credenciais da API Amadeus não configuradas.')
+
+        if not self.allow_fallback:
+            detalhes = ' '.join(providers_errors) if providers_errors else 'Nenhum provedor real disponível.'
+            raise RuntimeError(f"Não foi possível obter voos reais. {detalhes} Configure as credenciais corretas ou ajuste FLIGHT_API_ALLOW_FALLBACK.")
+
         print("Usando dados de fallback realistas")
+        if providers_errors:
+            print("Motivo do fallback:", ' | '.join(providers_errors))
         return self.search_flights_fallback(origem, destino, data_ida, data_volta, passageiros)
+
+    def _log_rate_limit(self, headers: Dict[str, str], endpoint: str, status_code: Optional[int] = None) -> None:
+        if not headers:
+            return
+
+        limit = headers.get('X-RateLimit-Limit')
+        remaining = headers.get('X-RateLimit-Remaining')
+        period = headers.get('X-RateLimit-Period')
+        reset = headers.get('X-RateLimit-Reset')
+
+        if all(value is None for value in (limit, remaining, period, reset)):
+            return
+
+        def to_int(value: Optional[str]) -> Optional[int]:
+            try:
+                return int(value) if value is not None else None
+            except (TypeError, ValueError):
+                return None
+
+        limit_value = to_int(limit)
+        remaining_value = to_int(remaining)
+        period_value = to_int(period)
+        reset_epoch_value = to_int(reset)
+        reset_at_value = None
+
+        if reset_epoch_value:
+            try:
+                reset_at_value = datetime.utcfromtimestamp(reset_epoch_value)
+            except (OverflowError, OSError, ValueError):
+                reset_at_value = None
+
+        alert_triggered = bool(
+            remaining_value is not None and self.rate_limit_alert_threshold is not None and remaining_value <= self.rate_limit_alert_threshold
+        )
+
+        log_entry = AmadeusRateLimitLog(
+            endpoint=endpoint,
+            status_code=status_code,
+            limit=limit_value,
+            remaining=remaining_value,
+            period=period_value,
+            reset_epoch=reset_epoch_value,
+            reset_at=reset_at_value,
+            alert_triggered=alert_triggered,
+            raw_headers=json.dumps({k: v for k, v in headers.items()})
+        )
+
+        try:
+            db.session.add(log_entry)
+            db.session.commit()
+        except Exception as db_error:
+            db.session.rollback()
+            print(f"Erro ao registrar limites Amadeus: {db_error}")
+
+        if alert_triggered:
+            message = f"Atenção: limite Amadeus próximo do esgotamento. Restantes: {remaining_value}"
+            if current_app:
+                current_app.logger.warning(message)
+            else:
+                print(message)

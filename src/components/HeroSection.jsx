@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Plane, MapPin, Calendar, Users, Star, TrendingUp, Shield, Sparkles, Loader2 } from 'lucide-react'
+import { Plane, MapPin, Calendar, Users, Star, TrendingUp, Shield, Sparkles, Loader2, AlertTriangle } from 'lucide-react'
 import { API_URL } from '../config.js'
 
 const API_BASE_URL = `${API_URL}/api`
@@ -15,6 +15,7 @@ export default function HeroSection({ onSearchSubmit }) {
   })
 
   const [loading, setLoading] = useState(false)
+  const [errorMessage, setErrorMessage] = useState(null)
 
   const handleInputChange = (e) => {
     const { name, value } = e.target
@@ -22,71 +23,6 @@ export default function HeroSection({ onSearchSubmit }) {
       ...prev,
       [name]: value
     }))
-  }
-
-  const gerarResultadosEstaticos = (dadosBusca) => {
-    const companhiasBase = [
-      { codigo: 'G3', nome: 'Gol', valor_milheiro: 45, ativa: true },
-      { codigo: 'AD', nome: 'Azul', valor_milheiro: 50, ativa: true },
-      { codigo: 'LA', nome: 'LATAM', valor_milheiro: 48, ativa: true },
-      { codigo: 'O6', nome: 'Avianca', valor_milheiro: 46, ativa: true },
-      { codigo: 'TP', nome: 'TAP', valor_milheiro: 52, ativa: true }
-    ]
-
-    const resultados = []
-    const precoBase = calcularPrecoBase(dadosBusca.origem, dadosBusca.destino)
-    const duracao = calcularDuracaoVoo(dadosBusca.origem, dadosBusca.destino)
-
-    companhiasBase.forEach((companhia, index) => {
-      for (let i = 0; i < 2; i++) {
-        const variacao = 1 + (Math.random() * 0.4 - 0.2)
-        const preco = Math.round(precoBase * variacao)
-        const milhas = Math.round((preco / companhia.valor_milheiro) * 1000)
-        const economia = Math.round(((preco - (milhas * companhia.valor_milheiro / 1000)) / preco) * 100)
-        const hora = 6 + (index * 3) + (i * 6)
-
-        resultados.push({
-          id: `${companhia.codigo}-${index}-${i}`,
-          companhia: {
-            id: companhia.codigo,
-            nome: companhia.nome,
-            codigo: companhia.codigo,
-            ativa: true,
-            valor_milheiro: companhia.valor_milheiro
-          },
-          voo_numero: `${companhia.codigo}${1000 + index * 100 + i}`,
-          horario_saida: `${hora.toString().padStart(2, '0')}:${(index * 15).toString().padStart(2, '0')}`,
-          horario_chegada: `${((hora + duracao) % 24).toString().padStart(2, '0')}:${((index * 15) + 30).toString().padStart(2, '0')}`,
-          milhas_necessarias: milhas,
-          preco_dinheiro: Math.round(preco * 100) / 100,
-          economia_calculada: economia,
-          paradas: index === 0 ? 'Direto' : index === 1 ? 'Direto' : '1 parada',
-          disponivel: true,
-          origem: dadosBusca.origem,
-          destino: dadosBusca.destino,
-          duracao: `PT${duracao}H${index % 2 === 0 ? 0 : 30}M`,
-          data: dadosBusca.data_ida
-        })
-      }
-    })
-
-    return resultados
-  }
-
-  const calcularPrecoBase = (origem, destino) => {
-    const rotasDomesticas = ['GRU', 'GIG', 'BSB', 'CGH', 'SDU', 'SSA', 'FOR', 'REC', 'POA', 'CWB']
-    if (rotasDomesticas.includes(origem?.toUpperCase()) && rotasDomesticas.includes(destino?.toUpperCase())) {
-      return 350
-    }
-    return 1200
-  }
-
-  const calcularDuracaoVoo = (origem, destino) => {
-    const rotasDomesticas = ['GRU', 'GIG', 'BSB', 'CGH', 'SDU', 'SSA', 'FOR', 'REC', 'POA', 'CWB']
-    if (rotasDomesticas.includes(origem?.toUpperCase()) && rotasDomesticas.includes(destino?.toUpperCase())) {
-      return 2
-    }
-    return 8
   }
 
   const handleSubmit = async (e) => {
@@ -98,6 +34,7 @@ export default function HeroSection({ onSearchSubmit }) {
     }
 
     setLoading(true)
+    setErrorMessage(null)
 
     try {
       const response = await fetch(`${API_BASE_URL}/busca/buscar`, {
@@ -112,24 +49,35 @@ export default function HeroSection({ onSearchSubmit }) {
       })
 
       if (!response.ok) {
-        throw new Error(`Erro HTTP: ${response.status}`)
+        const message = response.headers.get('content-type')?.includes('application/json')
+          ? (await response.json()).error
+          : `Erro HTTP: ${response.status}`
+        throw new Error(message || `Erro HTTP: ${response.status}`)
       }
 
       const data = await response.json()
 
       if (data.success && data.data.resultados) {
         const resultadosProcessados = data.data.resultados
-        if (onSearchSubmit) {
+        if (!Array.isArray(resultadosProcessados) || resultadosProcessados.length === 0) {
+          setErrorMessage('Nenhum voo real foi encontrado para os parâmetros informados. Tente ajustar sua busca.')
+          if (onSearchSubmit) {
+            onSearchSubmit([])
+          }
+        } else if (onSearchSubmit) {
           onSearchSubmit(resultadosProcessados)
         }
+      } else if (data.error) {
+        throw new Error(data.error)
       } else {
         throw new Error('Formato de resposta inválido')
       }
     } catch (error) {
-      console.error('Erro na busca, usando dados estáticos:', error)
-      const resultadosEstaticos = gerarResultadosEstaticos(searchData)
+      console.error('Erro na busca por voos reais:', error)
+      const mensagem = error?.message || 'Não foi possível concluir a busca de voos.'
+      setErrorMessage(mensagem)
       if (onSearchSubmit) {
-        onSearchSubmit(resultadosEstaticos)
+        onSearchSubmit([])
       }
     } finally {
       setLoading(false)
@@ -176,6 +124,16 @@ export default function HeroSection({ onSearchSubmit }) {
             <Sparkles className="search-header-icon" />
             <h3>Encontre sua próxima viagem</h3>
           </div>
+
+          {errorMessage && (
+            <div className="error-banner-hero">
+              <AlertTriangle className="error-icon-hero" />
+              <div>
+                <strong>Não foi possível carregar voos reais.</strong>
+                <p>{errorMessage}</p>
+              </div>
+            </div>
+          )}
 
           <form onSubmit={handleSubmit} className="search-form-hero">
             {/* Origem */}

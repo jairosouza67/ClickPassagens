@@ -230,3 +230,33 @@ class TransacaoCashback(db.Model):
             'descricao': self.descricao,
             'data_transacao': self.data_transacao.isoformat()
         }
+
+
+class AmadeusRateLimitLog(db.Model):
+    __tablename__ = 'amadeus_rate_limit_logs'
+
+    id = db.Column(db.Integer, primary_key=True)
+    endpoint = db.Column(db.String(100), nullable=False)
+    status_code = db.Column(db.Integer)
+    limit = db.Column(db.Integer)
+    remaining = db.Column(db.Integer)
+    period = db.Column(db.Integer)
+    reset_epoch = db.Column(db.Integer)
+    reset_at = db.Column(db.DateTime)
+    alert_triggered = db.Column(db.Boolean, default=False)
+    raw_headers = db.Column(db.Text)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'endpoint': self.endpoint,
+            'status_code': self.status_code,
+            'limit': self.limit,
+            'remaining': self.remaining,
+            'period': self.period,
+            'reset_epoch': self.reset_epoch,
+            'reset_at': self.reset_at.isoformat() if self.reset_at else None,
+            'alert_triggered': self.alert_triggered,
+            'created_at': self.created_at.isoformat()
+        }
