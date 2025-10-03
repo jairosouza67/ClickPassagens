@@ -109,21 +109,33 @@ export async function loginWithEmail(email, password) {
 export async function loginWithGoogle() {
   try {
     console.log('🔵 Iniciando login com Google...');
+    console.log('🔵 User Agent:', navigator.userAgent);
     
     // Detectar se é mobile para usar redirect ao invés de popup
-    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-    console.log('📱 Dispositivo mobile?', isMobile);
+    // Verificar user agent E se tem toque (para pegar tablets também)
+    const userAgent = navigator.userAgent;
+    const isMobile = /iPhone|iPad|iPod|Android|webOS|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
+    const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    
+    console.log('📱 É Mobile (User Agent)?', isMobile);
+    console.log('� Tem Touch?', isTouch);
+    
+    // Usar redirect se for mobile OU tiver touch E tela pequena
+    const useRedirect = isMobile || (isTouch && window.innerWidth < 768);
+    console.log('🔀 Vai usar redirect?', useRedirect);
+    
+    console.log('🔀 Vai usar redirect?', useRedirect);
     
     let result;
     
-    if (isMobile) {
-      console.log('🔄 Usando signInWithRedirect para mobile...');
+    if (useRedirect) {
+      console.log('🔄 Usando signInWithRedirect...');
       // Em mobile, usar signInWithRedirect (mais confiável)
       await signInWithRedirect(auth, googleProvider);
       // O resultado será capturado após o redirect
       return { success: true, redirect: true };
     } else {
-      console.log('🪟 Usando signInWithPopup para desktop...');
+      console.log('🪟 Usando signInWithPopup...');
       // Em desktop, usar popup
       result = await signInWithPopup(auth, googleProvider);
       console.log('✅ Popup concluído, resultado:', result);
@@ -186,10 +198,14 @@ export async function loginWithGoogle() {
 export async function handleRedirectResult() {
   try {
     console.log('🔄 firebase.js: Chamando getRedirectResult...');
+    console.log('🔄 firebase.js: Usuário atual antes:', auth.currentUser ? auth.currentUser.email : 'null');
+    
     const result = await getRedirectResult(auth);
     console.log('🔄 firebase.js: getRedirectResult retornou:', result);
+    console.log('🔄 firebase.js: Usuário atual depois:', auth.currentUser ? auth.currentUser.email : 'null');
     
-    if (result) {
+    // Se getRedirectResult retornar algo, processar normalmente
+    if (result && result.user) {
       const user = result.user;
       console.log('✅ firebase.js: Usuário do redirect:', user.email);
       
@@ -217,7 +233,32 @@ export async function handleRedirectResult() {
       return { success: true, user };
     }
     
-    console.log('⚠️ firebase.js: Nenhum resultado de redirect (normal se não houve redirect)');
+    // FALLBACK: Se getRedirectResult retornou null mas há usuário autenticado
+    // (isso pode acontecer se a página recarregou após o redirect)
+    if (!result && auth.currentUser) {
+      console.log('⚡ firebase.js: getRedirectResult null, mas há usuário autenticado!');
+      const user = auth.currentUser;
+      
+      // Verificar/criar documento
+      const userDoc = await getDoc(doc(db, 'users', user.uid));
+      if (!userDoc.exists()) {
+        console.log('📝 firebase.js: Criando documento do usuário logado...');
+        await setDoc(doc(db, 'users', user.uid), {
+          uid: user.uid,
+          email: user.email,
+          displayName: user.displayName || '',
+          createdAt: new Date().toISOString(),
+          photoURL: user.photoURL || '',
+          plan: 'free',
+          searches: 0,
+          quotes: 0
+        });
+      }
+      
+      return { success: true, user };
+    }
+    
+    console.log('⚠️ firebase.js: Nenhum resultado de redirect e nenhum usuário autenticado');
     return { success: false, noResult: true };
   } catch (error) {
     console.error('❌ firebase.js: Erro ao processar redirect:', error);
