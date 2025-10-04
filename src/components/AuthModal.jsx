@@ -17,17 +17,7 @@ export default function AuthModal({ isOpen, onClose }) {
 
   const { login, signup, googleLogin, resetPassword, currentUser } = useAuth();
 
-  // Verificar se o login com Google foi concluído (após redirect)
-  useEffect(() => {
-    if (isOpen && sessionStorage.getItem('googleLoginSuccess') === 'true') {
-      console.log('✅ AuthModal: Login com Google detectado no sessionStorage');
-      sessionStorage.removeItem('googleLoginSuccess');
-      setSuccess('Login realizado com sucesso!');
-      setTimeout(() => {
-        onClose();
-      }, 1000);
-    }
-  }, [isOpen, onClose]);
+  // Removido useEffect de sessionStorage (não usamos mais redirect)
 
   // Fechar modal automaticamente se o usuário estiver logado
   useEffect(() => {
@@ -156,42 +146,31 @@ export default function AuthModal({ isOpen, onClose }) {
   };
 
   const handleGoogleLogin = async () => {
-    console.log('🔵 AuthModal: Iniciando handleGoogleLogin');
+    console.log('🔵 [AuthModal.handleGoogleLogin] Iniciando...');
     setIsLoading(true);
     setLocalError('');
     
     try {
-      console.log('🔵 AuthModal: Chamando googleLogin()...');
+      console.log('🔵 [AuthModal.handleGoogleLogin] Chamando googleLogin()...');
       const result = await googleLogin();
-      console.log('🔵 AuthModal: Resultado:', result);
-      
-      // Se for redirect, não fechar o modal - a página vai recarregar
-      if (result.redirect) {
-        console.log('🔄 AuthModal: Redirect iniciado, aguardando retorno...');
-        setSuccess('Redirecionando para Google...');
-        // Não fechar o modal - o redirect vai recarregar a página
-        return;
-      }
+      console.log('🔵 [AuthModal.handleGoogleLogin] Resultado:', result);
       
       if (result.success) {
-        console.log('✅ AuthModal: Login bem-sucedido!');
+        console.log('✅ [AuthModal.handleGoogleLogin] Sucesso!');
         setSuccess('Login realizado com sucesso!');
         setTimeout(() => {
           onClose();
           resetForm();
-        }, 1000);
+        }, 1500);
       } else {
-        console.log('❌ AuthModal: Erro no login:', result.error);
-        setLocalError(result.error);
+        console.log('❌ [AuthModal.handleGoogleLogin] Falhou:', result.error);
+        setLocalError(result.error || 'Erro ao fazer login com Google');
       }
     } catch (error) {
-      console.error('❌ AuthModal: Exceção capturada:', error);
+      console.error('❌ [AuthModal.handleGoogleLogin] Exceção:', error);
       setLocalError('Erro ao fazer login com Google');
     } finally {
-      // Não desabilitar loading se for redirect
-      if (!result?.redirect) {
-        setIsLoading(false);
-      }
+      setIsLoading(false);
     }
   };
 

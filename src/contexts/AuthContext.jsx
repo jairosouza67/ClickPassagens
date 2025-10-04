@@ -130,23 +130,25 @@ export function AuthProvider({ children }) {
   // Login com Google
   async function googleLogin() {
     try {
+      console.log('🔵 [AuthContext.googleLogin] Iniciando...');
       setAuthError(null);
       setLoading(true);
+      
       const result = await loginWithGoogle();
+      console.log('🔵 [AuthContext.googleLogin] Resultado:', result);
       
       if (!result.success) {
+        console.error('❌ [AuthContext.googleLogin] Falhou:', result.error);
         setAuthError(result.error);
         setLoading(false);
         return result;
       }
       
-      // Se for redirect, não desabilitar loading - a página vai recarregar
-      if (!result.redirect) {
-        setLoading(false);
-      }
-      
+      console.log('✅ [AuthContext.googleLogin] Sucesso!');
+      setLoading(false);
       return result;
     } catch (error) {
+      console.error('❌ [AuthContext.googleLogin] Exceção:', error);
       setAuthError(error.message);
       setLoading(false);
       return { success: false, error: error.message };

@@ -116,48 +116,29 @@ export async function loginWithEmail(email, password) {
 }
 
 /**
- * Login com Google
+ * Login com Google - VERSÃO SIMPLIFICADA (apenas popup)
  */
 export async function loginWithGoogle() {
   try {
-    console.log('🔵 Iniciando login com Google...');
-    console.log('🔵 User Agent:', navigator.userAgent);
+    console.log('🔵 [Firebase] Iniciando login com Google...');
+    console.log('🔵 [Firebase] Auth:', auth);
+    console.log('🔵 [Firebase] Provider:', googleProvider);
     
-    // Detectar se é mobile para usar redirect ao invés de popup
-    // Verificar user agent E se tem toque (para pegar tablets também)
-    const userAgent = navigator.userAgent;
-    const isMobile = /iPhone|iPad|iPod|Android|webOS|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
-    const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    // SEMPRE usar popup (simplificado)
+    console.log('🪟 [Firebase] Chamando signInWithPopup...');
+    const result = await signInWithPopup(auth, googleProvider);
     
-    console.log('📱 É Mobile (User Agent)?', isMobile);
-    console.log('� Tem Touch?', isTouch);
-    
-    // Usar redirect se for mobile OU tiver touch E tela pequena
-    const useRedirect = isMobile || (isTouch && window.innerWidth < 768);
-    console.log('🔀 Vai usar redirect?', useRedirect);
-    
-    let result;
-    
-    if (useRedirect) {
-      console.log('🔄 Usando signInWithRedirect...');
-      // Em mobile, usar signInWithRedirect (mais confiável)
-      await signInWithRedirect(auth, googleProvider);
-      // O resultado será capturado após o redirect
-      return { success: true, redirect: true };
-    } else {
-      console.log('🪟 Usando signInWithPopup...');
-      // Em desktop, usar popup
-      result = await signInWithPopup(auth, googleProvider);
-      console.log('✅ Popup concluído, resultado:', result);
-    }
-    
+    console.log('✅ [Firebase] Popup retornou resultado:', result);
     const user = result.user;
+    console.log('✅ [Firebase] User email:', user.email);
+    console.log('✅ [Firebase] User displayName:', user.displayName);
     
-    // Verificar se é novo usuário
+    // Verificar/criar documento do usuário
+    console.log('📄 [Firebase] Verificando documento no Firestore...');
     const userDoc = await getDoc(doc(db, 'users', user.uid));
     
     if (!userDoc.exists()) {
-      // Criar documento para novo usuário
+      console.log('📝 [Firebase] Documento não existe, criando...');
       await setDoc(doc(db, 'users', user.uid), {
         uid: user.uid,
         email: user.email,
@@ -168,37 +149,42 @@ export async function loginWithGoogle() {
         searches: 0,
         quotes: 0
       });
+      console.log('✅ [Firebase] Documento criado com sucesso!');
+    } else {
+      console.log('✅ [Firebase] Documento já existe');
     }
     
+    console.log('🎉 [Firebase] Login Google concluído com sucesso!');
     return { success: true, user };
+    
   } catch (error) {
-    console.error('❌ Erro no login com Google:', error);
-    console.error('Código do erro:', error.code);
-    console.error('Mensagem:', error.message);
+    console.error('❌ [Firebase] ERRO no login Google:');
+    console.error('❌ [Firebase] Nome:', error.name);
+    console.error('❌ [Firebase] Código:', error.code);
+    console.error('❌ [Firebase] Mensagem:', error.message);
+    console.error('❌ [Firebase] Objeto completo:', error);
     
-    // Erros específicos
-    if (error.code === 'auth/popup-blocked') {
-      return { 
-        success: false, 
-        error: 'Popup bloqueado! Permita popups para este site e tente novamente.' 
-      };
+    // Tratamento de erros
+    let errorMessage = 'Erro ao fazer login com Google';
+    
+    switch(error.code) {
+      case 'auth/popup-blocked':
+        errorMessage = 'Popup bloqueado! Permita popups no navegador.';
+        break;
+      case 'auth/popup-closed-by-user':
+        errorMessage = 'Você fechou a janela de login.';
+        break;
+      case 'auth/cancelled-popup-request':
+        errorMessage = 'Aguarde e tente novamente.';
+        break;
+      case 'auth/unauthorized-domain':
+        errorMessage = 'Domínio não autorizado. Configure no Firebase.';
+        break;
+      default:
+        errorMessage = getErrorMessage(error.code) || error.message;
     }
     
-    if (error.code === 'auth/popup-closed-by-user') {
-      return { 
-        success: false, 
-        error: 'Login cancelado. Você fechou a janela de login.' 
-      };
-    }
-    
-    if (error.code === 'auth/cancelled-popup-request') {
-      return { 
-        success: false, 
-        error: 'Solicitação cancelada. Aguarde e tente novamente.' 
-      };
-    }
-    
-    return { success: false, error: getErrorMessage(error.code) };
+    return { success: false, error: errorMessage };
   }
 }
 
