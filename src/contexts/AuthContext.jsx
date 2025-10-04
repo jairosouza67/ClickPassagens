@@ -35,6 +35,8 @@ export function AuthProvider({ children }) {
       console.log('🔄 AuthContext: Redirect result:', result);
       if (result.success && result.user) {
         console.log('✅ Login com Google via redirect concluído!', result.user);
+        // Marcar sucesso no sessionStorage para não mostrar modal novamente
+        sessionStorage.setItem('googleLoginSuccess', 'true');
         // O onAuthStateChanged já vai pegar o usuário automaticamente
       } else if (result.error) {
         console.error('❌ Erro no redirect:', result.error);
@@ -125,15 +127,20 @@ export function AuthProvider({ children }) {
       
       if (!result.success) {
         setAuthError(result.error);
+        setLoading(false);
         return result;
+      }
+      
+      // Se for redirect, não desabilitar loading - a página vai recarregar
+      if (!result.redirect) {
+        setLoading(false);
       }
       
       return result;
     } catch (error) {
       setAuthError(error.message);
-      return { success: false, error: error.message };
-    } finally {
       setLoading(false);
+      return { success: false, error: error.message };
     }
   }
 

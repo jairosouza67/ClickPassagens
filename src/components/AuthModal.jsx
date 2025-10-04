@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, Mail, Lock, User, Chrome, AlertCircle, CheckCircle } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import './AuthModal.css';
@@ -15,7 +15,29 @@ export default function AuthModal({ isOpen, onClose }) {
   const [success, setSuccess] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const { login, signup, googleLogin, resetPassword } = useAuth();
+  const { login, signup, googleLogin, resetPassword, currentUser } = useAuth();
+
+  // Verificar se o login com Google foi concluído (após redirect)
+  useEffect(() => {
+    if (isOpen && sessionStorage.getItem('googleLoginSuccess') === 'true') {
+      console.log('✅ AuthModal: Login com Google detectado no sessionStorage');
+      sessionStorage.removeItem('googleLoginSuccess');
+      setSuccess('Login realizado com sucesso!');
+      setTimeout(() => {
+        onClose();
+      }, 1000);
+    }
+  }, [isOpen, onClose]);
+
+  // Fechar modal automaticamente se o usuário estiver logado
+  useEffect(() => {
+    if (isOpen && currentUser) {
+      console.log('✅ AuthModal: Usuário logado, fechando modal');
+      setTimeout(() => {
+        onClose();
+      }, 500);
+    }
+  }, [isOpen, currentUser, onClose]);
 
   // Prevenir scroll do body quando modal estiver aberto
   React.useEffect(() => {
@@ -143,6 +165,14 @@ export default function AuthModal({ isOpen, onClose }) {
       const result = await googleLogin();
       console.log('🔵 AuthModal: Resultado:', result);
       
+      // Se for redirect, não fechar o modal - a página vai recarregar
+      if (result.redirect) {
+        console.log('🔄 AuthModal: Redirect iniciado, aguardando retorno...');
+        setSuccess('Redirecionando para Google...');
+        // Não fechar o modal - o redirect vai recarregar a página
+        return;
+      }
+      
       if (result.success) {
         console.log('✅ AuthModal: Login bem-sucedido!');
         setSuccess('Login realizado com sucesso!');
@@ -158,7 +188,10 @@ export default function AuthModal({ isOpen, onClose }) {
       console.error('❌ AuthModal: Exceção capturada:', error);
       setLocalError('Erro ao fazer login com Google');
     } finally {
-      setIsLoading(false);
+      // Não desabilitar loading se for redirect
+      if (!result?.redirect) {
+        setIsLoading(false);
+      }
     }
   };
 
