@@ -28,23 +28,32 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
   const [authError, setAuthError] = useState(null);
 
-  // Capturar resultado do redirect (para login Google em mobile/desktop)
+  // Verificação básica de redirect - apenas para limpeza de URL
   useEffect(() => {
-    console.log('🔄 AuthContext: Verificando redirect result...');
-    handleRedirectResult().then(result => {
-      console.log('🔄 AuthContext: Redirect result:', result);
-      if (result.success && result.user) {
-        console.log('✅ Login com Google via redirect concluído!', result.user);
-        // Marcar sucesso no sessionStorage para não mostrar modal novamente
-        sessionStorage.setItem('googleLoginSuccess', 'true');
-        // O onAuthStateChanged já vai pegar o usuário automaticamente
-      } else if (result.error) {
-        console.error('❌ Erro no redirect:', result.error);
-        setAuthError(result.error);
+    const checkForRedirect = () => {
+      try {
+        // Verificar se há parâmetros de autenticação na URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const hasAuthParams = urlParams.toString().includes('auth') || 
+                             urlParams.toString().includes('code') ||
+                             urlParams.toString().includes('state');
+        
+        if (hasAuthParams) {
+          console.log('🔍 AuthContext: Parâmetros auth detectados na URL');
+          
+          // Limpar URL após um tempo (o firebase.js vai processar)
+          setTimeout(() => {
+            const cleanUrl = window.location.origin + window.location.pathname;
+            window.history.replaceState({}, document.title, cleanUrl);
+            console.log('✅ AuthContext: URL limpa');
+          }, 3000);
+        }
+      } catch (error) {
+        console.error('❌ AuthContext: Erro ao verificar URL:', error);
       }
-    }).catch(error => {
-      console.error('❌ Exceção ao processar redirect:', error);
-    });
+    };
+    
+    checkForRedirect();
   }, []);
 
   // Listener para mudanças na autenticação
