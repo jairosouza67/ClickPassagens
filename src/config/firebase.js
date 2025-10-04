@@ -229,6 +229,8 @@ export async function handleRedirectResult() {
         console.log('✅ firebase.js: Documento criado com sucesso!');
       }
       
+      // Marcar que o redirect foi processado com sucesso
+      sessionStorage.setItem('googleLoginSuccess', 'true');
       console.log('✅ firebase.js: handleRedirectResult - Login bem-sucedido!');
       return { success: true, user };
     }
