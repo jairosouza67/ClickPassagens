@@ -154,8 +154,8 @@ Ao fazer uma busca, você deve ver no Console (F12):
 ### `.env` (Configuração de Produção)
 ```env
 # API Amadeus
-AMADEUS_API_KEY=VJeodXGsEmTrl3Uo9Aels8pp1AFKDVxD
-AMADEUS_API_SECRET=N3oIh3zf8qnPsWbc
+AMADEUS_API_KEY=sua_chave_api_amadeus_aqui
+AMADEUS_API_SECRET=seu_secret_amadeus_aqui
 AMADEUS_BASE_URL=https://test.api.amadeus.com
 AMADEUS_RATE_LIMIT_ALERT_THRESHOLD=100
 

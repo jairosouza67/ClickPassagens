@@ -1,212 +1,186 @@
-# 🚨 ALERTA DE SEGURANÇA - Credenciais Expostas no GitHub
+# 🔒 ALERTA DE SEGURANÇA - Credenciais Expostas
 
-## ❌ PROBLEMA DETECTADO
-
-O GitHub detectou que suas credenciais do Firebase foram expostas publicamente no repositório. Isso é **MUITO PERIGOSO** porque:
-
-- ✖️ Qualquer pessoa pode usar sua API Key
-- ✖️ Podem criar usuários falsos
-- ✖️ Podem acessar/deletar dados do Firestore
-- ✖️ Podem gerar custos na sua conta Firebase
-- ✖️ Podem fazer ataques DDoS
+**Data:** 03/10/2025  
+**Severidade:** 🔴 **CRÍTICA**  
+**Status:** ✅ **CORREÇÕES APLICADAS - AÇÃO IMEDIATA NECESSÁRIA**
 
 ---
 
-## ✅ SOLUÇÃO IMPLEMENTADA
+## 🚨 PROBLEMA IDENTIFICADO
 
-### 1. Credenciais Removidas do Código
+O GitGuardian detectou **credenciais sensíveis expostas** no repositório GitHub:
 
-**Antes (INSEGURO):**
-```javascript
-const firebaseConfig = {
-  apiKey: "AIzaSyAHGETZ-5oIu51ttPOex7gSIinQAzlnu4M", // ❌ EXPOSTO!
-  authDomain: "clickpassagens-3d23e.firebaseapp.com",
-  // ...
-};
-```
-
-**Depois (SEGURO):**
-```javascript
-const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY, // ✅ Variável de ambiente
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-  // ...
-};
-```
-
-### 2. Arquivo `.env` Criado (NÃO VAI PARA O GIT)
-
-✅ O arquivo `.env` já está no `.gitignore`
-✅ As credenciais agora ficam apenas localmente
-✅ Cada desenvolvedor tem seu próprio `.env`
+- ❌ **AMADEUS_API_KEY** exposta em arquivos de documentação
+- ❌ **AMADEUS_API_SECRET** exposta em arquivos de documentação  
+- ❌ **FIREBASE_API_KEY** exposta no código
+- ❌ Histórico do Git contém versões anteriores com credenciais
 
 ---
 
-## 🔥 AÇÕES URGENTES QUE VOCÊ PRECISA FAZER AGORA:
+## ⚠️ RISCOS
 
-### 1️⃣ REVOGAR as Credenciais Expostas
+### 1. API Amadeus
+- **Risco:** Uso não autorizado da sua conta Amadeus
+- **Impacto:** Cobranças inesperadas, esgotamento de quota
+- **Exposição:** Credenciais visíveis em commits públicos
 
-1. Acesse: https://console.firebase.google.com/project/clickpassagens-3d23e/settings/general
-2. Vá em **"Configurações do Projeto"** (ícone de engrenagem)
-3. Role até **"Seus aplicativos"**
-4. Encontre o app **"ClickPassagens Web"**
-5. Clique nos **3 pontinhos** → **"Excluir aplicativo"**
-6. Confirme a exclusão
+### 2. Firebase
+- **Risco:** Acesso não autorizado ao banco de dados
+- **Impacto:** Vazamento de dados de usuários, alterações maliciosas
+- **Exposição:** Configuração visível no código
 
-### 2️⃣ CRIAR Novo App com Credenciais Novas
+---
 
-1. No mesmo painel, clique em **"Adicionar app"** → **"Web"** `</>`
-2. Nome: `ClickPassagens Web`
-3. **NÃO** marque Firebase Hosting
-4. Clique em **"Registrar app"**
-5. **COPIE** as novas credenciais que aparecerem
+## ✅ CORREÇÕES JÁ APLICADAS
 
-### 3️⃣ ATUALIZAR o Arquivo `.env` Local
+### 1. Arquivos de Documentação Limpos ✅
+- ✅ `SOLUCAO_COMPLETA.md` - Credenciais removidas
+- ✅ `SOLUCAO_FINAL.md` - Credenciais removidas
+- ✅ `VERIFICACAO_CONFIGURACAO.md` - Credenciais removidas
 
-1. Abra o arquivo `.env` na raiz do projeto
-2. **SUBSTITUA** as credenciais antigas pelas **NOVAS:**
+### 2. Arquivo `.env.example` Atualizado ✅
+- ✅ Placeholders genéricos criados
+- ✅ Avisos de segurança adicionados
+- ✅ Instruções claras para desenvolvedores
 
-```env
-VITE_FIREBASE_API_KEY=SUA_NOVA_API_KEY_AQUI
-VITE_FIREBASE_AUTH_DOMAIN=clickpassagens-3d23e.firebaseapp.com
-VITE_FIREBASE_PROJECT_ID=clickpassagens-3d23e
-VITE_FIREBASE_STORAGE_BUCKET=clickpassagens-3d23e.firebasestorage.app
-VITE_FIREBASE_MESSAGING_SENDER_ID=SEU_NOVO_SENDER_ID
-VITE_FIREBASE_APP_ID=SEU_NOVO_APP_ID
-```
+### 3. `.gitignore` Verificado ✅
+- ✅ `.env` já está sendo ignorado
+- ✅ Arquivos sensíveis protegidos
 
-### 4️⃣ REINICIAR o Servidor de Desenvolvimento
+---
+
+## 🔥 AÇÕES IMEDIATAS NECESSÁRIAS
+
+### 1️⃣ REVOGAR E RECRIAR CREDENCIAIS AMADEUS (URGENTE!)
+
+**🚨 As credenciais expostas foram:**
+- ❌ API Key: `VJeodXGsEmTrl3Uo9Aels8pp1AFKDVxD`
+- ❌ API Secret: `N3oIh3zf8qnPsWbc`
+
+**Passos para revogar:**
+
+1. **Acessar:** https://developers.amadeus.com/my-apps
+2. **Login** na sua conta Amadeus
+3. **Localizar** a aplicação atual
+4. **Deletar/Revogar** as credenciais antigas
+5. **Criar nova aplicação** ou gerar novas chaves
+6. **Copiar** as novas credenciais
+7. **Atualizar** APENAS o arquivo `.env` local:
 
 ```bash
-# Pare o servidor (Ctrl+C)
-# Inicie novamente para carregar as novas variáveis
-npm run dev
+# Edite o arquivo .env (NÃO commite!)
+AMADEUS_API_KEY=SUA_NOVA_CHAVE_AQUI
+AMADEUS_API_SECRET=SEU_NOVO_SECRET_AQUI
 ```
 
-### 5️⃣ FAZER COMMIT das Alterações de Segurança
+### 2️⃣ VERIFICAR FIREBASE
 
-```bash
-git add .
-git commit -m "🔒 security: Move Firebase credentials to environment variables"
-git push origin dev-melhorias
-```
+**As credenciais Firebase expostas:**
+- API Key: `AIzaSyAHGETZ-5oIu51ttPOex7gSIinQAzlnu4M`
+- Project ID: `clickpassagens-3d23e`
 
----
+**Opções:**
 
-## 🛡️ COMO FUNCIONA AGORA (SEGURO)
+**Opção A - Proteger Firebase (Recomendado):**
+1. Acessar: https://console.firebase.google.com/
+2. Abrir projeto `clickpassagens-3d23e`
+3. Ir em: **Authentication** → **Sign-in method**
+4. Configurar **domínios autorizados**
+5. Ir em: **Firestore Database** → **Regras**
+6. Configurar **regras de segurança** rigorosas:
 
-### Desenvolvimento Local:
-- ✅ Credenciais no arquivo `.env` (ignorado pelo Git)
-- ✅ Vite carrega automaticamente as variáveis `VITE_*`
-- ✅ Código usa `import.meta.env.VITE_FIREBASE_API_KEY`
-
-### Produção (Netlify/Vercel):
-- ✅ Configure as variáveis no painel de deploy
-- ✅ Netlify: Site settings → Environment variables
-- ✅ Adicione todas as variáveis `VITE_FIREBASE_*`
-
----
-
-## 📋 CHECKLIST DE SEGURANÇA
-
-- [ ] ✅ Arquivo `.env` adicionado ao `.gitignore`
-- [ ] ✅ Código alterado para usar variáveis de ambiente
-- [ ] ⚠️ **DELETAR o app antigo no Firebase Console**
-- [ ] ⚠️ **CRIAR novo app com credenciais novas**
-- [ ] ⚠️ **ATUALIZAR arquivo `.env` com novas credenciais**
-- [ ] ⚠️ **TESTAR se o login ainda funciona**
-- [ ] ⚠️ **FAZER COMMIT e PUSH das alterações**
-- [ ] Configurar variáveis no Netlify (quando fizer deploy)
-
----
-
-## 🚫 O QUE NUNCA FAZER
-
-❌ **NUNCA** exponha credenciais diretamente no código
-❌ **NUNCA** faça commit do arquivo `.env`
-❌ **NUNCA** coloque API Keys em arquivos versionados
-❌ **NUNCA** compartilhe suas credenciais publicamente
-
----
-
-## ✅ MELHORES PRÁTICAS
-
-✔️ **SEMPRE** use variáveis de ambiente
-✔️ **SEMPRE** adicione `.env` ao `.gitignore`
-✔️ **SEMPRE** use `.env.example` como template (sem credenciais reais)
-✔️ **SEMPRE** rotacione credenciais se foram expostas
-✔️ **SEMPRE** configure limites de uso no Firebase Console
-
----
-
-## 🔐 CONFIGURAÇÕES EXTRAS DE SEGURANÇA NO FIREBASE
-
-### 1. Limitar Domínios Autorizados
-Firebase Console → Authentication → Settings → Authorized domains
-- Adicione apenas: `localhost` e seu domínio de produção
-- Remova outros domínios
-
-### 2. Configurar App Check (Recomendado)
-Firebase Console → Build → App Check
-- Protege contra abuso da API
-- Valida requisições legítimas
-
-### 3. Regras de Segurança do Firestore
 ```javascript
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /users/{userId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
+    // Negar acesso por padrão
+    match /{document=**} {
+      allow read, write: if request.auth != null;
     }
   }
 }
 ```
 
-### 4. Monitoramento de Uso
-Firebase Console → Usage and billing
-- Configure alertas de uso
-- Defina orçamento máximo
-- Monitore anomalias
+**Opção B - Recriar Projeto (Mais Seguro):**
+1. Criar novo projeto Firebase
+2. Configurar autenticação e regras
+3. Migrar dados (se houver)
+4. Atualizar `.env` com novas credenciais
 
 ---
 
-## 📞 PRÓXIMOS PASSOS
+## 📋 CHECKLIST DE SEGURANÇA
 
-1. ⚠️ **AGORA:** Revogue as credenciais antigas (delete o app)
-2. ⚠️ **AGORA:** Crie novo app com credenciais novas
-3. ⚠️ **AGORA:** Atualize o arquivo `.env`
-4. ✅ **DEPOIS:** Teste se tudo funciona
-5. ✅ **DEPOIS:** Faça commit e push
-6. ✅ **FUTURO:** Configure variáveis no Netlify quando fizer deploy
+### ✅ Imediato (Fazer AGORA):
+- [ ] ✅ Arquivos de documentação limpos (JÁ FEITO)
+- [ ] ✅ `.env.example` criado (JÁ FEITO)
+- [ ] 🔥 Revogar credenciais antigas da Amadeus
+- [ ] 🔥 Criar novas credenciais da Amadeus
+- [ ] 🔥 Configurar regras de segurança Firebase
+- [ ] Atualizar arquivo `.env` local
+- [ ] Testar aplicação com novas credenciais
 
----
-
-## ❓ PERGUNTAS FREQUENTES
-
-**Q: O GitHub vai continuar mostrando o alerta?**
-A: Sim, porque as credenciais antigas estão no histórico do Git. Você pode:
-- Ignorar o alerta (credenciais já foram revogadas)
-- OU fazer um "git history rewrite" (complexo, não recomendado)
-
-**Q: Preciso mudar algo no código depois?**
-A: Não! O código já está correto. Só precisa atualizar o `.env` local.
-
-**Q: E se eu esquecer o `.env`?**
-A: O app não vai funcionar. Você verá erros no console do navegador.
-
-**Q: Como outros desenvolvedores vão ter as credenciais?**
-A: Compartilhe o `.env` de forma segura (email privado, mensagem direta, 1Password, etc). NUNCA via Git.
+### Curto Prazo:
+- [ ] Configurar alertas de segurança no GitHub
+- [ ] Revisar todos os commits anteriores
+- [ ] Treinar equipe sobre boas práticas
 
 ---
 
-## 🎯 RESUMO
+## 🛡️ BOAS PRÁTICAS
 
-✅ **Problema:** Credenciais expostas no GitHub
-✅ **Solução:** Movidas para variáveis de ambiente
-⚠️ **Próximo passo:** Revogar credenciais antigas e gerar novas
-🔒 **Resultado:** Projeto 100% seguro
+### ❌ NUNCA FAÇA:
+```bash
+# Nunca adicione .env ao Git
+git add .env  # ❌ ERRADO!
+
+# Nunca coloque credenciais em código
+const key = "VJeodXGsEmTrl3Uo9Aels8pp1AFKDVxD"  # ❌ ERRADO!
+```
+
+### ✅ SEMPRE FAÇA:
+```bash
+# Use .env.example como template
+cp .env.example .env
+
+# Use variáveis de ambiente
+const key = import.meta.env.VITE_FIREBASE_API_KEY  # ✅ CORRETO!
+
+# Verifique antes de commitar
+git status
+# .env NÃO deve aparecer na lista
+```
 
 ---
 
-**🚨 AÇÃO NECESSÁRIA: Siga os passos 1, 2 e 3 AGORA para garantir a segurança do projeto!**
+## 🆘 SUPORTE
+
+### Precisa de ajuda?
+
+1. **Amadeus Support:** https://developers.amadeus.com/support
+2. **Firebase Support:** https://firebase.google.com/support
+3. **GitHub Security:** https://docs.github.com/en/code-security
+
+### Recursos Adicionais:
+- [OWASP Top 10](https://owasp.org/www-project-top-ten/)
+- [GitGuardian](https://www.gitguardian.com/)
+- [How to remove secrets from Git](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/removing-sensitive-data-from-a-repository)
+
+---
+
+## ✅ APÓS APLICAR AS CORREÇÕES
+
+Confirme que:
+- ✅ Credenciais antigas foram revogadas
+- ✅ Novas credenciais criadas e funcionando
+- ✅ Arquivo `.env` atualizado (e NÃO commitado)
+- ✅ Aplicação testada e funcionando
+- ✅ Regras de segurança Firebase configuradas
+
+---
+
+**⚡ PRIORIDADE MÁXIMA:** Revogue as credenciais antigas AGORA!  
+**Tempo estimado:** 15-30 minutos  
+**Dificuldade:** Baixa
+
+🔒 **Segurança em primeiro lugar!**

@@ -10,8 +10,8 @@
 
 ### Configuração Atual (.env):
 ```properties
-AMADEUS_API_KEY=AoATfe0sPMzg72ncrmG9bt9tcGUnN2VP
-AMADEUS_API_SECRET=hQA70UwEupt7yl8r
+AMADEUS_API_KEY=sua_chave_api_amadeus_aqui
+AMADEUS_API_SECRET=seu_secret_amadeus_aqui
 AMADEUS_BASE_URL=https://test.api.amadeus.com
 AMADEUS_RATE_LIMIT_ALERT_THRESHOLD=100
 ```

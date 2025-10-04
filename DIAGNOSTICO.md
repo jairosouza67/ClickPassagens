@@ -135,8 +135,8 @@ curl http://localhost:5001/api/busca/buscar -X POST -H "Content-Type: applicatio
 **Solução:**
 Verificar `.env`:
 ```env
-AMADEUS_API_KEY=VJeodXGsEmTrl3Uo9Aels8pp1AFKDVxD
-AMADEUS_API_SECRET=N3oIh3zf8qnPsWbc
+AMADEUS_API_KEY=sua_chave_api_amadeus_aqui
+AMADEUS_API_SECRET=seu_secret_amadeus_aqui
 ```
 
 ### Problema 5: "Console mostra erros JavaScript"
