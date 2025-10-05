@@ -34,13 +34,18 @@ def _log(level: str, message: str, exc_info: bool = False):
 
 class FlightAPIService:
     def __init__(self):
-        self.amadeus_api_key = config('AMADEUS_API_KEY', default='')
-        self.amadeus_api_secret = config('AMADEUS_API_SECRET', default='')
+        # Credenciais padrão para Render (plano gratuito tem limite de env vars)
+        # IMPORTANTE: Em produção real, use variáveis de ambiente!
+        default_key = 'cppo2FiXfoOVQ7jyggpCKl0fG8NYH1Pu'
+        default_secret = 'AQlRGZdG1Qm3y74f'
+        
+        self.amadeus_api_key = config('AMADEUS_API_KEY', default=default_key)
+        self.amadeus_api_secret = config('AMADEUS_API_SECRET', default=default_secret)
         self.skyscanner_api_key = config('SKYSCANNER_API_KEY', default='')
         self.amadeus_base_url = config('AMADEUS_BASE_URL', default='https://test.api.amadeus.com')
         self.amadeus_token = None
         self.amadeus_token_expiration = None
-        self.mode = config('FLIGHT_API_MODE', default='development').lower()
+        self.mode = config('FLIGHT_API_MODE', default='production').lower()
         self.rate_limit_alert_threshold = int(config('AMADEUS_RATE_LIMIT_ALERT_THRESHOLD', default='100'))
 
         allow_fallback_default = 'false' if self.mode in {'production', 'real', 'live'} else 'true'
