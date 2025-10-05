@@ -38,42 +38,64 @@ const firebaseConfig = {
 };
 
 // Validar configuração
-if (!firebaseConfig.apiKey || !firebaseConfig.projectId) {
-  console.error('❌ ERRO: Variáveis do Firebase não configuradas!');
-  console.error('Verifique se o arquivo .env possui as variáveis VITE_FIREBASE_*');
-  throw new Error('Firebase configuration is missing. Check your .env file.');
+const isFirebaseConfigured = firebaseConfig.apiKey && 
+                              firebaseConfig.projectId && 
+                              !firebaseConfig.apiKey.includes('DEMO') &&
+                              !firebaseConfig.apiKey.includes('REPLACE');
+
+if (!isFirebaseConfigured) {
+  console.warn('⚠️ AVISO: Firebase não está configurado corretamente!');
+  console.warn('A aplicação funcionará em modo de demonstração.');
+  console.warn('Para habilitar autenticação, configure o arquivo .env');
 }
 
-console.log('✅ Firebase configurado com sucesso!', {
-  projectId: firebaseConfig.projectId,
-  authDomain: firebaseConfig.authDomain
-});
+let app = null;
+let auth = null;
+let db = null;
+let googleProvider = null;
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-const googleProvider = new GoogleAuthProvider();
+// Initialize Firebase apenas se configurado
+if (isFirebaseConfigured) {
+  console.log('✅ Firebase configurado com sucesso!', {
+    projectId: firebaseConfig.projectId,
+    authDomain: firebaseConfig.authDomain
+  });
+  
+  app = initializeApp(firebaseConfig);
+  auth = getAuth(app);
+  db = getFirestore(app);
+  googleProvider = new GoogleAuthProvider();
+} else {
+  console.log('🔧 Modo de desenvolvimento - Firebase desabilitado');
+}
 
 // Configurar persistência LOCAL (crucial para mobile)
 // Isso garante que a sessão persista mesmo após fechar o navegador
-setPersistence(auth, browserLocalPersistence)
-  .then(() => {
-    console.log('✅ Persistência LOCAL configurada (sessão mantida)');
-  })
-  .catch((error) => {
-    console.error('⚠️ Erro ao configurar persistência:', error);
-  });
+if (auth) {
+  setPersistence(auth, browserLocalPersistence)
+    .then(() => {
+      console.log('✅ Persistência LOCAL configurada (sessão mantida)');
+    })
+    .catch((error) => {
+      console.error('⚠️ Erro ao configurar persistência:', error);
+    });
+}
 
 // Configure Google Provider
-googleProvider.setCustomParameters({
-  prompt: 'select_account'
-});
+if (googleProvider) {
+  googleProvider.setCustomParameters({
+    prompt: 'select_account'
+  });
+}
 
 /**
  * Registra um novo usuário com email e senha
  */
 export async function registerWithEmail(email, password, displayName) {
+  if (!auth) {
+    return { success: false, error: 'Firebase não configurado. Configure o arquivo .env' };
+  }
+  
   try {
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
@@ -106,6 +128,10 @@ export async function registerWithEmail(email, password, displayName) {
  * Login com email e senha
  */
 export async function loginWithEmail(email, password) {
+  if (!auth) {
+    return { success: false, error: 'Firebase não configurado. Configure o arquivo .env' };
+  }
+  
   try {
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
     return { success: true, user: userCredential.user };
@@ -119,6 +145,10 @@ export async function loginWithEmail(email, password) {
  * Login com Google - VERSÃO SIMPLIFICADA (apenas popup)
  */
 export async function loginWithGoogle() {
+  if (!auth || !googleProvider) {
+    return { success: false, error: 'Firebase não configurado. Configure o arquivo .env para usar login com Google.' };
+  }
+  
   try {
     console.log('🔵 [Firebase] Iniciando login com Google...');
     console.log('🔵 [Firebase] Auth:', auth);
@@ -393,6 +423,10 @@ async function processUserAfterRedirect(user) {
  * Logout
  */
 export async function logout() {
+  if (!auth) {
+    return { success: true }; // Em modo demo, sempre permite "logout"
+  }
+  
   try {
     await signOut(auth);
     return { success: true };
@@ -451,6 +485,12 @@ export async function updateUserData(uid, data) {
  * Listener para mudanças no estado de autenticação
  */
 export function onAuthChange(callback) {
+  if (!auth) {
+    // Em modo demo, chama callback com null imediatamente
+    setTimeout(() => callback(null), 0);
+    return () => {}; // Retorna função vazia para unsubscribe
+  }
+  
   return onAuthStateChanged(auth, callback);
 }
 

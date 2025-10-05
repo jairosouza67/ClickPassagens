@@ -30,6 +30,13 @@ export function AuthProvider({ children }) {
   // Listener para mudanças na autenticação
   useEffect(() => {
     console.log('🎧 AuthContext: Registrando listener onAuthChange...');
+    
+    // Timeout de segurança para garantir que loading seja desativado
+    const safetyTimeout = setTimeout(() => {
+      console.log('⏰ AuthContext: Timeout de segurança ativado - desativando loading');
+      setLoading(false);
+    }, 3000);
+    
     const unsubscribe = onAuthChange(async (user) => {
       console.log('🔔 AuthContext: onAuthChange disparado! Usuário:', user ? user.email : 'null');
       setCurrentUser(user);
@@ -49,11 +56,15 @@ export function AuthProvider({ children }) {
         setUserData(null);
       }
       
+      clearTimeout(safetyTimeout);
       setLoading(false);
       console.log('✅ AuthContext: Loading = false');
     });
 
-    return unsubscribe;
+    return () => {
+      clearTimeout(safetyTimeout);
+      unsubscribe();
+    };
   }, []);
 
   // Registrar novo usuário
