@@ -4,7 +4,6 @@ import {
   registerWithEmail,
   loginWithEmail,
   loginWithGoogle,
-  handleRedirectResult,
   logout as firebaseLogout,
   resetPassword as firebaseResetPassword,
   getUserData,
@@ -27,34 +26,6 @@ export function AuthProvider({ children }) {
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [authError, setAuthError] = useState(null);
-
-  // Verificação básica de redirect - apenas para limpeza de URL
-  useEffect(() => {
-    const checkForRedirect = () => {
-      try {
-        // Verificar se há parâmetros de autenticação na URL
-        const urlParams = new URLSearchParams(window.location.search);
-        const hasAuthParams = urlParams.toString().includes('auth') || 
-                             urlParams.toString().includes('code') ||
-                             urlParams.toString().includes('state');
-        
-        if (hasAuthParams) {
-          console.log('🔍 AuthContext: Parâmetros auth detectados na URL');
-          
-          // Limpar URL após um tempo (o firebase.js vai processar)
-          setTimeout(() => {
-            const cleanUrl = window.location.origin + window.location.pathname;
-            window.history.replaceState({}, document.title, cleanUrl);
-            console.log('✅ AuthContext: URL limpa');
-          }, 3000);
-        }
-      } catch (error) {
-        console.error('❌ AuthContext: Erro ao verificar URL:', error);
-      }
-    };
-    
-    checkForRedirect();
-  }, []);
 
   // Listener para mudanças na autenticação
   useEffect(() => {
@@ -130,23 +101,25 @@ export function AuthProvider({ children }) {
   // Login com Google
   async function googleLogin() {
     try {
+      console.log('🔵 [AuthContext.googleLogin] Iniciando...');
       setAuthError(null);
       setLoading(true);
+      
       const result = await loginWithGoogle();
+      console.log('🔵 [AuthContext.googleLogin] Resultado:', result);
       
       if (!result.success) {
+        console.error('❌ [AuthContext.googleLogin] Falhou:', result.error);
         setAuthError(result.error);
         setLoading(false);
         return result;
       }
       
-      // Se for redirect, não desabilitar loading - a página vai recarregar
-      if (!result.redirect) {
-        setLoading(false);
-      }
-      
+      console.log('✅ [AuthContext.googleLogin] Sucesso!');
+      setLoading(false);
       return result;
     } catch (error) {
+      console.error('❌ [AuthContext.googleLogin] Exceção:', error);
       setAuthError(error.message);
       setLoading(false);
       return { success: false, error: error.message };
