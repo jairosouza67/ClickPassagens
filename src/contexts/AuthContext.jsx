@@ -4,7 +4,6 @@ import {
   registerWithEmail,
   loginWithEmail,
   loginWithGoogle,
-  handleRedirectResult,
   logout as firebaseLogout,
   resetPassword as firebaseResetPassword,
   getUserData,
@@ -27,34 +26,6 @@ export function AuthProvider({ children }) {
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [authError, setAuthError] = useState(null);
-
-  // Verificação básica de redirect - apenas para limpeza de URL
-  useEffect(() => {
-    const checkForRedirect = () => {
-      try {
-        // Verificar se há parâmetros de autenticação na URL
-        const urlParams = new URLSearchParams(window.location.search);
-        const hasAuthParams = urlParams.toString().includes('auth') || 
-                             urlParams.toString().includes('code') ||
-                             urlParams.toString().includes('state');
-        
-        if (hasAuthParams) {
-          console.log('🔍 AuthContext: Parâmetros auth detectados na URL');
-          
-          // Limpar URL após um tempo (o firebase.js vai processar)
-          setTimeout(() => {
-            const cleanUrl = window.location.origin + window.location.pathname;
-            window.history.replaceState({}, document.title, cleanUrl);
-            console.log('✅ AuthContext: URL limpa');
-          }, 3000);
-        }
-      } catch (error) {
-        console.error('❌ AuthContext: Erro ao verificar URL:', error);
-      }
-    };
-    
-    checkForRedirect();
-  }, []);
 
   // Listener para mudanças na autenticação
   useEffect(() => {

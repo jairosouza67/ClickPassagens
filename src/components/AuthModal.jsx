@@ -17,8 +17,6 @@ export default function AuthModal({ isOpen, onClose }) {
 
   const { login, signup, googleLogin, resetPassword, currentUser } = useAuth();
 
-  // Removido useEffect de sessionStorage (não usamos mais redirect)
-
   // Fechar modal automaticamente se o usuário estiver logado
   useEffect(() => {
     if (isOpen && currentUser) {

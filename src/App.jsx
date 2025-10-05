@@ -269,12 +269,12 @@ function App() {
                 onNewSearch={() => navegarPara('busca')}
                 onCompare={() => navegarPara('comparacao')}
                 onCheckout={(flight) => {
-                  console.log('Indo para checkout com voo:', flight);
+                  console.log('🎯 Selecionando voo para orçamento:', flight);
                   setSelectedFlight(flight);
-                  navegarPara('checkout');
+                  navegarPara('orcamento');
                 }}
                 onGenerateQuote={(flight) => {
-                  console.log('Gerando orçamento para voo:', flight);
+                  console.log('📋 Gerando orçamento para voo:', flight);
                   setSelectedFlight(flight);
                   navegarPara('orcamento');
                 }}
