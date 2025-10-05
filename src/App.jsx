@@ -264,7 +264,10 @@ function App() {
         <Tabs value={activeTab} onValueChange={navegarPara} className="w-full">
           {/* Tab Busca */}
           <TabsContent value="busca" className="m-0">
-            <HeroSection onSearchSubmit={handleBuscaCompleta} />
+            <HeroSection 
+              onSearchSubmit={handleBuscaCompleta} 
+              onNavigate={setActiveTab}
+            />
           </TabsContent>
 
           {/* Tab Resultados */}

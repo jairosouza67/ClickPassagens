@@ -6,7 +6,7 @@ import DatePickerInput from './DatePickerInput'
 
 const API_BASE_URL = `${API_URL}/api`
 
-export default function HeroSection({ onSearchSubmit }) {
+export default function HeroSection({ onSearchSubmit, onNavigate }) {
   const [searchData, setSearchData] = useState({
     origem: '',
     destino: '',
@@ -132,7 +132,22 @@ export default function HeroSection({ onSearchSubmit }) {
               <Plane className="btn-icon" />
               Buscar Passagens Agora
             </button>
-            <button className="btn-secondary-hero" type="button">
+            <button 
+              className="btn-secondary-hero" 
+              type="button"
+              onClick={() => {
+                if (onNavigate) {
+                  onNavigate('planos');
+                  // Pequeno delay para garantir que a aba mudou antes de rolar
+                  setTimeout(() => {
+                    const faqSection = document.getElementById('faq-section');
+                    if (faqSection) {
+                      faqSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                  }, 100);
+                }
+              }}
+            >
               Ver Como Funciona
             </button>
           </div>

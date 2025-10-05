@@ -239,7 +239,7 @@ const PricingPage = ({ onSelectPlan }) => {
         </div>
 
         {/* FAQ Section */}
-        <div className="faq-section">
+        <div id="faq-section" className="faq-section">
           <h2 className="faq-title">❓ Perguntas Frequentes</h2>
           {faqs.map((faq, index) => (
             <div key={index} className="faq-item">
