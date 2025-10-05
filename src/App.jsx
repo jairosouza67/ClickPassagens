@@ -46,6 +46,7 @@ function App() {
   const [resultados, setResultados] = useState([])
   const [buscaRealizada, setBuscaRealizada] = useState(false)
   const [selectedFlight, setSelectedFlight] = useState(null) // Voo selecionado para orçamento
+  const [searchParams, setSearchParams] = useState(null) // Parâmetros da busca
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false) // Estado do modal de login
 
   // Hook de autenticação
@@ -102,14 +103,16 @@ function App() {
     }
   ]
 
-  const handleBuscaCompleta = (resultadosBusca) => {
+  const handleBuscaCompleta = (resultadosBusca, parametrosBusca) => {
     console.log('🎯 handleBuscaCompleta chamado!')
     console.log('📊 Resultados recebidos:', resultadosBusca)
+    console.log('📊 Parâmetros recebidos:', parametrosBusca)
     console.log('📊 É array?', Array.isArray(resultadosBusca))
     console.log('📊 Quantidade:', resultadosBusca?.length)
     
     if (Array.isArray(resultadosBusca)) {
       setResultados(resultadosBusca)
+      setSearchParams(parametrosBusca) // Salvar parâmetros da busca
       setBuscaRealizada(true)
       console.log('✅ Estado atualizado - navegando para resultados')
       navegarPara('resultados')
@@ -265,7 +268,8 @@ function App() {
           <TabsContent value="resultados" className="m-0">
             {buscaRealizada && resultados.length > 0 ? (
               <ResultsPage 
-                results={resultados} 
+                results={resultados}
+                searchParams={searchParams}
                 onNewSearch={() => navegarPara('busca')}
                 onCompare={() => navegarPara('comparacao')}
                 onCheckout={(flight) => {

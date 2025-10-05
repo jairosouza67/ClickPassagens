@@ -78,12 +78,12 @@ export default function HeroSection({ onSearchSubmit }) {
           console.warn('⚠️ Nenhum resultado encontrado')
           setErrorMessage('Nenhum voo real foi encontrado para os parâmetros informados. Tente ajustar sua busca.')
           if (onSearchSubmit) {
-            onSearchSubmit([])
+            onSearchSubmit([], searchData)
           }
         } else {
           console.log('✅ Chamando onSearchSubmit com', resultadosProcessados.length, 'resultados')
           if (onSearchSubmit) {
-            onSearchSubmit(resultadosProcessados)
+            onSearchSubmit(resultadosProcessados, searchData)
           }
         }
       } else if (data.error) {
@@ -96,7 +96,7 @@ export default function HeroSection({ onSearchSubmit }) {
       const mensagem = error?.message || 'Não foi possível concluir a busca de voos.'
       setErrorMessage(mensagem + ' Verifique sua conexão e tente novamente.')
       if (onSearchSubmit) {
-        onSearchSubmit([])
+        onSearchSubmit([], searchData)
       }
     } finally {
       setLoading(false)
