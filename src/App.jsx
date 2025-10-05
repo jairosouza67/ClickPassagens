@@ -458,8 +458,8 @@ function App() {
       {/* Footer */}
       <footer className="bg-gray-900 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="grid md:grid-cols-4 gap-8">
-            <div>
+          <div className="grid md:grid-cols-4 gap-8 mb-8">
+            <div className="md:col-span-1">
               <div className="flex items-center space-x-3 mb-4">
                 <div className="bg-gradient-aviation p-2 rounded-lg">
                   <Plane className="h-6 w-6 text-white" />
@@ -472,8 +472,8 @@ function App() {
             </div>
             
             <div>
-              <h3 className="font-semibold mb-4">Produtos</h3>
-              <ul className="space-y-2 text-gray-400">
+              <h3 className="font-semibold text-lg mb-4 text-white">Produtos</h3>
+              <ul className="space-y-3 text-gray-400">
                 <li>
                   <button 
                     onClick={() => {
@@ -496,7 +496,6 @@ function App() {
                     Comparador de Milhas
                   </button>
                 </li>
-                <li><a href="#" className="hover:text-white transition-colors">Alertas de Preço</a></li>
                 <li>
                   <button 
                     onClick={() => {
@@ -505,15 +504,15 @@ function App() {
                     }}
                     className="hover:text-white transition-colors text-left"
                   >
-                    Programa de Fidelidade
+                    Planos e Preços
                   </button>
                 </li>
               </ul>
             </div>
             
             <div>
-              <h3 className="font-semibold mb-4">Empresa</h3>
-              <ul className="space-y-2 text-gray-400">
+              <h3 className="font-semibold text-lg mb-4 text-white">Empresa</h3>
+              <ul className="space-y-3 text-gray-400">
                 <li>
                   <button 
                     onClick={() => {
@@ -525,7 +524,6 @@ function App() {
                     Sobre Nós
                   </button>
                 </li>
-                <li><a href="#" className="hover:text-white transition-colors">Como Funciona</a></li>
                 <li>
                   <button 
                     onClick={() => {
@@ -537,27 +535,30 @@ function App() {
                     Termos de Uso
                   </button>
                 </li>
-                <li><a href="#" className="hover:text-white transition-colors">Política de Privacidade</a></li>
               </ul>
             </div>
             
             <div>
-              <h3 className="font-semibold mb-4">Suporte</h3>
-              <ul className="space-y-2 text-gray-400">
-                <li><a href="#" className="hover:text-white transition-colors">Central de Ajuda</a></li>
-                <li>
-                  <button 
-                    onClick={() => {
-                      setActiveTab('contato');
-                      window.scrollTo({ top: 0, behavior: 'smooth' });
-                    }}
-                    className="hover:text-white transition-colors text-left"
-                  >
-                    Contato
-                  </button>
+              <h3 className="font-semibold text-lg mb-4 text-white">Contato</h3>
+              <ul className="space-y-3 text-gray-400">
+                <li className="flex items-center gap-2">
+                  <Mail className="w-4 h-4" />
+                  <a href="mailto:contato@clickpassagens.com" className="hover:text-white transition-colors">
+                    contato@clickpassagens.com
+                  </a>
                 </li>
-                <li><a href="#" className="hover:text-white transition-colors">Status do Sistema</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Reportar Problema</a></li>
+                <li className="flex items-center gap-2">
+                  <Phone className="w-4 h-4" />
+                  <a href="tel:+5577999999999" className="hover:text-white transition-colors">
+                    (77) 99999-9999
+                  </a>
+                </li>
+                <li className="flex items-center gap-2">
+                  <MessageCircle className="w-4 h-4" />
+                  <a href="https://wa.me/5577999999999" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">
+                    WhatsApp
+                  </a>
+                </li>
               </ul>
             </div>
           </div>
