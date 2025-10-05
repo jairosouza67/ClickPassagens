@@ -236,16 +236,6 @@ function App() {
               >
                 Dashboard
               </button>
-              <button 
-                onClick={() => navegarPara('sobre')}
-                className={`transition-all duration-300 px-3 py-2 rounded-lg font-medium whitespace-nowrap ${
-                  activeTab === 'sobre' 
-                    ? 'text-aviation-blue bg-aviation-blue/10 shadow-sm' 
-                    : 'text-gray-700 hover:text-aviation-blue hover:bg-aviation-blue/5'
-                }`}
-              >
-                Sobre Nós
-              </button>
             </nav>
 
             <div className="flex items-center space-x-3">
@@ -518,7 +508,17 @@ function App() {
             <div>
               <h3 className="font-semibold mb-4">Empresa</h3>
               <ul className="space-y-2 text-gray-400">
-                <li><a href="#" className="hover:text-white transition-colors">Sobre Nós</a></li>
+                <li>
+                  <button 
+                    onClick={() => {
+                      setActiveTab('sobre');
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }}
+                    className="hover:text-white transition-colors text-left"
+                  >
+                    Sobre Nós
+                  </button>
+                </li>
                 <li><a href="#" className="hover:text-white transition-colors">Como Funciona</a></li>
                 <li><a href="#" className="hover:text-white transition-colors">Termos de Uso</a></li>
                 <li><a href="#" className="hover:text-white transition-colors">Política de Privacidade</a></li>
