@@ -974,14 +974,74 @@
   box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
 }
 
+/* ===== BOTÃO TOGGLE FILTROS MOBILE ===== */
+.btn-toggle-filters-mobile {
+  display: none; /* Escondido no desktop */
+}
+
 /* ===== RESPONSIVO ===== */
 @media (max-width: 1024px) {
   .results-container-modern {
     grid-template-columns: 1fr;
   }
 
+  /* Botão de toggle filtros */
+  .btn-toggle-filters-mobile {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 12px 20px;
+    background: white;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    color: #1e40af;
+    font-weight: 600;
+    font-size: 15px;
+    cursor: pointer;
+    margin-bottom: 16px;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  }
+
+  .btn-toggle-filters-mobile:hover {
+    background: #f0f9ff;
+    border-color: #3b82f6;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(59, 130, 246, 0.15);
+  }
+
+  .btn-toggle-filters-mobile:active {
+    transform: translateY(0);
+  }
+
+  /* Filtros sidebar - escondido por padrão no mobile */
   .filters-sidebar-modern {
     position: static;
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    margin-bottom: 0;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .filters-sidebar-modern.show-mobile {
+    max-height: 2000px;
+    opacity: 1;
+    margin-bottom: 20px;
+    animation: slideDown 0.3s ease-out;
+  }
+
+  @keyframes slideDown {
+    from {
+      transform: translateY(-10px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
   }
 
   .flight-card-content {
@@ -1016,31 +1076,101 @@
 
   .sort-btn {
     flex: 1;
+    padding: 8px 12px; /* Reduzido */
+    font-size: 13px; /* Menor */
+  }
+
+  /* CARDS DE VOOS - COMPACTOS NO MOBILE */
+  .flight-card-modern {
+    padding: 14px; /* Reduzido de 20px */
+    margin-bottom: 12px; /* Reduzido de 16px */
   }
 
   .flight-route-modern {
-    grid-template-columns: 70px 1fr 70px;
-    gap: 12px;
+    grid-template-columns: 60px 1fr 60px; /* Reduzido de 70px */
+    gap: 10px; /* Reduzido de 12px */
   }
 
   .time-large {
-    font-size: 18px;
+    font-size: 16px; /* Reduzido de 18px */
   }
 
+  .city-code {
+    font-size: 11px; /* Reduzido */
+  }
+
+  .flight-duration {
+    padding: 6px 0; /* Compacto */
+  }
+
+  .duration-time {
+    font-size: 12px; /* Menor */
+  }
+
+  .stops-indicator {
+    font-size: 11px; /* Menor */
+  }
+
+  /* Preços compactos */
+  .pricing-info {
+    gap: 8px;
+  }
+
+  .price-option h4 {
+    font-size: 11px; /* Menor */
+  }
+
+  .price-value {
+    font-size: 18px; /* Reduzido de 22px */
+  }
+
+  .price-details {
+    font-size: 11px; /* Menor */
+  }
+
+  /* Botões de ação menores */
   .action-buttons {
     flex-direction: column;
     width: 100%;
+    gap: 8px; /* Menor espaçamento */
   }
 
   .btn-details-modern,
   .btn-select-modern {
     width: 100%;
     text-align: center;
+    padding: 10px 16px; /* Reduzido */
+    font-size: 14px; /* Menor */
   }
 
   .flight-amenities {
     flex-direction: column;
-    gap: 10px;
+    gap: 8px; /* Reduzido */
+  }
+
+  .amenity-item {
+    font-size: 12px; /* Menor */
+    padding: 4px 8px; /* Mais compacto */
+  }
+
+  /* Badges de confiança menores */
+  .confidence-badge {
+    padding: 4px 10px; /* Reduzido */
+    font-size: 11px; /* Menor */
+  }
+
+  /* Header de resumo compacto */
+  .search-summary-header {
+    padding: 16px 0; /* Reduzido */
+  }
+
+  .route-cities {
+    font-size: 15px; /* Reduzido */
+  }
+
+  .route-details {
+    font-size: 11px; /* Menor */
+    flex-wrap: wrap;
   }
 }
 

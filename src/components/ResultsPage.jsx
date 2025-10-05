@@ -7,6 +7,7 @@ import './ResultsPageModern.css'
 export default function ResultsPage({ results, onNewSearch, onCompare, onCheckout, onGenerateQuote, searchParams }) {
   const [selectedFlight, setSelectedFlight] = useState(null);
   const [showEditPanel, setShowEditPanel] = useState(false);
+  const [showFilters, setShowFilters] = useState(false); // Toggle filtros no mobile
   const [filters, setFilters] = useState({
     companhias: [],
     paradas: [],
@@ -238,8 +239,15 @@ export default function ResultsPage({ results, onNewSearch, onCompare, onCheckou
       )}
 
       <div className="results-container-modern">
+        {/* Botão de Filtros Mobile */}
+        <button className="btn-toggle-filters-mobile" onClick={() => setShowFilters(!showFilters)}>
+          <Filter size={18} />
+          Filtros
+          {showFilters ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+        </button>
+
         {/* Filtros Sidebar */}
-        <aside className="filters-sidebar-modern">
+        <aside className={`filters-sidebar-modern ${showFilters ? 'show-mobile' : ''}`}>
           <div className="filters-header">
             <div className="filters-title">
               <Filter size={20} />
