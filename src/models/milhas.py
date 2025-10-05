@@ -15,6 +15,7 @@ class StatusBusca(Enum):
     PENDENTE = "pendente"
     PROCESSANDO = "processando"
     CONCLUIDA = "concluida"
+    SEM_RESULTADOS = "sem_resultados"
     ERRO = "erro"
 
 class Usuario(db.Model):

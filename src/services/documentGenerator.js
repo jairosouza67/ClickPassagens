@@ -1,5 +1,5 @@
 import jsPDF from 'jspdf';
-import 'jspdf-autotable';
+import autoTable from 'jspdf-autotable';
 import { Document, Packer, Paragraph, Table, TableCell, TableRow, WidthType, AlignmentType } from 'docx';
 import { saveAs } from 'file-saver';
 
@@ -82,7 +82,7 @@ export const generatePDF = (quote, quoteType = 'client') => {
       ['Classe:', flight.class || 'N/A']
     );
     
-    doc.autoTable({
+    autoTable(doc, {
       startY: yPos,
       body: flightData,
       theme: 'plain',
@@ -93,7 +93,7 @@ export const generatePDF = (quote, quoteType = 'client') => {
       }
     });
     
-    yPos = doc.lastAutoTable.finalY + 10;
+    yPos = doc.lastAutoTable ? doc.lastAutoTable.finalY + 10 : yPos + 60;
     
     // VALORES
     if (isInternal) {
@@ -114,7 +114,7 @@ export const generatePDF = (quote, quoteType = 'client') => {
         [`LUCRO (${pricing.profit?.percentage || '0%'})`, `+ ${formatCurrency(pricing.profit?.amount || 0)}`],
       ];
       
-      doc.autoTable({
+      autoTable(doc, {
         startY: yPos,
         body: pricingData,
         theme: 'striped',
@@ -125,7 +125,7 @@ export const generatePDF = (quote, quoteType = 'client') => {
         }
       });
       
-      yPos = doc.lastAutoTable.finalY + 5;
+      yPos = doc.lastAutoTable ? doc.lastAutoTable.finalY + 5 : yPos + 40;
       
       // Total ao Cliente
       doc.setFillColor(...primaryColor);
@@ -152,7 +152,7 @@ export const generatePDF = (quote, quoteType = 'client') => {
           ['Total ao Cliente', `${formatMiles(pricing.miles.clientTotal)} milhas`],
         ];
         
-        doc.autoTable({
+        autoTable(doc, {
           startY: yPos,
           body: milesData,
           theme: 'striped',
@@ -163,7 +163,7 @@ export const generatePDF = (quote, quoteType = 'client') => {
           }
         });
         
-        yPos = doc.lastAutoTable.finalY + 8;
+        yPos = doc.lastAutoTable ? doc.lastAutoTable.finalY + 8 : yPos + 40;
       }
       
     } else {
@@ -182,7 +182,7 @@ export const generatePDF = (quote, quoteType = 'client') => {
         ['Taxas de Embarque', formatCurrency(pricing.taxes?.airportTaxes || 0)],
       ];
       
-      doc.autoTable({
+      autoTable(doc, {
         startY: yPos,
         body: pricingData,
         theme: 'plain',
@@ -193,7 +193,7 @@ export const generatePDF = (quote, quoteType = 'client') => {
         }
       });
       
-      yPos = doc.lastAutoTable.finalY + 5;
+      yPos = doc.lastAutoTable ? doc.lastAutoTable.finalY + 5 : yPos + 30;
       
       // Total
       doc.setFillColor(...primaryColor);

@@ -45,7 +45,7 @@ def obter_limite_amadeus():
 
 @busca_bp.route('/buscar', methods=['POST'])
 def buscar_passagens():
-    """Realiza busca de passagens"""
+    """Realiza busca de passagens com sugestão de datas alternativas"""
     try:
         data = request.get_json()
         
@@ -73,29 +73,78 @@ def buscar_passagens():
         db.session.add(busca)
         db.session.commit()
         
-        # Buscar voos reais usando o serviço de API
+        # Buscar voos reais usando o serviço de API (com busca inteligente em datas próximas)
         flight_service = FlightAPIService()
-        resultados = flight_service.search_flights(
+        
+        # Primeira tentativa: busca completa com datas alternativas
+        resultado_busca = flight_service.search_nearby_dates(
             origem=data['origem'],
             destino=data['destino'], 
             data_ida=data['data_ida'],
             data_volta=data.get('data_volta'),
-            passageiros=data.get('passageiros', 1)
+            passageiros=data.get('passageiros', 1),
+            dias_range=3  # Buscar ±3 dias
         )
         
+        # Preparar resposta
+        if resultado_busca['voos_encontrados']:
+            # Encontrou voos na data solicitada
+            resultados = resultado_busca['resultados']
+            mensagem = resultado_busca['mensagem']
+            data_utilizada = data['data_ida']
+            
+        elif resultado_busca.get('melhor_alternativa'):
+            # Não encontrou na data solicitada, mas encontrou em data próxima
+            melhor_alt = resultado_busca['melhor_alternativa']
+            resultados = melhor_alt['resultados']
+            
+            # Marcar voos como data alternativa
+            for voo in resultados:
+                voo['data_alternativa'] = melhor_alt['data']
+                voo['data_original'] = data['data_ida']
+                voo['diferenca_dias'] = melhor_alt['diferenca_dias']
+            
+            mensagem = resultado_busca['mensagem']
+            data_utilizada = melhor_alt['data']
+            
+        else:
+            # Não encontrou voos em nenhuma data
+            resultados = []
+            mensagem = resultado_busca['mensagem']
+            data_utilizada = None
+        
         # Salvar resultados no banco (opcional, para histórico)
-        salvar_resultados_banco(busca.id, resultados)
+        if resultados:
+            salvar_resultados_banco(busca.id, resultados)
         
         # Atualizar status da busca
-        busca.status = StatusBusca.CONCLUIDA
+        busca.status = StatusBusca.CONCLUIDA if resultados else StatusBusca.SEM_RESULTADOS
         db.session.commit()
+        
+        response_data = {
+            'busca_id': busca.id,
+            'resultados': resultados,
+            'data_solicitada': data['data_ida'],
+            'data_utilizada': data_utilizada,
+            'mensagem': mensagem
+        }
+        
+        # Adicionar datas alternativas se houver
+        if resultado_busca.get('datas_alternativas'):
+            response_data['datas_alternativas'] = [
+                {
+                    'data': alt['data'],
+                    'dia_semana': alt['dia_semana'],
+                    'diferenca_dias': alt['diferenca_dias'],
+                    'quantidade_voos': alt['quantidade_voos'],
+                    'preco_minimo': alt['preco_minimo']
+                }
+                for alt in resultado_busca['datas_alternativas'][:5]  # Limitar a 5 sugestões
+            ]
         
         return jsonify({
             'success': True,
-            'data': {
-                'busca_id': busca.id,
-                'resultados': resultados
-            }
+            'data': response_data
         })
         
     except Exception as e:

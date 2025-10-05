@@ -505,13 +505,25 @@ export default function ResultsPage({ results, onNewSearch, onCompare, onCheckou
                       <div className="action-buttons">
                         <button 
                           className="btn-details-modern"
-                          onClick={() => setSelectedFlight(result)}
+                          onClick={() => setSelectedFlight({
+                            ...result,
+                            data_ida: searchParams?.data_ida,
+                            data_volta: searchParams?.data_volta,
+                            passageiros: searchParams?.passageiros || 1,
+                            classe: searchParams?.classe || 'economica'
+                          })}
                         >
                           Ver detalhes
                         </button>
                         <button 
                           className="btn-select-modern"
-                          onClick={() => onCheckout && onCheckout(result)}
+                          onClick={() => onCheckout && onCheckout({
+                            ...result,
+                            data_ida: searchParams?.data_ida,
+                            data_volta: searchParams?.data_volta,
+                            passageiros: searchParams?.passageiros || 1,
+                            classe: searchParams?.classe || 'economica'
+                          })}
                         >
                           Solicitar orçamento
                         </button>

@@ -221,119 +221,126 @@ class FlightAPIService:
         }
         return airlines.get(carrier_code, f"Companhia {carrier_code}")
     
-    def search_flights_fallback(self, origem: str, destino: str, data_ida: str, 
-                               data_volta: str = None, passageiros: int = 1) -> List[Dict]:
-        """Dados de fallback quando APIs externas não estão disponíveis"""
-        # Lista de companhias reais brasileiras e internacionais
-        companhias_reais = [
-            {'codigo': 'G3', 'nome': 'Gol', 'valor_milheiro': 18.0},
-            {'codigo': 'AD', 'nome': 'Azul', 'valor_milheiro': 20.0},
-            {'codigo': 'LA', 'nome': 'LATAM', 'valor_milheiro': 22.0},
-            {'codigo': 'AV', 'nome': 'Avianca', 'valor_milheiro': 19.0},
-            {'codigo': 'TP', 'nome': 'TAP', 'valor_milheiro': 25.0},
-            {'codigo': 'AF', 'nome': 'Air France', 'valor_milheiro': 28.0},
-            {'codigo': 'KL', 'nome': 'KLM', 'valor_milheiro': 26.0},
-            {'codigo': 'IB', 'nome': 'Ibéria', 'valor_milheiro': 24.0}
-        ]
+    # REMOVIDO: Método search_flights_fallback() - Não usamos mais dados simulados!
+    # Agora buscamos em datas próximas quando não encontramos voos na data solicitada.
+    
+    def search_nearby_dates(self, origem: str, destino: str, data_ida: str, 
+                           data_volta: str = None, passageiros: int = 1, dias_range: int = 3) -> Dict:
+        """Busca voos na data solicitada e em datas próximas se não encontrar"""
+        _log('info', f"Iniciando busca inteligente: {origem} -> {destino} em {data_ida}")
         
-        resultados = []
+        # Converte data para datetime
+        try:
+            data_base = datetime.strptime(data_ida, '%Y-%m-%d')
+        except ValueError:
+            _log('error', f"Data inválida: {data_ida}")
+            return {
+                'data_solicitada': data_ida,
+                'voos_encontrados': False,
+                'resultados': [],
+                'datas_alternativas': [],
+                'mensagem': 'Data inválida. Use o formato YYYY-MM-DD.'
+            }
         
-        # Gerar dados mais realistas baseados na rota
-        base_price = self.calculate_base_price(origem, destino)
+        # Primeira tentativa: data solicitada
+        resultados_data_original = self.search_flights_amadeus(origem, destino, data_ida, data_volta, passageiros)
         
-        for companhia in companhias_reais[:6]:  # Limitar a 6 companhias
-            # Gerar 1-2 voos por companhia
-            num_voos = 1 if len(resultados) > 8 else 2
+        if resultados_data_original:
+            _log('info', f"Voos encontrados na data solicitada: {len(resultados_data_original)}")
+            return {
+                'data_solicitada': data_ida,
+                'voos_encontrados': True,
+                'resultados': resultados_data_original,
+                'datas_alternativas': [],
+                'mensagem': f'{len(resultados_data_original)} voos encontrados para a data solicitada.'
+            }
+        
+        # Não encontrou: buscar em datas próximas
+        _log('info', f"Nenhum voo encontrado em {data_ida}. Buscando datas próximas...")
+        datas_alternativas = []
+        
+        # Gerar range de datas (±dias_range)
+        for offset in range(-dias_range, dias_range + 1):
+            if offset == 0:  # Já tentamos a data original
+                continue
             
-            for i in range(num_voos):
-                # Preços mais realistas
-                variacao = 1 + (i * 0.15)  # 15% de variação por voo
-                preco = base_price * variacao * (companhia['valor_milheiro'] / 20)
-                
-                # Milhas baseadas no preço real
-                milhas = int(preco * 45)  # ~45 milhas por real
-                economia = preco * 0.2   # 20% de economia
-                
-                # Horários mais realistas
-                hora_base = 6 + (i * 4) + (len(resultados) % 3)
-                duracao_voo = self.calculate_flight_duration(origem, destino)
-                
-                resultado = {
-                    'companhia': {
-                        'id': None,
-                        'nome': companhia['nome'],
-                        'codigo': companhia['codigo'],
-                        'logo_url': f"https://images.kiwi.com/airlines/64/{companhia['codigo']}.png",
-                        'ativa': True,
-                        'valor_milheiro': companhia['valor_milheiro'],
-                        'comissao_percentual': 3.0
-                    },
-                    'voo_numero': f"{companhia['codigo']}{1000 + len(resultados) * 100 + i}",
-                    'horario_saida': f"{hora_base:02d}:{(i * 15) % 60:02d}",
-                    'horario_chegada': f"{(hora_base + duracao_voo) % 24:02d}:{((i * 15) + 30) % 60:02d}",
-                    'milhas_necessarias': milhas,
-                    'preco_dinheiro': round(preco, 2),
-                    'economia_calculada': round(economia, 2),
-                    'paradas': 'Direto' if i == 0 else '1 parada',
-                    'disponivel': True,
-                    'origem': origem,
-                    'destino': destino,
-                    'duracao': f"PT{duracao_voo}H{30 if i == 1 else 0}M"
-                }
-                
-                resultados.append(resultado)
+            data_alternativa = data_base + timedelta(days=offset)
+            data_alternativa_str = data_alternativa.strftime('%Y-%m-%d')
+            
+            # Buscar voos nesta data alternativa
+            _log('info', f"Tentando data alternativa: {data_alternativa_str}")
+            resultados_alt = self.search_flights_amadeus(origem, destino, data_alternativa_str, data_volta, passageiros)
+            
+            if resultados_alt:
+                datas_alternativas.append({
+                    'data': data_alternativa_str,
+                    'dia_semana': data_alternativa.strftime('%A'),
+                    'diferenca_dias': offset,
+                    'quantidade_voos': len(resultados_alt),
+                    'preco_minimo': min(voo['preco_dinheiro'] for voo in resultados_alt),
+                    'resultados': resultados_alt
+                })
+                _log('info', f"Encontrados {len(resultados_alt)} voos em {data_alternativa_str}")
         
-        return resultados
-    
-    def calculate_base_price(self, origem: str, destino: str) -> float:
-        """Calcula preço base baseado na rota"""
-        # Preços base por tipo de rota (valores mais realistas para 2025)
-        rotas_domesticas = ['GRU', 'GIG', 'BSB', 'CGH', 'SDU', 'SSA', 'FOR', 'REC', 'POA', 'CWB']
+        if datas_alternativas:
+            # Ordenar por diferença de dias (mais próximo primeiro)
+            datas_alternativas.sort(key=lambda x: abs(x['diferenca_dias']))
+            
+            melhor_data = datas_alternativas[0]
+            mensagem = f"Não encontramos voos para {data_ida}, mas encontramos {melhor_data['quantidade_voos']} voos em {melhor_data['data']} ({melhor_data['diferenca_dias']:+d} dias)."
+            
+            return {
+                'data_solicitada': data_ida,
+                'voos_encontrados': False,
+                'resultados': [],
+                'datas_alternativas': datas_alternativas,
+                'melhor_alternativa': melhor_data,
+                'mensagem': mensagem
+            }
         
-        if origem in rotas_domesticas and destino in rotas_domesticas:
-            return 350.0  # Voos domésticos
-        else:
-            return 1200.0  # Voos internacionais
-    
-    def calculate_flight_duration(self, origem: str, destino: str) -> int:
-        """Calcula duração estimada do voo em horas"""
-        rotas_domesticas = ['GRU', 'GIG', 'BSB', 'CGH', 'SDU', 'SSA', 'FOR', 'REC', 'POA', 'CWB']
-        
-        if origem in rotas_domesticas and destino in rotas_domesticas:
-            return 2  # Voos domésticos: ~2 horas
-        else:
-            return 8  # Voos internacionais: ~8 horas
+        # Não encontrou em nenhuma data
+        _log('warning', f"Nenhum voo encontrado em {origem} -> {destino} nas datas próximas a {data_ida}")
+        return {
+            'data_solicitada': data_ida,
+            'voos_encontrados': False,
+            'resultados': [],
+            'datas_alternativas': [],
+            'mensagem': f'Nenhum voo disponível de {origem} para {destino} entre {(data_base - timedelta(days=dias_range)).strftime("%d/%m")} e {(data_base + timedelta(days=dias_range)).strftime("%d/%m")}. Tente outra rota ou período.'
+        }
     
     def search_flights(self, origem: str, destino: str, data_ida: str, 
                       data_volta: str = None, passageiros: int = 1) -> List[Dict]:
-        """Método principal para busca de voos"""
+        """Método principal para busca de voos - SOMENTE DADOS REAIS"""
         _log('info', f"Buscando voos reais: {origem} -> {destino} em {data_ida}")
         _log('info', f"Modo: {self.mode}, Allow Fallback: {self.allow_fallback}")
 
-        providers_errors: List[str] = []
-
-        if self.amadeus_api_key and self.amadeus_api_secret:
-            _log('info', "Credenciais Amadeus configuradas, tentando busca...")
-            resultados = self.search_flights_amadeus(origem, destino, data_ida, data_volta, passageiros)
-            if resultados:
-                _log('info', f"Encontrados {len(resultados)} voos via Amadeus")
-                return resultados
-            providers_errors.append('Amadeus não retornou resultados válidos para a busca solicitada.')
-            _log('warning', f"Amadeus não retornou resultados")
-        else:
-            providers_errors.append('Credenciais da API Amadeus não configuradas.')
+        if not self.amadeus_api_key or not self.amadeus_api_secret:
             _log('error', "Credenciais Amadeus NÃO configuradas!")
+            raise RuntimeError(
+                "Credenciais da API Amadeus não configuradas. "
+                "Configure AMADEUS_API_KEY e AMADEUS_API_SECRET no arquivo .env para buscar voos reais."
+            )
 
-        if not self.allow_fallback:
-            detalhes = ' '.join(providers_errors) if providers_errors else 'Nenhum provedor real disponível.'
-            error_msg = f"Não foi possível obter voos reais. {detalhes} Configure as credenciais corretas ou ajuste FLIGHT_API_ALLOW_FALLBACK."
-            _log('error', error_msg)
-            raise RuntimeError(error_msg)
-
-        _log('warning', "Usando dados de fallback realistas")
-        if providers_errors:
-            _log('warning', "Motivo do fallback: " + ' | '.join(providers_errors))
-        return self.search_flights_fallback(origem, destino, data_ida, data_volta, passageiros)
+        # Busca inteligente em datas próximas
+        resultado_busca = self.search_nearby_dates(origem, destino, data_ida, data_volta, passageiros)
+        
+        if resultado_busca['voos_encontrados']:
+            return resultado_busca['resultados']
+        
+        # Se tem datas alternativas, retorna a melhor
+        if resultado_busca.get('melhor_alternativa'):
+            _log('info', f"Retornando voos da melhor data alternativa: {resultado_busca['melhor_alternativa']['data']}")
+            # Adicionar flag indicando que é data alternativa
+            for voo in resultado_busca['melhor_alternativa']['resultados']:
+                voo['data_alternativa'] = resultado_busca['melhor_alternativa']['data']
+                voo['data_original'] = data_ida
+                voo['diferenca_dias'] = resultado_busca['melhor_alternativa']['diferenca_dias']
+            
+            return resultado_busca['melhor_alternativa']['resultados']
+        
+        # Não encontrou voos em nenhuma data
+        _log('error', resultado_busca['mensagem'])
+        return []
 
     def _log_rate_limit(self, headers: Dict[str, str], endpoint: str, status_code: Optional[int] = None) -> None:
         if not headers:

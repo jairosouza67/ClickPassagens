@@ -21,6 +21,31 @@ function extractAirportCode(airportString) {
 }
 
 /**
+ * Extrai a data da viagem de várias fontes possíveis
+ */
+function extractFlightDate(flightData, dateType = 'departure') {
+  // Tentar vários campos possíveis
+  const possibleFields = dateType === 'departure' 
+    ? ['data_ida', 'dataIda', 'data', 'departure_date', 'departureDate', 'data_alternativa']
+    : ['data_volta', 'dataVolta', 'return_date', 'returnDate'];
+  
+  for (const field of possibleFields) {
+    if (flightData[field]) {
+      // Se for uma data válida, retornar formatada
+      const date = new Date(flightData[field] + 'T00:00:00');
+      if (!isNaN(date.getTime())) {
+        return date.toLocaleDateString('pt-BR');
+      }
+      // Se já estiver formatada, retornar como está
+      return flightData[field];
+    }
+  }
+  
+  // Se não encontrou nada, retornar data atual ou null
+  return dateType === 'departure' ? new Date().toLocaleDateString('pt-BR') : null;
+}
+
+/**
  * Converte moeda estrangeira para BRL
  */
 function convertToBRL(amount, currency) {
@@ -90,12 +115,12 @@ export function generateInternalQuote(flightData, passengerData = {}) {
         airport: taxes.destination.airportName
       },
       departure: {
-        date: flightData.data || flightData.dataIda,
+        date: extractFlightDate(flightData, 'departure'),
         time: flightData.horario_saida || 'A definir'
       },
       return: isRoundTrip ? {
-        date: flightData.dataVolta || flightData.data_volta,
-        time: flightData.horario_chegada_volta || 'A definir'
+        date: extractFlightDate(flightData, 'return'),
+        time: flightData.horario_chegada_volta || flightData.horario_chegada || 'A definir'
       } : null,
       duration: flightData.duracao || 'A definir',
       stops: flightData.paradas || 0,
@@ -293,7 +318,9 @@ export function saveQuoteToHistory(quote) {
     const history = JSON.parse(localStorage.getItem('quotesHistory') || '[]');
     history.unshift({
       ...quote,
-      savedAt: new Date().toISOString()
+      savedAt: new Date().toISOString(),
+      saleConfirmed: false, // Venda não confirmada por padrão
+      confirmedAt: null // Data de confirmação da venda
     });
     
     // Manter apenas os últimos 50 orçamentos
@@ -319,10 +346,100 @@ export function getQuotesHistory() {
   }
 }
 
+/**
+ * Confirma venda de um orçamento
+ */
+export function confirmQuoteSale(quoteNumber) {
+  try {
+    const history = JSON.parse(localStorage.getItem('quotesHistory') || '[]');
+    const updatedHistory = history.map(quote => {
+      if (quote.quoteNumber === quoteNumber) {
+        return {
+          ...quote,
+          saleConfirmed: true,
+          confirmedAt: new Date().toISOString()
+        };
+      }
+      return quote;
+    });
+    
+    localStorage.setItem('quotesHistory', JSON.stringify(updatedHistory));
+    return true;
+  } catch (error) {
+    console.error('Erro ao confirmar venda:', error);
+    return false;
+  }
+}
+
+/**
+ * Desmarca venda de um orçamento
+ */
+export function unconfirmQuoteSale(quoteNumber) {
+  try {
+    const history = JSON.parse(localStorage.getItem('quotesHistory') || '[]');
+    const updatedHistory = history.map(quote => {
+      if (quote.quoteNumber === quoteNumber) {
+        return {
+          ...quote,
+          saleConfirmed: false,
+          confirmedAt: null
+        };
+      }
+      return quote;
+    });
+    
+    localStorage.setItem('quotesHistory', JSON.stringify(updatedHistory));
+    return true;
+  } catch (error) {
+    console.error('Erro ao desmarcar venda:', error);
+    return false;
+  }
+}
+
+/**
+ * Recupera apenas vendas confirmadas
+ */
+export function getConfirmedSales() {
+  try {
+    const history = getQuotesHistory();
+    return history.filter(quote => quote.saleConfirmed === true);
+  } catch (error) {
+    console.error('Erro ao recuperar vendas:', error);
+    return [];
+  }
+}
+
+/**
+ * Calcula total de comissões das vendas confirmadas
+ */
+export function calculateTotalCommissions() {
+  try {
+    const sales = getConfirmedSales();
+    return sales.reduce((total, sale) => {
+      // Para orçamentos internos, pegamos o lucro
+      if (sale.pricing?.profit?.amount) {
+        return total + sale.pricing.profit.amount;
+      }
+      // Para orçamentos cliente, estimamos 30% do total
+      if (sale.pricing?.total) {
+        return total + (sale.pricing.total * 0.30);
+      }
+      return total;
+    }, 0);
+  } catch (error) {
+    console.error('Erro ao calcular comissões:', error);
+    return 0;
+  }
+}
+
 export default {
   generateInternalQuote,
   generateClientQuote,
   formatQuoteForPrint,
   saveQuoteToHistory,
-  getQuotesHistory
+  getQuotesHistory,
+  confirmQuoteSale,
+  unconfirmQuoteSale,
+  getConfirmedSales,
+  calculateTotalCommissions
 };

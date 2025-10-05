@@ -28,6 +28,9 @@ export default function BuscaIntegrada({ onBuscaCompleta }) {
   const [loading, setLoading] = useState(false)
   const [buscaRealizada, setBuscaRealizada] = useState(false)
   const [errorMessage, setErrorMessage] = useState(null)
+  const [datasAlternativas, setDatasAlternativas] = useState([])
+  const [dataUtilizada, setDataUtilizada] = useState(null)
+  const [dataSolicitada, setDataSolicitada] = useState(null)
 
   // Carregar companhias ao montar o componente
   useEffect(() => {
@@ -95,22 +98,53 @@ export default function BuscaIntegrada({ onBuscaCompleta }) {
       const data = await response.json()
       console.log('Dados recebidos:', data)
 
-      if (data.success && data.data.resultados) {
-        const resultadosProcessados = data.data.resultados
-        console.log('Resultados processados:', resultadosProcessados)
-        if (!Array.isArray(resultadosProcessados) || resultadosProcessados.length === 0) {
+      if (data.success && data.data) {
+        const { resultados, datas_alternativas, data_utilizada, data_solicitada, mensagem } = data.data
+        
+        console.log('Resultados processados:', resultados)
+        
+        // Atualizar estados
+        setDataSolicitada(data_solicitada)
+        setDataUtilizada(data_utilizada)
+        setDatasAlternativas(datas_alternativas || [])
+        
+        if (!Array.isArray(resultados) || resultados.length === 0) {
           setResultados([])
           setBuscaRealizada(false)
-          setErrorMessage('Nenhum voo real foi encontrado para os parâmetros informados. Tente ajustar datas ou aeroportos.')
+          
+          // Verificar se há datas alternativas
+          if (datas_alternativas && datas_alternativas.length > 0) {
+            setErrorMessage(
+              <div>
+                <p className="font-semibold mb-2">{mensagem}</p>
+                <p className="text-sm">Sugestões de datas disponíveis abaixo.</p>
+              </div>
+            )
+          } else {
+            setErrorMessage(mensagem || 'Nenhum voo encontrado para os parâmetros informados. Tente ajustar datas ou aeroportos.')
+          }
+          
           if (onBuscaCompleta) {
             onBuscaCompleta([])
           }
         } else {
-          setResultados(resultadosProcessados)
+          setResultados(resultados)
           setBuscaRealizada(true)
-          setErrorMessage(null)
+          
+          // Mostrar mensagem se estiver usando data alternativa
+          if (data_utilizada !== data_solicitada) {
+            setErrorMessage(
+              <div className="text-blue-700">
+                <p className="font-semibold">{mensagem}</p>
+                <p className="text-sm mt-1">Mostrando resultados para a data sugerida.</p>
+              </div>
+            )
+          } else {
+            setErrorMessage(null)
+          }
+          
           if (onBuscaCompleta) {
-            onBuscaCompleta(resultadosProcessados)
+            onBuscaCompleta(resultados)
           }
         }
       } else {
@@ -120,9 +154,9 @@ export default function BuscaIntegrada({ onBuscaCompleta }) {
     } catch (error) {
       console.error('Erro na busca:', error)
       const mensagem = error?.message || 'Não foi possível concluir a busca por voos reais.'
-      // Removido fallback para dados simulados - sempre usa API real
       setResultados([])
       setBuscaRealizada(false)
+      setDatasAlternativas([])
       setErrorMessage(mensagem + ' Verifique sua conexão e tente novamente.')
       if (onBuscaCompleta) {
         onBuscaCompleta([])
@@ -132,9 +166,61 @@ export default function BuscaIntegrada({ onBuscaCompleta }) {
     }
   }
 
+  const buscarDataAlternativa = async (dataAlternativa) => {
+    // Atualizar a data de ida com a data alternativa escolhida
+    setSearchData(prev => ({ ...prev, data_ida: dataAlternativa }))
+    
+    // Limpar mensagens e datas alternativas
+    setErrorMessage(null)
+    setDatasAlternativas([])
+    
+    // Realizar busca novamente com a nova data
+    setLoading(true)
+    setBuscaRealizada(false)
+
+    try {
+      const url = `${API_BASE_URL}/busca/buscar`;
+      const requestBody = {
+        ...searchData,
+        data_ida: dataAlternativa,
+        usuario_id: 1
+      };
+
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(requestBody)
+      })
+
+      if (!response.ok) {
+        throw new Error(`Erro HTTP: ${response.status}`)
+      }
+
+      const data = await response.json()
+
+      if (data.success && data.data && data.data.resultados) {
+        setResultados(data.data.resultados)
+        setBuscaRealizada(true)
+        setErrorMessage(null)
+        if (onBuscaCompleta) {
+          onBuscaCompleta(data.data.resultados)
+        }
+      }
+    } catch (error) {
+      console.error('Erro na busca da data alternativa:', error)
+      setErrorMessage('Erro ao buscar voos para a data alternativa.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
   const novaBusca = () => {
     setResultados([])
     setBuscaRealizada(false)
+    setDatasAlternativas([])
+    setErrorMessage(null)
+    setDataUtilizada(null)
+    setDataSolicitada(null)
     setSearchData({
       origem: '',
       destino: '',
@@ -215,6 +301,56 @@ export default function BuscaIntegrada({ onBuscaCompleta }) {
                 </div>
               </div>
             )}
+
+            {/* Datas Alternativas */}
+            {datasAlternativas && datasAlternativas.length > 0 && (
+              <div className="mb-6 rounded-xl border-2 border-blue-200 bg-blue-50 p-6">
+                <h3 className="text-lg font-semibold text-blue-900 mb-4 flex items-center">
+                  <Calendar className="w-5 h-5 mr-2" />
+                  Datas Disponíveis Próximas
+                </h3>
+                <p className="text-sm text-blue-700 mb-4">
+                  Não encontramos voos para {dataSolicitada && new Date(dataSolicitada + 'T00:00:00').toLocaleDateString('pt-BR')}, 
+                  mas há opções nestas datas:
+                </p>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                  {datasAlternativas.map((dataAlt, index) => (
+                    <button
+                      key={index}
+                      onClick={() => buscarDataAlternativa(dataAlt.data)}
+                      className="flex flex-col p-4 bg-white rounded-lg border-2 border-blue-300 hover:border-blue-500 hover:bg-blue-50 transition-all duration-200 text-left group"
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-sm font-semibold text-blue-900">
+                          {new Date(dataAlt.data + 'T00:00:00').toLocaleDateString('pt-BR', { 
+                            day: '2-digit', 
+                            month: 'short' 
+                          })}
+                        </span>
+                        <Badge variant="outline" className="text-xs bg-blue-100 text-blue-700 border-blue-300">
+                          {dataAlt.diferenca_dias > 0 ? '+' : ''}{dataAlt.diferenca_dias} dias
+                        </Badge>
+                      </div>
+                      <div className="text-xs text-gray-600 mb-2">
+                        {dataAlt.dia_semana}
+                      </div>
+                      <div className="flex items-center justify-between mt-auto">
+                        <span className="text-xs text-gray-500">
+                          {dataAlt.quantidade_voos} {dataAlt.quantidade_voos === 1 ? 'voo' : 'voos'}
+                        </span>
+                        <span className="text-sm font-semibold text-green-600">
+                          R$ {dataAlt.preco_minimo?.toFixed(2)}
+                        </span>
+                      </div>
+                      <div className="mt-2 text-xs text-blue-600 group-hover:text-blue-700 font-medium">
+                        Ver voos →
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
             <form onSubmit={(e) => { e.preventDefault(); realizarBusca(); }} className="space-y-6">
               {/* Origem e Destino */}
               <div className="grid md:grid-cols-2 gap-6">

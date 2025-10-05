@@ -253,11 +253,121 @@
 }
 
 .searches-list,
-.trips-list {
+.trips-list,
+.sales-list,
+.orcamentos-preview {
   display: flex;
   flex-direction: column;
   gap: 1rem;
   margin-bottom: 1rem;
+}
+
+.sales-list {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.sale-item-dash {
+  padding: 1rem;
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  border-radius: 12px;
+  border: 2px solid #3b82f6;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.3s ease;
+}
+
+.sale-item-dash:hover {
+  transform: translateX(4px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+}
+
+.sale-route-info {
+  flex: 1;
+}
+
+.sale-route-dash {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 0.25rem;
+}
+
+.sale-passenger-dash {
+  font-size: 0.9rem;
+  color: #64748b;
+  margin-bottom: 0.25rem;
+}
+
+.sale-date-dash {
+  font-size: 0.85rem;
+  color: #94a3b8;
+}
+
+.sale-values-dash {
+  text-align: right;
+}
+
+.sale-price {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #10b981;
+  margin-bottom: 0.25rem;
+}
+
+.sale-commission {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #f59e0b;
+  background: #fef3c7;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+.empty-state-dash {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1rem;
+  text-align: center;
+}
+
+.orcamentos-preview {
+  align-items: center;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  border-radius: 12px;
+  border: 2px solid #3b82f6;
+}
+
+.orcamento-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  background: white;
+  border-radius: 12px;
+  width: 100%;
+}
+
+.orcamento-stat .stat-number {
+  font-size: 2.5rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.orcamento-stat .stat-text {
+  color: #64748b;
+  font-size: 0.9rem;
+  font-weight: 600;
 }
 
 .search-item-dash,
@@ -319,6 +429,19 @@
   font-weight: 700;
   color: #1e293b;
   margin-bottom: 0.3rem;
+  font-size: 1.1rem;
+}
+
+.trip-passenger-dash {
+  font-size: 0.9rem;
+  color: #64748b;
+  margin-bottom: 0.25rem;
+}
+
+.trip-date-dash {
+  font-size: 0.9rem;
+  color: #64748b;
+  margin-bottom: 0.25rem;
 }
 
 .trip-flight-dash {

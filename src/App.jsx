@@ -34,6 +34,7 @@ import ComparisonPage from './components/ComparisonPage.jsx'
 import QuotePage from './components/QuotePage.jsx'
 import CommissionsPage from './components/CommissionsPage.jsx'
 import DashboardPage from './components/DashboardPage.jsx'
+import QuotesHistoryPage from './components/QuotesHistoryPage.jsx'
 import CheckoutPage from './components/CheckoutPage.jsx'
 import AuthModal from './components/AuthModal.jsx'
 import UserMenu from './components/UserMenu.jsx'
@@ -335,6 +336,11 @@ function App() {
           {/* Tab Dashboard */}
           <TabsContent value="dashboard" className="m-0">
             <DashboardPage onNavigate={(tab) => navegarPara(tab)} />
+          </TabsContent>
+
+          {/* Tab Histórico de Orçamentos */}
+          <TabsContent value="historico-orcamentos" className="m-0">
+            <QuotesHistoryPage onNavigate={(tab) => navegarPara(tab)} />
           </TabsContent>
 
           {/* Tab Comissões */}
