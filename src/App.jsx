@@ -37,6 +37,7 @@ import DashboardPage from './components/DashboardPage.jsx'
 import QuotesHistoryPage from './components/QuotesHistoryPage.jsx'
 import CheckoutPage from './components/CheckoutPage.jsx'
 import AboutPage from './components/AboutPage.jsx'
+import TermsPage from './components/TermsPage.jsx'
 import AuthModal from './components/AuthModal.jsx'
 import UserMenu from './components/UserMenu.jsx'
 import useGoogleAnalytics, { analytics } from './hooks/useGoogleAnalytics.js'
@@ -372,6 +373,11 @@ function App() {
             <AboutPage onNavigate={setActiveTab} />
           </TabsContent>
 
+          {/* Tab Termos de Uso */}
+          <TabsContent value="termos" className="m-0">
+            <TermsPage onNavigate={setActiveTab} />
+          </TabsContent>
+
           {/* Tab Contato */}
           <TabsContent value="contato" className="m-0">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
@@ -520,7 +526,17 @@ function App() {
                   </button>
                 </li>
                 <li><a href="#" className="hover:text-white transition-colors">Como Funciona</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Termos de Uso</a></li>
+                <li>
+                  <button 
+                    onClick={() => {
+                      setActiveTab('termos');
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }}
+                    className="hover:text-white transition-colors text-left"
+                  >
+                    Termos de Uso
+                  </button>
+                </li>
                 <li><a href="#" className="hover:text-white transition-colors">Política de Privacidade</a></li>
               </ul>
             </div>
