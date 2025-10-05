@@ -36,6 +36,7 @@ import CommissionsPage from './components/CommissionsPage.jsx'
 import DashboardPage from './components/DashboardPage.jsx'
 import QuotesHistoryPage from './components/QuotesHistoryPage.jsx'
 import CheckoutPage from './components/CheckoutPage.jsx'
+import AboutPage from './components/AboutPage.jsx'
 import AuthModal from './components/AuthModal.jsx'
 import UserMenu from './components/UserMenu.jsx'
 import useGoogleAnalytics, { analytics } from './hooks/useGoogleAnalytics.js'
@@ -235,6 +236,16 @@ function App() {
               >
                 Dashboard
               </button>
+              <button 
+                onClick={() => navegarPara('sobre')}
+                className={`transition-all duration-300 px-3 py-2 rounded-lg font-medium whitespace-nowrap ${
+                  activeTab === 'sobre' 
+                    ? 'text-aviation-blue bg-aviation-blue/10 shadow-sm' 
+                    : 'text-gray-700 hover:text-aviation-blue hover:bg-aviation-blue/5'
+                }`}
+              >
+                Sobre Nós
+              </button>
             </nav>
 
             <div className="flex items-center space-x-3">
@@ -364,6 +375,11 @@ function App() {
                 navegarPara('dashboard');
               }}
             />
+          </TabsContent>
+
+          {/* Tab Sobre Nós */}
+          <TabsContent value="sobre" className="m-0">
+            <AboutPage onNavigate={setActiveTab} />
           </TabsContent>
 
           {/* Tab Contato */}
