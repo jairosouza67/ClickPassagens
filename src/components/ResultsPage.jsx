@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react'
-import { Filter, TrendingDown, Clock, Plane, Check, X, Edit2, Calendar, Users, MapPin, ChevronDown, ChevronUp, ArrowRight } from 'lucide-react'
+import { Filter, TrendingDown, Clock, Plane, Check, X, Edit2, Calendar, Users, MapPin, ChevronDown, ChevronUp, ArrowRight, Shield, ShieldAlert, ShieldCheck } from 'lucide-react'
 import FlightCard from './FlightCard.jsx'
 import FlightDetailsModal from './FlightDetailsModal.jsx'
 import './ResultsPageModern.css'
@@ -481,10 +481,44 @@ export default function ResultsPage({ results, onNewSearch, onCompare, onCheckou
                     <div className="flight-pricing">
                       <div className="pricing-info">
                         <div className="price-miles">
-                          <div className="price-label">Milhas</div>
+                          <div className="price-label-container">
+                            <span className="price-label">Milhas</span>
+                            {/* Badge de confiabilidade do preço */}
+                            {result.preco_real_milhas ? (
+                              <span className="confidence-badge confidence-real" title="Preço real obtido da API">
+                                <ShieldCheck size={12} />
+                                Real
+                              </span>
+                            ) : result.nivel_confianca === 'high' ? (
+                              <span className="confidence-badge confidence-high" title="Estimativa de alta confiabilidade">
+                                <Shield size={12} />
+                                Alta confiança
+                              </span>
+                            ) : result.nivel_confianca === 'medium' ? (
+                              <span className="confidence-badge confidence-medium" title="Estimativa baseada em cotações">
+                                <Shield size={12} />
+                                Estimado
+                              </span>
+                            ) : (
+                              <span className="confidence-badge confidence-low" title="Estimativa aproximada">
+                                <ShieldAlert size={12} />
+                                Aproximado
+                              </span>
+                            )}
+                          </div>
                           <div className="price-value-miles">
                             {result.milhas_necessarias?.toLocaleString('pt-BR')}
                           </div>
+                          {result.programa_fidelidade && (
+                            <div className="loyalty-program-label">
+                              {result.programa_fidelidade}
+                            </div>
+                          )}
+                          {result.taxas_milhas > 0 && (
+                            <div className="tax-info">
+                              + R$ {result.taxas_milhas.toFixed(2)} taxas
+                            </div>
+                          )}
                         </div>
                         <div className="price-divider">ou</div>
                         <div className="price-money">
@@ -498,7 +532,7 @@ export default function ResultsPage({ results, onNewSearch, onCompare, onCheckou
                       {result.economia_calculada > 0 && (
                         <div className="economy-badge-modern">
                           <TrendingDown size={14} />
-                          Economize {result.economia_calculada}%
+                          Economize R$ {result.economia_calculada.toFixed(2)}
                         </div>
                       )}
 

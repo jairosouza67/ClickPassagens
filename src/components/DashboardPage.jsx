@@ -8,20 +8,60 @@ const DashboardPage = ({ onNavigate }) => {
   const [activeMenu, setActiveMenu] = useState('home');
   const [confirmedSales, setConfirmedSales] = useState([]);
   const [totalCommissions, setTotalCommissions] = useState(0);
+  const [totalQuotes, setTotalQuotes] = useState(0);
   
   // Obter dados do usuário autenticado
   const { currentUser, userData, logout } = useAuth();
 
-  // Carregar vendas confirmadas ao montar componente
+  // Carregar vendas confirmadas e contar orçamentos ao montar componente
   useEffect(() => {
     loadSalesData();
+    loadQuotesCount();
+    
+    // Listener para atualizar quando localStorage mudar (novo orçamento ou venda confirmada)
+    const handleStorageChange = () => {
+      loadSalesData();
+      loadQuotesCount();
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    
+    // Listener customizado para mudanças locais (mesma aba)
+    const handleLocalUpdate = () => {
+      loadSalesData();
+      loadQuotesCount();
+    };
+    
+    window.addEventListener('quotesUpdated', handleLocalUpdate);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('quotesUpdated', handleLocalUpdate);
+    };
   }, []);
+
+  // Recarregar quando userData mudar (quando incrementQuotes é chamado)
+  useEffect(() => {
+    if (userData) {
+      loadQuotesCount();
+    }
+  }, [userData?.quotes, userData?.searches]);
 
   const loadSalesData = () => {
     const sales = getConfirmedSales();
     setConfirmedSales(sales);
     const commissions = calculateTotalCommissions();
     setTotalCommissions(commissions);
+  };
+
+  const loadQuotesCount = () => {
+    try {
+      const history = JSON.parse(localStorage.getItem('quotesHistory') || '[]');
+      setTotalQuotes(history.length);
+    } catch (error) {
+      console.error('Erro ao carregar contagem de orçamentos:', error);
+      setTotalQuotes(0);
+    }
   };
 
   const handleMenuClick = (menuId) => {
@@ -59,29 +99,27 @@ const DashboardPage = ({ onNavigate }) => {
   // Estatísticas com dados reais do usuário
   const quickStats = [
     { 
-      icon: '🔍', 
-      label: 'Buscas Realizadas', 
-      value: userData?.searches || 0, 
-      color: '#3b82f6' 
-    },
-    { 
       icon: '�', 
-      label: 'Orçamentos Gerados', 
-      value: userData?.quotes || 0, 
+      label: 'Comissões Totais', 
+      value: `R$ ${totalCommissions.toFixed(2)}`, 
       color: '#10b981' 
     },
     { 
-      icon: '⭐', 
-      label: 'Plano Atual', 
-      value: userData?.plan === 'free' ? 'Gratuito' : 
-             userData?.plan === 'basic' ? 'Básico' :
-             userData?.plan === 'premium' ? 'Premium' : 'Enterprise',
+      icon: '�', 
+      label: 'Vendas Confirmadas', 
+      value: confirmedSales.length, 
+      color: '#3b82f6' 
+    },
+    { 
+      icon: '📋', 
+      label: 'Orçamentos Gerados', 
+      value: totalQuotes,
       color: '#f59e0b' 
     },
     { 
-      icon: '📅', 
-      label: 'Membro Desde', 
-      value: userData?.createdAt ? new Date(userData.createdAt).toLocaleDateString('pt-BR', { month: 'short', year: 'numeric' }) : 'Recente',
+      icon: '�', 
+      label: 'Buscas Realizadas', 
+      value: userData?.searches || 0,
       color: '#8b5cf6' 
     }
   ];
@@ -261,7 +299,7 @@ const DashboardPage = ({ onNavigate }) => {
             </h2>
             <div className="orcamentos-preview">
               <div className="orcamento-stat">
-                <span className="stat-number">{(userData?.quotes || 0) - confirmedSales.length}</span>
+                <span className="stat-number">{totalQuotes - confirmedSales.length}</span>
                 <span className="stat-text">Aguardando Confirmação</span>
               </div>
               <p style={{ color: '#64748b', fontSize: '0.9rem', margin: '1rem 0' }}>

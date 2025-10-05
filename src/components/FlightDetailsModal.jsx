@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, Plane, Clock, Briefcase, MapPin, Info, Check } from 'lucide-react';
+import { X, Plane, Clock, Briefcase, MapPin, Info, Check, Shield, ShieldCheck, ShieldAlert } from 'lucide-react';
 import './FlightDetailsModalModern.css';
 
 const FlightDetailsModal = ({ flight, onClose }) => {
@@ -162,9 +162,52 @@ const FlightDetailsModal = ({ flight, onClose }) => {
         <div className="modal-price-section">
           <div className="price-breakdown">
             <div className="price-row">
-              <span className="price-label">Em milhas</span>
+              <div className="price-label-with-badge">
+                <span className="price-label">Em milhas</span>
+                {/* Badge de confiabilidade */}
+                {flight.preco_real_milhas ? (
+                  <span className="confidence-badge-modal confidence-real">
+                    <ShieldCheck size={12} />
+                    Preço Real
+                  </span>
+                ) : flight.nivel_confianca === 'high' ? (
+                  <span className="confidence-badge-modal confidence-high">
+                    <Shield size={12} />
+                    Alta Confiança
+                  </span>
+                ) : flight.nivel_confianca === 'medium' ? (
+                  <span className="confidence-badge-modal confidence-medium">
+                    <Shield size={12} />
+                    Estimado
+                  </span>
+                ) : (
+                  <span className="confidence-badge-modal confidence-low">
+                    <ShieldAlert size={12} />
+                    Aproximado
+                  </span>
+                )}
+              </div>
               <span className="price-value primary">{flight.milhas_necessarias?.toLocaleString('pt-BR')} milhas</span>
             </div>
+            {flight.programa_fidelidade && (
+              <div className="price-row-info">
+                <span className="info-label">Programa:</span>
+                <span className="info-value">{flight.programa_fidelidade}</span>
+              </div>
+            )}
+            {flight.taxas_milhas > 0 && (
+              <div className="price-row-info">
+                <span className="info-label">Taxas estimadas:</span>
+                <span className="info-value">R$ {flight.taxas_milhas.toFixed(2)}</span>
+              </div>
+            )}
+            {flight.custo_total_milhas > 0 && (
+              <div className="price-row-info">
+                <span className="info-label">Custo total (milhas + taxas):</span>
+                <span className="info-value">R$ {flight.custo_total_milhas.toFixed(2)}</span>
+              </div>
+            )}
+            <div className="price-divider-modal"></div>
             <div className="price-row">
               <span className="price-label">ou em dinheiro</span>
               <span className="price-value">R$ {flight.preco_dinheiro?.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
@@ -172,7 +215,7 @@ const FlightDetailsModal = ({ flight, onClose }) => {
             {flight.economia_calculada > 0 && (
               <div className="price-row economy">
                 <span className="price-label">Economia usando milhas</span>
-                <span className="price-value economy-value">{flight.economia_calculada}%</span>
+                <span className="price-value economy-value">R$ {flight.economia_calculada.toFixed(2)}</span>
               </div>
             )}
           </div>

@@ -739,13 +739,70 @@
   text-align: right;
 }
 
+.price-label-container {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px;
+  justify-content: flex-end;
+}
+
 .price-label {
   font-size: 11px;
   color: #9ca3af;
   text-transform: uppercase;
   font-weight: 600;
   letter-spacing: 0.5px;
-  margin-bottom: 4px;
+}
+
+/* Badges de Confiabilidade */
+.confidence-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.confidence-real {
+  background: #dcfce7;
+  color: #166534;
+  border: 1px solid #86efac;
+}
+
+.confidence-high {
+  background: #dbeafe;
+  color: #1e40af;
+  border: 1px solid #93c5fd;
+}
+
+.confidence-medium {
+  background: #fef3c7;
+  color: #92400e;
+  border: 1px solid #fde68a;
+}
+
+.confidence-low {
+  background: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+}
+
+.loyalty-program-label {
+  font-size: 10px;
+  color: #6b7280;
+  margin-top: 2px;
+  font-weight: 500;
+}
+
+.tax-info {
+  font-size: 10px;
+  color: #9ca3af;
+  margin-top: 2px;
 }
 
 .price-value-miles {

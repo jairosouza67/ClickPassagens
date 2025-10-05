@@ -13,7 +13,16 @@ const EXCHANGE_RATES = {
 };
 
 /**
- * Extrai o código do aeroporto de uma string como "São Paulo (GRU)"
+ * Extrai o código do aeroporto de uma s    });
+    
+    localStorage.setItem('quotesHistory', JSON.stringify(updatedHistory));
+    
+    // Disparar evento para atualizar componentes
+    window.dispatchEvent(new Event('quotesUpdated'));
+    
+    return true;
+  } catch (error) {
+    console.error('Erro ao desconfirmar venda:', error);como "São Paulo (GRU)"
  */
 function extractAirportCode(airportString) {
   const match = airportString.match(/\(([A-Z]{3})\)/);
@@ -327,6 +336,9 @@ export function saveQuoteToHistory(quote) {
     const limitedHistory = history.slice(0, 50);
     localStorage.setItem('quotesHistory', JSON.stringify(limitedHistory));
     
+    // Disparar evento para atualizar componentes
+    window.dispatchEvent(new Event('quotesUpdated'));
+    
     return true;
   } catch (error) {
     console.error('Erro ao salvar orçamento:', error);
@@ -364,6 +376,10 @@ export function confirmQuoteSale(quoteNumber) {
     });
     
     localStorage.setItem('quotesHistory', JSON.stringify(updatedHistory));
+    
+    // Disparar evento para atualizar componentes
+    window.dispatchEvent(new Event('quotesUpdated'));
+    
     return true;
   } catch (error) {
     console.error('Erro ao confirmar venda:', error);

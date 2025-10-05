@@ -373,6 +373,48 @@
   border: 2px solid #e5e7eb;
 }
 
+.price-label-with-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.confidence-badge-modal {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.price-row-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 16px;
+  font-size: 13px;
+}
+
+.info-label {
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.info-value {
+  color: #1f2937;
+  font-weight: 600;
+}
+
+.price-divider-modal {
+  height: 1px;
+  background: #e5e7eb;
+  margin: 8px 0;
+}
+
 .price-row.economy {
   background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
   border-color: #10b981;
@@ -405,7 +447,7 @@
   color: white;
   padding: 6px 12px;
   border-radius: 8px;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 800;
 }
 

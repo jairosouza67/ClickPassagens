@@ -98,7 +98,7 @@ class FlightAPIService:
     
     def search_flights_amadeus(self, origem: str, destino: str, data_ida: str, 
                               data_volta: str = None, passageiros: int = 1) -> List[Dict]:
-        """Busca voos usando a API Amadeus"""
+        """Busca voos usando a API Amadeus com suporte a branded fares e loyalty programs"""
         if not self.get_amadeus_token():
             _log('error', "Falha ao obter token Amadeus")
             return []
@@ -113,7 +113,8 @@ class FlightAPIService:
             'destinationLocationCode': destino,
             'departureDate': data_ida,
             'adults': passageiros,
-            'max': 20  # Máximo de resultados
+            'max': 20,  # Máximo de resultados
+            'currencyCode': 'BRL'
         }
         
         if data_volta:
@@ -140,13 +141,16 @@ class FlightAPIService:
         return []
     
     def parse_amadeus_response(self, data: Dict) -> List[Dict]:
-        """Converte resposta da Amadeus para formato interno"""
+        """Converte resposta da Amadeus para formato interno com cálculo inteligente de milhas"""
         resultados = []
         
         if 'data' not in data:
+            _log('warning', "Resposta Amadeus sem campo 'data'")
             return resultados
         
-        for offer in data['data']:
+        _log('info', f"Iniciando parse de {len(data['data'])} ofertas")
+        
+        for idx, offer in enumerate(data['data']):
             try:
                 itinerary = offer['itineraries'][0]  # Primeira parte da viagem
                 segment = itinerary['segments'][0]   # Primeiro segmento
@@ -159,13 +163,18 @@ class FlightAPIService:
                 departure = segment['departure']
                 arrival = segment['arrival']
                 
-                # Preço
+                # Preço em dinheiro
                 price_info = offer['price']
                 preco = float(price_info['total'])
                 
-                # Calcular milhas estimadas (1 real = ~50 milhas, aproximadamente)
-                milhas_estimadas = int(preco * 50)
-                economia_calculada = preco * 0.25  # 25% de economia média
+                # Calcular distância aproximada (se disponível nos metadados)
+                route_distance = 0  # Pode ser extraído de dictionaries da Amadeus se disponível
+                
+                # Usar método inteligente para calcular milhas
+                miles_data = self.calculate_miles_price(preco, carrier_code, route_distance)
+                
+                # Obter informações do programa de fidelidade
+                loyalty_info = self.get_loyalty_program_info(carrier_code)
                 
                 resultado = {
                     'companhia': {
@@ -174,28 +183,37 @@ class FlightAPIService:
                         'codigo': carrier_code,
                         'logo_url': f"https://images.kiwi.com/airlines/64/{carrier_code}.png",
                         'ativa': True,
-                        'valor_milheiro': 20.0,
+                        'valor_milheiro': loyalty_info['miles_value'],
                         'comissao_percentual': 3.0
                     },
                     'voo_numero': segment['number'],
                     'horario_saida': departure['at'].split('T')[1][:5],
                     'horario_chegada': arrival['at'].split('T')[1][:5],
-                    'milhas_necessarias': milhas_estimadas,
+                    'milhas_necessarias': miles_data['estimated_miles'],
                     'preco_dinheiro': preco,
-                    'economia_calculada': economia_calculada,
+                    'economia_calculada': miles_data['savings'],
+                    'taxas_milhas': miles_data['tax_fees'],
+                    'custo_total_milhas': miles_data['total_cost'],
                     'paradas': 'Direto' if len(itinerary['segments']) == 1 else f"{len(itinerary['segments']) - 1} parada(s)",
                     'disponivel': True,
                     'origem': departure['iataCode'],
                     'destino': arrival['iataCode'],
-                    'duracao': itinerary['duration']
+                    'duracao': itinerary['duration'],
+                    # Novos campos para indicar confiabilidade
+                    'preco_real_milhas': miles_data['is_real_price'],
+                    'nivel_confianca': miles_data['confidence_level'],
+                    'programa_fidelidade': miles_data['loyalty_program'],
+                    'metodo_calculo': miles_data['calculation_method']
                 }
                 
                 resultados.append(resultado)
+                _log('debug', f"Oferta {idx+1} processada com sucesso: {carrier_code} {segment['number']}")
                 
             except Exception as e:
-                print(f"Erro ao processar oferta: {e}")
+                _log('error', f"Erro ao processar oferta {idx+1}: {e}", exc_info=True)
                 continue
         
+        _log('info', f"Parse concluído: {len(resultados)} voos processados com sucesso")
         return resultados
     
     def get_airline_name(self, carrier_code: str) -> str:
@@ -220,6 +238,122 @@ class FlightAPIService:
             'AR': 'Aerolineas Argentinas'
         }
         return airlines.get(carrier_code, f"Companhia {carrier_code}")
+    
+    def get_loyalty_program_info(self, carrier_code: str) -> Dict:
+        """Retorna informações do programa de fidelidade da companhia"""
+        loyalty_programs = {
+            'G3': {
+                'program': 'Smiles',
+                'miles_value': 20.0,  # R$ por 1000 milhas
+                'has_api': False,
+                'estimation_method': 'market_rate'
+            },
+            'AD': {
+                'program': 'TudoAzul',
+                'miles_value': 22.0,
+                'has_api': False,
+                'estimation_method': 'market_rate'
+            },
+            'LA': {
+                'program': 'LATAM Pass',
+                'miles_value': 25.0,
+                'has_api': False,
+                'estimation_method': 'market_rate'
+            },
+            'AV': {
+                'program': 'LifeMiles',
+                'miles_value': 18.0,
+                'has_api': False,
+                'estimation_method': 'market_rate'
+            },
+            'TP': {
+                'program': 'TAP Miles&Go',
+                'miles_value': 24.0,
+                'has_api': False,
+                'estimation_method': 'market_rate'
+            },
+            'AF': {
+                'program': 'Flying Blue',
+                'miles_value': 23.0,
+                'has_api': False,
+                'estimation_method': 'market_rate'
+            },
+            'AA': {
+                'program': 'AAdvantage',
+                'miles_value': 26.0,
+                'has_api': False,
+                'estimation_method': 'market_rate'
+            },
+            'DL': {
+                'program': 'SkyMiles',
+                'miles_value': 25.0,
+                'has_api': False,
+                'estimation_method': 'market_rate'
+            },
+            'UA': {
+                'program': 'MileagePlus',
+                'miles_value': 24.0,
+                'has_api': False,
+                'estimation_method': 'market_rate'
+            }
+        }
+        return loyalty_programs.get(carrier_code, {
+            'program': 'Programa de Milhas',
+            'miles_value': 22.0,
+            'has_api': False,
+            'estimation_method': 'average'
+        })
+    
+    def calculate_miles_price(self, cash_price: float, carrier_code: str, route_distance: int = 0) -> Dict:
+        """
+        Calcula preço em milhas baseado em múltiplas fontes
+        Retorna dict com preço estimado e nível de confiabilidade
+        """
+        loyalty_info = self.get_loyalty_program_info(carrier_code)
+        
+        # Método 1: Conversão baseada no valor do milheiro
+        miles_from_market = (cash_price / loyalty_info['miles_value']) * 1000
+        
+        # Método 2: Baseado na distância (se disponível)
+        # Rotas curtas: ~12-15k milhas, Médias: ~20-30k, Longas: ~40-70k
+        miles_from_distance = 0
+        confidence = 'medium'
+        
+        if route_distance > 0:
+            if route_distance < 500:  # Curta
+                miles_from_distance = 12000 + (route_distance * 5)
+                confidence = 'high'
+            elif route_distance < 2000:  # Média
+                miles_from_distance = 20000 + (route_distance * 7)
+                confidence = 'high'
+            else:  # Longa
+                miles_from_distance = 40000 + (route_distance * 8)
+                confidence = 'high'
+        
+        # Usar média ponderada se tivermos distância
+        if miles_from_distance > 0:
+            estimated_miles = int((miles_from_market * 0.6) + (miles_from_distance * 0.4))
+        else:
+            estimated_miles = int(miles_from_market)
+            confidence = 'low'
+        
+        # Calcular economia (taxas geralmente são ~10-15% do valor em dinheiro)
+        tax_fees = cash_price * 0.12
+        miles_cost = (estimated_miles / 1000) * loyalty_info['miles_value']
+        total_cost_with_miles = miles_cost + tax_fees
+        savings = cash_price - total_cost_with_miles
+        
+        return {
+            'estimated_miles': estimated_miles,
+            'tax_fees': round(tax_fees, 2),
+            'total_cost': round(total_cost_with_miles, 2),
+            'savings': round(savings, 2),
+            'confidence_level': confidence,
+            'is_real_price': False,  # Sempre False até termos API real
+            'loyalty_program': loyalty_info['program'],
+            'miles_value': loyalty_info['miles_value'],
+            'calculation_method': 'market_rate_based'
+        }
     
     # REMOVIDO: Método search_flights_fallback() - Não usamos mais dados simulados!
     # Agora buscamos em datas próximas quando não encontramos voos na data solicitada.
