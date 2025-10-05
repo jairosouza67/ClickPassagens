@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { FileText, Upload, Check, ArrowRight, Calendar, MapPin, Users, Plane, Download, Printer, ArrowLeft } from 'lucide-react';
 import { generateInternalQuote, generateClientQuote, saveQuoteToHistory } from '../services/quoteService.js';
+import { generatePDF, generateWord } from '../services/documentGenerator.js';
 import { useAuth } from '../contexts/AuthContext.jsx';
 import './QuotePage.css';
 
@@ -9,6 +10,7 @@ const QuotePage = ({ selectedFlight, onSubmit, onBack }) => {
   const [internalQuote, setInternalQuote] = useState(null);
   const [clientQuote, setClientQuote] = useState(null);
   const [activeQuoteView, setActiveQuoteView] = useState('client'); // 'client' or 'internal'
+  const [downloadFormat, setDownloadFormat] = useState('pdf'); // 'pdf' or 'word'
   
   // Hook de autenticação para auto-preencher dados do usuário
   const { currentUser, userData, incrementQuotes } = useAuth();
@@ -112,15 +114,38 @@ const QuotePage = ({ selectedFlight, onSubmit, onBack }) => {
     if (onSubmit) onSubmit(formData);
   };
 
-  const downloadQuote = (quoteType) => {
+  const downloadQuote = async (quoteType) => {
+    console.log('=== DOWNLOAD QUOTE INICIADO ===');
+    console.log('quoteType:', quoteType);
+    console.log('downloadFormat:', downloadFormat);
+    
     const quote = quoteType === 'internal' ? internalQuote : clientQuote;
-    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(quote, null, 2));
-    const downloadAnchorNode = document.createElement('a');
-    downloadAnchorNode.setAttribute("href", dataStr);
-    downloadAnchorNode.setAttribute("download", `orcamento-${quoteType}-${quote.quoteNumber}.json`);
-    document.body.appendChild(downloadAnchorNode);
-    downloadAnchorNode.click();
-    downloadAnchorNode.remove();
+    console.log('quote selecionado:', quote);
+    
+    if (!quote) {
+      console.error('ERRO: Quote não existe!');
+      alert('Erro: Orçamento não disponível. Gere o orçamento primeiro.');
+      return;
+    }
+    
+    try {
+      console.log(`Iniciando geração de ${downloadFormat}...`);
+      
+      if (downloadFormat === 'pdf') {
+        console.log('Chamando generatePDF...');
+        generatePDF(quote, quoteType);
+      } else if (downloadFormat === 'word') {
+        console.log('Chamando generateWord...');
+        await generateWord(quote, quoteType);
+      }
+      
+      console.log('=== DOWNLOAD CONCLUÍDO ===');
+    } catch (error) {
+      console.error('=== ERRO NO DOWNLOAD ===');
+      console.error('Erro ao gerar documento:', error);
+      console.error('Stack:', error.stack);
+      alert(`Erro ao gerar documento: ${error.message}`);
+    }
   };
 
   const printQuote = () => {
@@ -531,41 +556,78 @@ const QuotePage = ({ selectedFlight, onSubmit, onBack }) => {
                       </div>
                     </div>
 
-                    <div style={{ marginTop: '1.5rem', display: 'flex', gap: '1rem', justifyContent: 'center' }}>
-                      <button
-                        onClick={() => downloadQuote('client')}
-                        style={{
-                          padding: '12px 24px',
-                          background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
-                          color: 'white',
-                          border: 'none',
-                          borderRadius: '8px',
-                          fontWeight: '600',
-                          cursor: 'pointer',
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '8px'
-                        }}
-                      >
-                        <Download size={20} /> Baixar Orçamento
-                      </button>
-                      <button
-                        onClick={printQuote}
-                        style={{
-                          padding: '12px 24px',
-                          background: 'linear-gradient(135deg, #64748b 0%, #475569 100%)',
-                          color: 'white',
-                          border: 'none',
-                          borderRadius: '8px',
-                          fontWeight: '600',
-                          cursor: 'pointer',
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '8px'
-                        }}
-                      >
-                        <Printer size={20} /> Imprimir
-                      </button>
+                    <div style={{ marginTop: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem', alignItems: 'center' }}>
+                      {/* Seletor de Formato */}
+                      <div style={{ display: 'flex', gap: '0.5rem', background: '#f1f5f9', padding: '0.5rem', borderRadius: '8px' }}>
+                        <button
+                          onClick={() => setDownloadFormat('pdf')}
+                          style={{
+                            padding: '8px 20px',
+                            background: downloadFormat === 'pdf' ? 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)' : 'transparent',
+                            color: downloadFormat === 'pdf' ? 'white' : '#64748b',
+                            border: 'none',
+                            borderRadius: '6px',
+                            fontWeight: '600',
+                            cursor: 'pointer',
+                            transition: 'all 0.3s ease'
+                          }}
+                        >
+                          📄 PDF
+                        </button>
+                        <button
+                          onClick={() => setDownloadFormat('word')}
+                          style={{
+                            padding: '8px 20px',
+                            background: downloadFormat === 'word' ? 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)' : 'transparent',
+                            color: downloadFormat === 'word' ? 'white' : '#64748b',
+                            border: 'none',
+                            borderRadius: '6px',
+                            fontWeight: '600',
+                            cursor: 'pointer',
+                            transition: 'all 0.3s ease'
+                          }}
+                        >
+                          📝 Word
+                        </button>
+                      </div>
+
+                      {/* Botões de Ação */}
+                      <div style={{ display: 'flex', gap: '1rem' }}>
+                        <button
+                          onClick={() => downloadQuote('client')}
+                          style={{
+                            padding: '12px 24px',
+                            background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '8px',
+                            fontWeight: '600',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '8px'
+                          }}
+                        >
+                          <Download size={20} /> Baixar {downloadFormat === 'pdf' ? 'PDF' : 'Word'}
+                        </button>
+                        <button
+                          onClick={printQuote}
+                          style={{
+                            padding: '12px 24px',
+                            background: 'linear-gradient(135deg, #64748b 0%, #475569 100%)',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '8px',
+                            fontWeight: '600',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '8px'
+                          }}
+                        >
+                          <Printer size={20} /> Imprimir
+                        </button>
+                      </div>
                     </div>
                   </div>
                 )}
@@ -681,7 +743,42 @@ const QuotePage = ({ selectedFlight, onSubmit, onBack }) => {
                       </div>
                     </div>
 
-                    <div style={{ marginTop: '1.5rem', display: 'flex', gap: '1rem', justifyContent: 'center' }}>
+                    <div style={{ marginTop: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem', alignItems: 'center' }}>
+                      {/* Seletor de Formato */}
+                      <div style={{ display: 'flex', gap: '0.5rem', background: '#f1f5f9', padding: '0.5rem', borderRadius: '8px' }}>
+                        <button
+                          onClick={() => setDownloadFormat('pdf')}
+                          style={{
+                            padding: '8px 20px',
+                            background: downloadFormat === 'pdf' ? 'linear-gradient(135deg, #10b981 0%, #34d399 100%)' : 'transparent',
+                            color: downloadFormat === 'pdf' ? 'white' : '#64748b',
+                            border: 'none',
+                            borderRadius: '6px',
+                            fontWeight: '600',
+                            cursor: 'pointer',
+                            transition: 'all 0.3s ease'
+                          }}
+                        >
+                          📄 PDF
+                        </button>
+                        <button
+                          onClick={() => setDownloadFormat('word')}
+                          style={{
+                            padding: '8px 20px',
+                            background: downloadFormat === 'word' ? 'linear-gradient(135deg, #10b981 0%, #34d399 100%)' : 'transparent',
+                            color: downloadFormat === 'word' ? 'white' : '#64748b',
+                            border: 'none',
+                            borderRadius: '6px',
+                            fontWeight: '600',
+                            cursor: 'pointer',
+                            transition: 'all 0.3s ease'
+                          }}
+                        >
+                          📝 Word
+                        </button>
+                      </div>
+
+                      {/* Botão de Download */}
                       <button
                         onClick={() => downloadQuote('internal')}
                         style={{
@@ -697,7 +794,7 @@ const QuotePage = ({ selectedFlight, onSubmit, onBack }) => {
                           gap: '8px'
                         }}
                       >
-                        <Download size={20} /> Baixar Orçamento Interno
+                        <Download size={20} /> Baixar Orçamento Interno ({downloadFormat === 'pdf' ? 'PDF' : 'Word'})
                       </button>
                     </div>
                   </div>
