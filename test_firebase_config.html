@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste Firebase - ClickPassagens</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            border-bottom: 3px solid #4285f4;
+            padding-bottom: 10px;
+        }
+        .status {
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        button {
+            background: #4285f4;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+        }
+        button:hover {
+            background: #357ae8;
+        }
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .log {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+            max-height: 400px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        .log-entry {
+            margin: 5px 0;
+            padding: 5px;
+            border-left: 3px solid #4285f4;
+            padding-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔥 Teste de Configuração Firebase</h1>
+        
+        <div id="config-status"></div>
+        
+        <div style="margin: 20px 0;">
+            <button onclick="testEmailLogin()">Testar Login com Email</button>
+            <button onclick="testGoogleLogin()">Testar Login com Google</button>
+            <button onclick="checkCurrentUser()">Verificar Usuário Atual</button>
+            <button onclick="clearLogs()">Limpar Logs</button>
+        </div>
+        
+        <div id="test-form" style="display:none; margin: 20px 0; padding: 20px; background: #f8f9fa; border-radius: 5px;">
+            <h3>Login de Teste</h3>
+            <input type="email" id="email" placeholder="Email" style="width: 100%; padding: 10px; margin: 5px 0; border: 1px solid #ddd; border-radius: 5px;">
+            <input type="password" id="password" placeholder="Senha" style="width: 100%; padding: 10px; margin: 5px 0; border: 1px solid #ddd; border-radius: 5px;">
+            <button onclick="doEmailLogin()">Fazer Login</button>
+        </div>
+        
+        <h3>📋 Logs:</h3>
+        <div id="logs" class="log"></div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { 
+            getAuth, 
+            signInWithEmailAndPassword,
+            signInWithPopup,
+            GoogleAuthProvider,
+            onAuthStateChanged
+        } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+
+        // Configuração do Firebase (mesma do .env)
+        const firebaseConfig = {
+            apiKey: "AIzaSyDAcLO47JOWxvEa-fpzDI02zd6C1ab6uGA",
+            authDomain: "clickpassagens-dee10.firebaseapp.com",
+            projectId: "clickpassagens-dee10",
+            storageBucket: "clickpassagens-dee10.firebasestorage.app",
+            messagingSenderId: "334285502963",
+            appId: "1:334285502963:web:31fe2e939e4bf56aac3a86"
+        };
+
+        let app, auth, googleProvider;
+
+        function log(message, type = 'info') {
+            const logsDiv = document.getElementById('logs');
+            const entry = document.createElement('div');
+            entry.className = 'log-entry';
+            entry.style.borderLeftColor = type === 'error' ? '#dc3545' : type === 'success' ? '#28a745' : '#4285f4';
+            entry.innerHTML = `<strong>[${new Date().toLocaleTimeString()}]</strong> ${message}`;
+            logsDiv.appendChild(entry);
+            logsDiv.scrollTop = logsDiv.scrollHeight;
+            console.log(message);
+        }
+
+        function showStatus(message, type) {
+            const statusDiv = document.getElementById('config-status');
+            statusDiv.className = `status ${type}`;
+            statusDiv.textContent = message;
+        }
+
+        // Inicializar Firebase
+        try {
+            log('🔄 Inicializando Firebase...', 'info');
+            app = initializeApp(firebaseConfig);
+            auth = getAuth(app);
+            googleProvider = new GoogleAuthProvider();
+            
+            log('✅ Firebase inicializado com sucesso!', 'success');
+            showStatus('✅ Firebase configurado corretamente!', 'success');
+            
+            // Listener de autenticação
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    log(`👤 Usuário logado: ${user.email}`, 'success');
+                    log(`   - UID: ${user.uid}`, 'info');
+                    log(`   - Display Name: ${user.displayName || 'N/A'}`, 'info');
+                    log(`   - Email Verified: ${user.emailVerified}`, 'info');
+                } else {
+                    log('🚪 Nenhum usuário logado', 'info');
+                }
+            });
+            
+        } catch (error) {
+            log(`❌ ERRO ao inicializar Firebase: ${error.message}`, 'error');
+            showStatus('❌ Erro na configuração do Firebase! Verifique as credenciais.', 'error');
+            console.error(error);
+        }
+
+        // Funções globais para os botões
+        window.testEmailLogin = function() {
+            document.getElementById('test-form').style.display = 'block';
+            log('📝 Formulário de login exibido', 'info');
+        };
+
+        window.doEmailLogin = async function() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            if (!email || !password) {
+                log('⚠️ Preencha email e senha!', 'error');
+                return;
+            }
+            
+            try {
+                log(`🔄 Tentando login com: ${email}`, 'info');
+                const result = await signInWithEmailAndPassword(auth, email, password);
+                log(`✅ Login bem-sucedido! Usuário: ${result.user.email}`, 'success');
+            } catch (error) {
+                log(`❌ ERRO no login: ${error.code} - ${error.message}`, 'error');
+                
+                // Mensagens amigáveis
+                if (error.code === 'auth/user-not-found') {
+                    log('💡 Sugestão: Esta conta não existe. Crie uma nova conta primeiro.', 'info');
+                } else if (error.code === 'auth/wrong-password') {
+                    log('💡 Sugestão: Senha incorreta. Tente novamente.', 'info');
+                } else if (error.code === 'auth/invalid-email') {
+                    log('💡 Sugestão: Email inválido.', 'info');
+                }
+            }
+        };
+
+        window.testGoogleLogin = async function() {
+            try {
+                log('🔄 Iniciando login com Google...', 'info');
+                log('🪟 Abrindo popup do Google...', 'info');
+                
+                const result = await signInWithPopup(auth, googleProvider);
+                
+                log(`✅ Login com Google bem-sucedido!`, 'success');
+                log(`   - Email: ${result.user.email}`, 'success');
+                log(`   - Nome: ${result.user.displayName}`, 'success');
+                log(`   - Foto: ${result.user.photoURL}`, 'info');
+                
+            } catch (error) {
+                log(`❌ ERRO no login Google: ${error.code} - ${error.message}`, 'error');
+                
+                // Mensagens amigáveis
+                if (error.code === 'auth/popup-blocked') {
+                    log('💡 Sugestão: O popup foi bloqueado! Permita popups para este site.', 'info');
+                } else if (error.code === 'auth/popup-closed-by-user') {
+                    log('💡 Você fechou o popup. Tente novamente.', 'info');
+                } else if (error.code === 'auth/unauthorized-domain') {
+                    log('💡 ERRO CRÍTICO: Domínio não autorizado no Firebase Console!', 'error');
+                    log('   Configure em: Authentication > Settings > Authorized domains', 'info');
+                }
+            }
+        };
+
+        window.checkCurrentUser = function() {
+            const user = auth.currentUser;
+            if (user) {
+                log('👤 Usuário atual:', 'info');
+                log(`   - Email: ${user.email}`, 'info');
+                log(`   - UID: ${user.uid}`, 'info');
+                log(`   - Display Name: ${user.displayName || 'N/A'}`, 'info');
+                log(`   - Email Verified: ${user.emailVerified}`, 'info');
+            } else {
+                log('🚪 Nenhum usuário logado no momento', 'info');
+            }
+        };
+
+        window.clearLogs = function() {
+            document.getElementById('logs').innerHTML = '';
+            log('🗑️ Logs limpos', 'info');
+        };
+
+        // Log inicial
+        log('🚀 Página carregada. Pronto para testar!', 'success');
+    </script>
+</body>
+</html>
