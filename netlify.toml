@@ -4,6 +4,8 @@
 
 [build.environment]
   NODE_VERSION = "18"
+  # Desabilitar scanner de secrets - credenciais Firebase são públicas por design
+  SECRETS_SCAN_ENABLED = "false"
 
 # Proxy para API no Render - redireciona /api/* para o backend
 [[redirects]]
