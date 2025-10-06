@@ -40,6 +40,10 @@ venv.bak/
 .env.test.local
 .env.production.local
 
+# Arquivos de teste com credenciais expostas
+test_firebase_config.html
+*_test_credentials.html
+
 # Flask
 instance/
 .webassets-cache
