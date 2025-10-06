@@ -34,13 +34,12 @@ def _log(level: str, message: str, exc_info: bool = False):
 
 class FlightAPIService:
     def __init__(self):
-        # Credenciais padrão para Render (plano gratuito tem limite de env vars)
-        # IMPORTANTE: Em produção real, use variáveis de ambiente!
-        default_key = 'cppo2FiXfoOVQ7jyggpCKl0fG8NYH1Pu'
-        default_secret = 'AQlRGZdG1Qm3y74f'
+        # ⚠️ IMPORTANTE: Configure as credenciais Amadeus no arquivo .env
+        # Nunca use credenciais hardcoded em produção!
+        # Obtenha novas credenciais em: https://developers.amadeus.com/
         
-        self.amadeus_api_key = config('AMADEUS_API_KEY', default=default_key)
-        self.amadeus_api_secret = config('AMADEUS_API_SECRET', default=default_secret)
+        self.amadeus_api_key = config('AMADEUS_API_KEY', default='')
+        self.amadeus_api_secret = config('AMADEUS_API_SECRET', default='')
         self.skyscanner_api_key = config('SKYSCANNER_API_KEY', default='')
         self.amadeus_base_url = config('AMADEUS_BASE_URL', default='https://test.api.amadeus.com')
         self.amadeus_token = None
