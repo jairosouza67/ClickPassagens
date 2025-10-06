@@ -24,6 +24,7 @@ import {
   User
 } from 'lucide-react'
 import { AuthProvider, useAuth } from './contexts/AuthContext.jsx'
+import { handleRedirectResult } from './config/firebase.js'
 import BuscaIntegrada from './components/BuscaIntegrada.jsx'
 import PushNotifications from './components/PushNotifications.jsx'
 import FlightCard from './components/FlightCard.jsx'
@@ -57,6 +58,33 @@ function App() {
 
   // Inicializar Google Analytics
   useGoogleAnalytics();
+
+  // Capturar resultado do redirect (login Google em mobile)
+  useEffect(() => {
+    const checkRedirectResult = async () => {
+      // Verificar se estamos voltando de um redirect do Google
+      const googleLoginInProgress = sessionStorage.getItem('googleLoginInProgress');
+      
+      if (googleLoginInProgress) {
+        console.log('🔄 [App] Detectado redirect Google em andamento...');
+        
+        try {
+          const result = await handleRedirectResult();
+          
+          if (result && result.success) {
+            console.log('✅ [App] Redirect Google processado com sucesso!');
+            sessionStorage.removeItem('googleLoginInProgress');
+          } else if (result && !result.noResult) {
+            console.log('⚠️ [App] Erro no redirect:', result.error);
+          }
+        } catch (error) {
+          console.error('❌ [App] Erro ao processar redirect:', error);
+        }
+      }
+    };
+    
+    checkRedirectResult();
+  }, []);
 
   // Rastrear mudança de abas
   useEffect(() => {

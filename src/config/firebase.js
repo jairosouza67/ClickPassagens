@@ -142,50 +142,77 @@ export async function loginWithEmail(email, password) {
 }
 
 /**
- * Login com Google - VERSÃO SIMPLIFICADA (apenas popup)
+ * Detecta se é dispositivo mobile
+ */
+function isMobileDevice() {
+  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+         (window.innerWidth <= 768);
+}
+
+/**
+ * Login com Google - VERSÃO OTIMIZADA (popup para desktop, redirect para mobile)
  */
 export async function loginWithGoogle() {
   if (!auth || !googleProvider) {
     return { success: false, error: 'Firebase não configurado. Configure o arquivo .env para usar login com Google.' };
   }
   
+  const isMobile = isMobileDevice();
+  console.log('🔵 [Firebase] Iniciando login com Google...');
+  console.log('📱 [Firebase] Dispositivo:', isMobile ? 'MOBILE' : 'DESKTOP');
+  console.log('🔵 [Firebase] Auth:', auth);
+  console.log('🔵 [Firebase] Provider:', googleProvider);
+  
   try {
-    console.log('🔵 [Firebase] Iniciando login com Google...');
-    console.log('🔵 [Firebase] Auth:', auth);
-    console.log('🔵 [Firebase] Provider:', googleProvider);
-    
-    // SEMPRE usar popup (simplificado)
-    console.log('🪟 [Firebase] Chamando signInWithPopup...');
-    const result = await signInWithPopup(auth, googleProvider);
-    
-    console.log('✅ [Firebase] Popup retornou resultado:', result);
-    const user = result.user;
-    console.log('✅ [Firebase] User email:', user.email);
-    console.log('✅ [Firebase] User displayName:', user.displayName);
-    
-    // Verificar/criar documento do usuário
-    console.log('📄 [Firebase] Verificando documento no Firestore...');
-    const userDoc = await getDoc(doc(db, 'users', user.uid));
-    
-    if (!userDoc.exists()) {
-      console.log('📝 [Firebase] Documento não existe, criando...');
-      await setDoc(doc(db, 'users', user.uid), {
-        uid: user.uid,
-        email: user.email,
-        displayName: user.displayName || '',
-        createdAt: new Date().toISOString(),
-        photoURL: user.photoURL || '',
-        plan: 'free',
-        searches: 0,
-        quotes: 0
-      });
-      console.log('✅ [Firebase] Documento criado com sucesso!');
+    // Em mobile, usar redirect (melhor experiência)
+    // Em desktop, usar popup (mais rápido)
+    if (isMobile) {
+      console.log('📱 [Firebase] Mobile detectado - usando REDIRECT...');
+      
+      // Salvar flag para identificar que estamos fazendo login
+      sessionStorage.setItem('googleLoginInProgress', 'true');
+      
+      // Redirecionar para login do Google
+      await signInWithRedirect(auth, googleProvider);
+      
+      // A função retorna aqui, mas o redirect vai acontecer
+      // O resultado será capturado em handleRedirectResult()
+      return { success: true, redirect: true };
+      
     } else {
-      console.log('✅ [Firebase] Documento já existe');
+      // Desktop: usar popup
+      console.log('🖥️ [Firebase] Desktop - usando POPUP...');
+      const result = await signInWithPopup(auth, googleProvider);
+      
+      console.log('✅ [Firebase] Popup retornou resultado:', result);
+      const user = result.user;
+      console.log('✅ [Firebase] User email:', user.email);
+      console.log('✅ [Firebase] User displayName:', user.displayName);
+      
+      // Verificar/criar documento do usuário
+      console.log('📄 [Firebase] Verificando documento no Firestore...');
+      const userDoc = await getDoc(doc(db, 'users', user.uid));
+      
+      if (!userDoc.exists()) {
+        console.log('📝 [Firebase] Documento não existe, criando...');
+        await setDoc(doc(db, 'users', user.uid), {
+          uid: user.uid,
+          email: user.email,
+          displayName: user.displayName || '',
+          createdAt: new Date().toISOString(),
+          photoURL: user.photoURL || '',
+          plan: 'free',
+          searches: 0,
+          quotes: 0
+        });
+        console.log('✅ [Firebase] Documento criado com sucesso!');
+      } else {
+        console.log('✅ [Firebase] Documento já existe');
+      }
+      
+      console.log('🎉 [Firebase] Login Google concluído com sucesso!');
+      return { success: true, user };
     }
-    
-    console.log('🎉 [Firebase] Login Google concluído com sucesso!');
-    return { success: true, user };
     
   } catch (error) {
     console.error('❌ [Firebase] ERRO no login Google:');
@@ -208,7 +235,7 @@ export async function loginWithGoogle() {
         errorMessage = 'Aguarde e tente novamente.';
         break;
       case 'auth/unauthorized-domain':
-        errorMessage = 'Domínio não autorizado. Configure no Firebase.';
+        errorMessage = 'Domínio não autorizado no Firebase Console. Adicione seu domínio em: Authentication > Settings > Authorized domains';
         break;
       default:
         errorMessage = getErrorMessage(error.code) || error.message;
