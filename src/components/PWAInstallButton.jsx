@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Button } from './ui/button.jsx';
 import { Badge } from './ui/badge.jsx';
-import { Download, Smartphone, Share, Bell } from 'lucide-react';
+import { Download, Smartphone, Share } from 'lucide-react';
 import { usePWA } from '../hooks/usePWA.js';
 
 export default function PWAInstallButton() {
@@ -12,21 +12,15 @@ export default function PWAInstallButton() {
     isStandalone,
     installApp,
     shareApp,
-    requestNotificationPermission,
     sendNotification
   } = usePWA();
 
   const [isInstalling, setIsInstalling] = useState(false);
-  const [showNotificationPrompt, setShowNotificationPrompt] = useState(false);
 
   const handleInstall = async () => {
     setIsInstalling(true);
     try {
-      const success = await installApp();
-      if (success) {
-        // Mostrar prompt para notificações após instalação
-        setShowNotificationPrompt(true);
-      }
+      await installApp();
     } catch (error) {
       console.error('Erro na instalação:', error);
     } finally {
@@ -35,24 +29,7 @@ export default function PWAInstallButton() {
   };
 
   const handleShare = async () => {
-    const success = await shareApp();
-    if (success) {
-      sendNotification('Link copiado!', {
-        body: 'O link do ClickPassagens foi copiado para sua área de transferência.',
-        tag: 'share-success'
-      });
-    }
-  };
-
-  const handleNotificationPermission = async () => {
-    const granted = await requestNotificationPermission();
-    if (granted) {
-      sendNotification('Notificações ativadas!', {
-        body: 'Você receberá alertas sobre as melhores ofertas de milhas.',
-        tag: 'notification-enabled'
-      });
-    }
-    setShowNotificationPrompt(false);
+    await shareApp();
   };
 
   // Se já está instalado como PWA, mostrar indicador
@@ -107,36 +84,6 @@ export default function PWAInstallButton() {
         <Share className="h-4 w-4 mr-2" />
         Compartilhar
       </Button>
-
-      {/* Prompt para Notificações */}
-      {showNotificationPrompt && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg p-6 max-w-sm w-full">
-            <div className="flex items-center space-x-3 mb-4">
-              <Bell className="h-6 w-6 text-blue-600" />
-              <h3 className="text-lg font-semibold">Ativar Notificações?</h3>
-            </div>
-            <p className="text-gray-600 mb-6">
-              Receba alertas sobre as melhores ofertas de passagens com milhas diretamente no seu dispositivo.
-            </p>
-            <div className="flex space-x-3">
-              <Button
-                onClick={handleNotificationPermission}
-                className="flex-1"
-              >
-                Ativar
-              </Button>
-              <Button
-                onClick={() => setShowNotificationPrompt(false)}
-                variant="outline"
-                className="flex-1"
-              >
-                Agora não
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Indicador de Status Online/Offline */}
       {!isOnline && (
