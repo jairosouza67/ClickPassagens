@@ -12,6 +12,7 @@ const QuotesHistoryPage = ({ onNavigate }) => {
   const [filterType, setFilterType] = useState('all'); // 'all', 'client', 'internal'
   const [sortBy, setSortBy] = useState('recent'); // 'recent', 'oldest', 'price'
   const [downloadFormat, setDownloadFormat] = useState('pdf');
+  const [viewMode, setViewMode] = useState('client'); // 'client' ou 'internal' - para alternar visualização
 
   // Carregar orçamentos ao montar o componente
   useEffect(() => {
@@ -279,9 +280,19 @@ const QuotesHistoryPage = ({ onNavigate }) => {
 
                   <div className="quote-card-body">
                     <div className="quote-route">
-                      <strong>{quote.flight?.origin?.code || 'N/A'}</strong>
-                      <Plane size={16} style={{ color: '#64748b' }} />
-                      <strong>{quote.flight?.destination?.code || 'N/A'}</strong>
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                        <strong>{quote.flight?.origin?.code || 'N/A'}</strong>
+                        <small style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '2px' }}>
+                          {quote.flight?.origin?.name || quote.flight?.origin?.city || ''}
+                        </small>
+                      </div>
+                      <Plane size={16} style={{ color: '#64748b', margin: '0 10px' }} />
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                        <strong>{quote.flight?.destination?.code || 'N/A'}</strong>
+                        <small style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '2px' }}>
+                          {quote.flight?.destination?.name || quote.flight?.destination?.city || ''}
+                        </small>
+                      </div>
                     </div>
                     <div className="quote-details-mini">
                       <span>{quote.flight?.airline || 'N/A'}</span>
@@ -328,6 +339,49 @@ const QuotesHistoryPage = ({ onNavigate }) => {
                 </button>
               </div>
 
+              {/* Toggle entre Orçamento Cliente e Interno */}
+              <div className="quote-view-toggle" style={{
+                display: 'flex',
+                gap: '10px',
+                padding: '20px',
+                background: '#f8fafc',
+                borderBottom: '2px solid #e2e8f0',
+                justifyContent: 'center'
+              }}>
+                <button
+                  onClick={() => setViewMode('client')}
+                  style={{
+                    padding: '12px 32px',
+                    background: viewMode === 'client' ? 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)' : 'transparent',
+                    color: viewMode === 'client' ? 'white' : '#64748b',
+                    border: viewMode === 'client' ? 'none' : '2px solid #cbd5e1',
+                    borderRadius: '8px',
+                    fontWeight: '600',
+                    cursor: 'pointer',
+                    transition: 'all 0.3s ease',
+                    fontSize: '0.95rem'
+                  }}
+                >
+                  📄 Orçamento Cliente
+                </button>
+                <button
+                  onClick={() => setViewMode('internal')}
+                  style={{
+                    padding: '12px 32px',
+                    background: viewMode === 'internal' ? 'linear-gradient(135deg, #10b981 0%, #34d399 100%)' : 'transparent',
+                    color: viewMode === 'internal' ? 'white' : '#64748b',
+                    border: viewMode === 'internal' ? 'none' : '2px solid #cbd5e1',
+                    borderRadius: '8px',
+                    fontWeight: '600',
+                    cursor: 'pointer',
+                    transition: 'all 0.3s ease',
+                    fontSize: '0.95rem'
+                  }}
+                >
+                  💼 Orçamento Interno
+                </button>
+              </div>
+
               <div className="quote-details-content">
                 {/* Informações Básicas */}
                 <div className="details-section">
@@ -367,16 +421,26 @@ const QuotesHistoryPage = ({ onNavigate }) => {
                         <span className="detail-label">Voo:</span>
                         <span className="detail-value">{selectedQuote.flight.flightNumber}</span>
                       </div>
-                      <div className="detail-item">
+                      <div className="detail-item" style={{ gridColumn: '1 / -1' }}>
                         <span className="detail-label">Origem:</span>
                         <span className="detail-value">
-                          {selectedQuote.flight.origin?.name} ({selectedQuote.flight.origin?.code})
+                          <strong>{selectedQuote.flight.origin?.name || selectedQuote.flight.origin?.city}</strong>
+                          {selectedQuote.flight.origin?.code && (
+                            <span style={{ color: '#64748b', fontSize: '0.9em', marginLeft: '8px' }}>
+                              ({selectedQuote.flight.origin.code})
+                            </span>
+                          )}
                         </span>
                       </div>
-                      <div className="detail-item">
+                      <div className="detail-item" style={{ gridColumn: '1 / -1' }}>
                         <span className="detail-label">Destino:</span>
                         <span className="detail-value">
-                          {selectedQuote.flight.destination?.name} ({selectedQuote.flight.destination?.code})
+                          <strong>{selectedQuote.flight.destination?.name || selectedQuote.flight.destination?.city}</strong>
+                          {selectedQuote.flight.destination?.code && (
+                            <span style={{ color: '#64748b', fontSize: '0.9em', marginLeft: '8px' }}>
+                              ({selectedQuote.flight.destination.code})
+                            </span>
+                          )}
                         </span>
                       </div>
                       <div className="detail-item">
@@ -435,7 +499,7 @@ const QuotesHistoryPage = ({ onNavigate }) => {
                   <div className="details-section">
                     <h3>💰 Valores</h3>
                     <div className="pricing-details">
-                      {selectedQuote.quoteType === 'INTERNAL' ? (
+                      {viewMode === 'internal' ? (
                         <>
                           <div className="pricing-row">
                             <span>Custo Base:</span>
@@ -514,9 +578,9 @@ const QuotesHistoryPage = ({ onNavigate }) => {
                   <div className="action-buttons">
                     <button 
                       className="btn-download"
-                      onClick={() => handleDownload(selectedQuote, selectedQuote.quoteType === 'INTERNAL' ? 'internal' : 'client')}
+                      onClick={() => handleDownload(selectedQuote, viewMode)}
                     >
-                      <Download size={20} /> Baixar {downloadFormat === 'pdf' ? 'PDF' : 'Word'}
+                      <Download size={20} /> Baixar {downloadFormat === 'pdf' ? 'PDF' : 'Word'} ({viewMode === 'internal' ? 'Interno' : 'Cliente'})
                     </button>
                     <button 
                       className="btn-delete"

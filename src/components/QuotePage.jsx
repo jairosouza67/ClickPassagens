@@ -11,6 +11,7 @@ const QuotePage = ({ selectedFlight, onSubmit, onBack }) => {
   const [clientQuote, setClientQuote] = useState(null);
   const [activeQuoteView, setActiveQuoteView] = useState('client'); // 'client' or 'internal'
   const [downloadFormat, setDownloadFormat] = useState('pdf'); // 'pdf' or 'word'
+  const [profitMargin, setProfitMargin] = useState(30); // Margem de lucro padrão: 30%
   
   // Hook de autenticação para auto-preencher dados do usuário
   const { currentUser, userData, incrementQuotes } = useAuth();
@@ -82,8 +83,32 @@ const QuotePage = ({ selectedFlight, onSubmit, onBack }) => {
     if (currentStep > 1) setCurrentStep(currentStep - 1);
   };
 
+  const handleNewQuote = () => {
+    // Resetar orçamentos
+    setInternalQuote(null);
+    setClientQuote(null);
+    setActiveQuoteView('client');
+    setProfitMargin(30);
+    
+    // Resetar formulário mantendo dados do voo selecionado
+    setFormData(prev => ({
+      ...prev,
+      observacoes: '',
+      arquivo: null
+    }));
+    
+    // Voltar para step 2 (dados do cliente) se houver voo selecionado
+    // ou step 1 se não houver
+    setCurrentStep(selectedFlight ? 2 : 1);
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
+    
+    console.log('=== GERANDO ORÇAMENTO ===');
+    console.log('selectedFlight:', selectedFlight);
+    console.log('formData:', formData);
+    console.log('profitMargin:', profitMargin);
     
     // Gerar orçamentos
     if (selectedFlight) {
@@ -94,19 +119,40 @@ const QuotePage = ({ selectedFlight, onSubmit, onBack }) => {
         passageiros: formData.passageiros
       };
       
-      const internal = generateInternalQuote(selectedFlight, passengersData);
-      const client = generateClientQuote(selectedFlight, passengersData);
+      console.log('passengersData:', passengersData);
       
-      setInternalQuote(internal);
-      setClientQuote(client);
+      // Converter margem de porcentagem (0-100) para decimal (0-1)
+      const marginDecimal = profitMargin / 100;
+      console.log('marginDecimal:', marginDecimal);
       
-      // Salvar no histórico
-      saveQuoteToHistory(client);
-      
-      // Incrementar contador de orçamentos do usuário
-      if (currentUser) {
-        incrementQuotes();
+      try {
+        const internal = generateInternalQuote(selectedFlight, passengersData, marginDecimal);
+        const client = generateClientQuote(selectedFlight, passengersData, marginDecimal);
+        
+        console.log('internal quote:', internal);
+        console.log('client quote:', client);
+        
+        setInternalQuote(internal);
+        setClientQuote(client);
+        
+        // Salvar no histórico
+        saveQuoteToHistory(client);
+        
+        // Incrementar contador de orçamentos do usuário
+        if (currentUser) {
+          incrementQuotes();
+        }
+        
+        console.log('✅ Orçamentos gerados com sucesso!');
+      } catch (error) {
+        console.error('❌ ERRO ao gerar orçamentos:', error);
+        alert('Erro ao gerar orçamento: ' + error.message);
+        return;
       }
+    } else {
+      console.error('❌ selectedFlight não está definido!');
+      alert('Erro: Nenhum voo selecionado. Por favor, volte e selecione um voo.');
+      return;
     }
     
     setCurrentStep(4);
@@ -344,6 +390,36 @@ const QuotePage = ({ selectedFlight, onSubmit, onBack }) => {
               <h2 className="step-title">
                 <FileText size={24} /> Informações Adicionais
               </h2>
+
+              <div className="form-group">
+                <label>Margem de Lucro (%)</label>
+                <input
+                  type="number"
+                  value={profitMargin}
+                  onChange={(e) => {
+                    const value = parseFloat(e.target.value);
+                    if (!isNaN(value) && value >= 0 && value <= 100) {
+                      setProfitMargin(value);
+                    } else if (e.target.value === '') {
+                      setProfitMargin(30); // Reset para padrão se vazio
+                    }
+                  }}
+                  min="0"
+                  max="100"
+                  step="0.5"
+                  placeholder="30"
+                  style={{
+                    fontSize: '1rem',
+                    padding: '0.75rem',
+                    border: '2px solid #e5e7eb',
+                    borderRadius: '8px',
+                    width: '100%'
+                  }}
+                />
+                <small style={{ color: '#6b7280', fontSize: '0.875rem', marginTop: '0.5rem', display: 'block' }}>
+                  Define a margem de lucro aplicada sobre o custo total da passagem (padrão: 30%)
+                </small>
+              </div>
 
               <div className="form-group">
                 <label>Observações (opcional)</label>
@@ -881,7 +957,7 @@ const QuotePage = ({ selectedFlight, onSubmit, onBack }) => {
             {currentStep === 4 && (
               <button
                 type="button"
-                onClick={() => window.location.reload()}
+                onClick={handleNewQuote}
                 className="btn-nav btn-new"
               >
                 Nova Solicitação

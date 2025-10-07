@@ -1,11 +1,12 @@
 import { calculateTripTaxes } from '../data/airportTaxes.js';
+import { getAirportName, getAirportFullName } from '../data/airports.js';
 
 /**
  * Serviço para geração de orçamentos de viagens
  * Gera dois tipos: orçamento interno (com lucro) e orçamento para cliente
  */
 
-const PROFIT_MARGIN = 0.30; // 30% de lucro
+const DEFAULT_PROFIT_MARGIN = 0.30; // 30% de lucro (padrão)
 const EXCHANGE_RATES = {
   USD: 5.20,
   EUR: 5.65,
@@ -80,8 +81,13 @@ function calculateTotalCost(flightData, taxes) {
 
 /**
  * Gera o orçamento interno (com detalhamento de lucro)
+ * @param {Object} flightData - Dados do voo
+ * @param {Object} passengerData - Dados dos passageiros
+ * @param {Number} customProfitMargin - Margem de lucro personalizada (0-1), ex: 0.30 = 30%
  */
-export function generateInternalQuote(flightData, passengerData = {}) {
+export function generateInternalQuote(flightData, passengerData = {}, customProfitMargin = null) {
+  const profitMargin = customProfitMargin !== null ? customProfitMargin : DEFAULT_PROFIT_MARGIN;
+  
   const originCode = extractAirportCode(flightData.origem);
   const destinationCode = extractAirportCode(flightData.destino);
   const isRoundTrip = !!flightData.dataVolta || !!flightData.data_volta;
@@ -92,13 +98,13 @@ export function generateInternalQuote(flightData, passengerData = {}) {
   // Calcular custos
   const costs = calculateTotalCost(flightData, taxes);
   
-  // Calcular lucro
-  const profitAmount = costs.subtotal * PROFIT_MARGIN;
+  // Calcular lucro com margem personalizada
+  const profitAmount = costs.subtotal * profitMargin;
   const clientPrice = costs.subtotal + profitAmount;
   
   // Calcular valores em milhas (se aplicável)
   const milesNeeded = flightData.milhas_necessarias || flightData.milhas || 0;
-  const milesProfit = milesNeeded * PROFIT_MARGIN;
+  const milesProfit = milesNeeded * profitMargin;
   const milesClientPrice = milesNeeded + milesProfit;
   
   const quoteNumber = `ORC-${Date.now()}-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
@@ -115,12 +121,14 @@ export function generateInternalQuote(flightData, passengerData = {}) {
       flightNumber: flightData.voo_numero || flightData.numero_voo || 'N/A',
       origin: {
         code: originCode,
-        name: flightData.origem,
+        name: getAirportName(originCode),
+        city: flightData.origem,
         airport: taxes.origin.airportName
       },
       destination: {
         code: destinationCode,
-        name: flightData.destino,
+        name: getAirportName(destinationCode),
+        city: flightData.destino,
         airport: taxes.destination.airportName
       },
       departure: {
@@ -169,9 +177,9 @@ export function generateInternalQuote(flightData, passengerData = {}) {
       // Subtotal (custo real)
       subtotal: costs.subtotal,
       
-      // Lucro da empresa (30%)
+      // Lucro da empresa (percentual customizável)
       profit: {
-        percentage: PROFIT_MARGIN * 100,
+        percentage: (profitMargin * 100).toFixed(0) + '%',
         amount: profitAmount
       },
       
@@ -183,7 +191,7 @@ export function generateInternalQuote(flightData, passengerData = {}) {
         baseNeeded: milesNeeded,
         profit: milesProfit,
         clientTotal: milesClientPrice,
-        profitPercentage: PROFIT_MARGIN * 100
+        profitPercentage: (profitMargin * 100).toFixed(0) + '%'
       } : null,
       
       // Economia (se pagar em milhas)
@@ -195,7 +203,7 @@ export function generateInternalQuote(flightData, passengerData = {}) {
     
     // Observações internas
     internalNotes: {
-      profitMargin: `${PROFIT_MARGIN * 100}%`,
+      profitMargin: `${profitMargin * 100}%`,
       costBreakdown: `Base: R$ ${costs.basePrice.toFixed(2)} + Taxas: R$ ${costs.taxes.toFixed(2)}`,
       recommendation: costs.subtotal < 1000 ? 'Margem de lucro adequada' : 'Considerar desconto para fechar negócio'
     }
@@ -204,9 +212,12 @@ export function generateInternalQuote(flightData, passengerData = {}) {
 
 /**
  * Gera o orçamento para o cliente (sem mostrar lucro)
+ * @param {Object} flightData - Dados do voo
+ * @param {Object} passengerData - Dados dos passageiros
+ * @param {Number} customProfitMargin - Margem de lucro personalizada (0-1)
  */
-export function generateClientQuote(flightData, passengerData = {}) {
-  const internalQuote = generateInternalQuote(flightData, passengerData);
+export function generateClientQuote(flightData, passengerData = {}, customProfitMargin = null) {
+  const internalQuote = generateInternalQuote(flightData, passengerData, customProfitMargin);
   
   // Criar versão para cliente (sem detalhes de lucro)
   return {

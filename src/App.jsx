@@ -62,24 +62,24 @@ function App() {
   // Capturar resultado do redirect (login Google em mobile)
   useEffect(() => {
     const checkRedirectResult = async () => {
-      // Verificar se estamos voltando de um redirect do Google
-      const googleLoginInProgress = sessionStorage.getItem('googleLoginInProgress');
+      console.log('🔄 [App] Verificando redirect de autenticação...');
       
-      if (googleLoginInProgress) {
-        console.log('🔄 [App] Detectado redirect Google em andamento...');
+      try {
+        // SEMPRE verificar redirect, não apenas quando há flag
+        // (em mobile, sessionStorage pode ser perdido durante o redirect)
+        const result = await handleRedirectResult();
         
-        try {
-          const result = await handleRedirectResult();
-          
-          if (result && result.success) {
-            console.log('✅ [App] Redirect Google processado com sucesso!');
-            sessionStorage.removeItem('googleLoginInProgress');
-          } else if (result && !result.noResult) {
-            console.log('⚠️ [App] Erro no redirect:', result.error);
-          }
-        } catch (error) {
-          console.error('❌ [App] Erro ao processar redirect:', error);
+        if (result && result.success) {
+          console.log('✅ [App] Redirect Google processado com sucesso!');
+          console.log('✅ [App] Usuário:', result.user?.email);
+          sessionStorage.removeItem('googleLoginInProgress');
+        } else if (result && result.noResult) {
+          console.log('ℹ️ [App] Nenhum redirect pendente');
+        } else if (result && result.error) {
+          console.log('⚠️ [App] Erro no redirect:', result.error);
         }
+      } catch (error) {
+        console.error('❌ [App] Erro ao processar redirect:', error);
       }
     };
     
