@@ -1,572 +1,354 @@
-# 🛫 ClickPassagens - Encontre as Melhores Passagens com Milhas# ClickPassagens Frontend
+# ✈️ ClickPassagens
 
+Sistema completo de busca e comparação de passagens aéreas com integração de APIs reais e sistema de milhas.
 
+## 📋 Índice
 
-**Bem-vindo ao ClickPassagens!** 🎉Frontend da plataforma ClickPassagens - # ClickPassagens - Sistema de Busca de Passagens com Milhas
-
-
-
-Este é um sistema completo que ajuda você a encontrar passagens aéreas e calcular quantas milhas você precisa para viajar. É como ter um assistente pessoal que procura os melhores voos para você!Sistema completo para busca e comparação de passagens aéreas usando milhas, com dados reais de voos.
-
-
-
----## 🚀 Como Executar (Modo Fácil)
-
-
-
-## 🤔 O que este site faz?### Opção 1: Script Automático
-
-```bash
-
-Imagine que você quer viajar para o Rio de Janeiro. Em vez de procurar em vários sites, você:# Clique duplo no arquivo ou execute:
-
-start_clickpassagens.bat
-
-1. **Entra no ClickPassagens**```
-
-2. **Escolhe de onde sai e para onde vai** (exemplo: São Paulo → Rio de Janeiro)Este script irá:
-
-3. **Seleciona a data** que quer viajar- Iniciar o backend Flask (porta 5001)
-
-4. **Clica em "Buscar"**- Iniciar o frontend React (porta 5173)  
-
-5. **PRONTO!** O sistema mostra todos os voos disponíveis com:- Abrir automaticamente o navegador
-
-   - 💵 Preço em dinheiro
-
-   - ✈️ Quantidade de milhas necessárias### Opção 2: Manual
-
-   - ⏰ Horários de saída e chegada```bash
-
-   - 🏢 Companhia aérea# Terminal 1 - Backend (mantenha aberto)
-
-.venv\Scripts\activate
-
-Depois você pode:py main.py
-
-- 📄 **Gerar um orçamento em PDF** para guardar ou enviar para alguém
-
-- 📝 **Baixar em Word** para editar# Terminal 2 - Frontend (mantenha aberto)  
-
-- 📊 **Ver seu histórico** de buscas e orçamentosnpm run dev
-
-```
+- [Sobre o Projeto](#sobre-o-projeto)
+- [Tecnologias](#tecnologias)
+- [Arquitetura](#arquitetura)
+- [Configuração](#configuração)
+- [Deploy](#deploy)
+- [Solução de Problemas](#solução-de-problemas)
+- [Funcionalidades](#funcionalidades)
 
 ---
 
-## 🌐 URLs de Acesso
+## 🎯 Sobre o Projeto
 
-## 🚀 Como fazer o site funcionar?
+ClickPassagens é uma plataforma web para busca, comparação e emissão de passagens aéreas com foco em otimização de milhas. O sistema integra APIs reais de voos (Amadeus) e oferece funcionalidades de cálculo de milhas, comparação de preços e geração de orçamentos.
 
-- **Frontend**: http://localhost:5173
+### Características Principais
 
-### Você vai precisar:- **Backend API**: http://127.0.0.1:5001
+- 🔐 **Autenticação completa** (Email/Senha + Google OAuth)
+- ✈️ **Busca de voos reais** via API Amadeus
+- 💰 **Cálculo automático de milhas** e comparação de preços
+- 📊 **Sistema de orçamentos** com geração de PDF/Word
+- 📱 **PWA** (Progressive Web App) - instalável em dispositivos móveis
+- 🎨 **Interface responsiva** e moderna
 
-- **Documentação da API**: http://127.0.0.1:5001/api
+---
 
-1. **Python** (versão 3.12 ou mais nova) - É o "cérebro" do site
+## 🚀 Tecnologias
 
-2. **Node.js** (versão 18 ou mais nova) - Ajuda a criar a parte visual## ⚡ Configuração Inicial
+### Frontend
+- **React** 18.2.0 + Vite
+- **TailwindCSS** para estilização
+- **Firebase** Authentication
+- **Lucide React** para ícones
+- **ShadcN/UI** componentes
 
-3. **Uma conta no Amadeus** - Dá acesso aos dados de voos reais
+### Backend
+- **Python** 3.11+
+- **Flask** framework web
+- **SQLAlchemy** ORM
+- **Gunicorn** servidor WSGI
+- **SQLite** banco de dados
 
-4. **Uma conta no Firebase** - Cuida do login dos usuários### 1. Instalar Dependências Python
+### APIs Externas
+- **Amadeus API** - Busca de voos reais (2.000 chamadas/mês grátis)
+- **Firebase Authentication** - Sistema de login
 
-```bash
+### Deploy
+- **Frontend**: Netlify
+- **Backend**: Render.com
+- **Domínio**: clickpassagens.me
 
----.venv\Scripts\activate
+---
 
-pip install -r requirements.txt
-
-## 📖 Guia Passo a Passo (Primeira Vez)```
-
-
-
-### PASSO 1: Baixar o Código### 2. Instalar Dependências Node.js
-
-```bash
-
-Se você ainda não tem o código no seu computador:npm install
-
-```bash```
-
-git clone https://github.com/jairosouza67/ClickPassagens.git
-
-cd ClickPassagens### 3. Inicializar Banco de Dados
-
-``````bash
-
-.venv\Scripts\activate
-
-### PASSO 2: Configurar o "Cérebro" (Backend)python init_db.py
+## 🏗️ Arquitetura
 
 ```
+ClickPassagens/
+├── src/                    # Código React (Frontend)
+│   ├── components/         # Componentes React
+│   ├── contexts/          # Context API (Auth, etc)
+│   ├── hooks/             # Custom hooks
+│   ├── services/          # APIs e serviços (Python Backend)
+│   └── routes/            # Rotas do Flask
+├── public/                # Assets públicos
+├── database/              # Banco SQLite
+├── .env                   # Variáveis de ambiente (LOCAL)
+└── dist/                  # Build de produção
+```
 
-O backend é a parte que busca os voos e faz os cálculos.
+### Fluxo de Dados
 
-## 🛫 APIs de Voos Reais
+1. **Usuário** → Frontend (React/Netlify)
+2. **Frontend** → Backend API (Flask/Render)
+3. **Backend** → API Amadeus (Busca voos)
+4. **Backend** → SQLite (Salva buscas/orçamentos)
+5. **Dados** → Frontend (Exibição)
 
-**No terminal, digite:**
+---
 
-### Modo Development (Padrão)
+## ⚙️ Configuração
 
-```bash- Usa dados realistas de fallback
+### 1️⃣ Variáveis de Ambiente
 
-# 1. Criar um "ambiente virtual" (como uma pasta especial para o Python)- Preços baseados em rotas reais
+#### Frontend (.env)
+```env
+# Firebase Authentication
+VITE_FIREBASE_API_KEY=sua_api_key
+VITE_FIREBASE_AUTH_DOMAIN=seu-projeto.firebaseapp.com
+VITE_FIREBASE_PROJECT_ID=seu-projeto
+VITE_FIREBASE_STORAGE_BUCKET=seu-projeto.firebasestorage.app
+VITE_FIREBASE_MESSAGING_SENDER_ID=123456789
+VITE_FIREBASE_APP_ID=1:123456789:web:xxxxx
 
-python -m venv .venv- Companhias aéreas reais (Gol, Azul, LATAM, etc.)
+# Backend API
+VITE_API_BASE_URL=https://clickpassagens-api.onrender.com
+VITE_APP_MODE=production
+```
 
-- Não requer credenciais de API
+#### Backend (Render Environment Variables)
+```env
+# Amadeus API (https://developers.amadeus.com)
+AMADEUS_API_KEY=sua_api_key
+AMADEUS_API_SECRET=seu_api_secret
+AMADEUS_BASE_URL=https://test.api.amadeus.com
 
-# 2. Ativar o ambiente virtual
+# Configuração
+FLIGHT_API_MODE=production
+FLASK_ENV=production
+SECRET_KEY=chave_secreta_aleatoria
+```
 
-# Se você usa Windows:### Modo Production (APIs Reais)
+### 2️⃣ Instalação Local
 
-.venv\Scripts\Activate.ps1Para usar dados 100% reais:
+```bash
+# Clone o repositório
+git clone https://github.com/jairosouza67/ClickPassagens.git
+cd ClickPassagens
 
-
-
-# 3. Instalar as ferramentas que o sistema precisa1. **Cadastre-se na Amadeus**: https://developers.amadeus.com/
-
-pip install -r requirements.txt2. **Configure no `.env`**:
-
-```   ```env
-
-   AMADEUS_API_KEY=sua_chave_aqui
-
-### PASSO 3: Configurar a Parte Visual (Frontend)   AMADEUS_API_SECRET=seu_secret_aqui
-
-   FLIGHT_API_MODE=production
-
-A parte visual é o que você vê no navegador.   ```
-
-3. **Reinicie o servidor**
-
-**No terminal, digite:**
-
-```bash## 📱 Funcionalidades
-
+# Frontend
 npm install
 
-```- ✅ Busca de voos com dados reais
-
-- ✅ Comparação de preços (dinheiro vs milhas)
-
-Isso vai instalar todas as ferramentas necessárias para criar a interface bonita que você vê.- ✅ Cálculo de economia automático
-
-- ✅ Interface responsiva
-
-### PASSO 4: Configurar as "Chaves Secretas"- ✅ PWA (Progressive Web App)
-
-- ✅ Múltiplas companhias aéreas
-
-O site precisa de algumas "chaves" para funcionar. É como ter as chaves da sua casa - sem elas, você não consegue entrar!- ✅ Filtros avançados
-
-
-
-**Você vai configurar um arquivo chamado `.env`**## 🏗️ Arquitetura
-
-
-
-1. Abra o arquivo `.env` (está na pasta principal)```
-
-2. Preencha assim:Frontend (React + Vite)
-
-│
-
-```env├── src/
-
-# ===== AMADEUS - Para buscar voos =====│   ├── components/
-
-# Pegue estas chaves em: https://developers.amadeus.com/│   │   ├── BuscaIntegrada.jsx
-
-AMADEUS_API_KEY=sua_chave_aqui│   │   ├── FlightCard.jsx
-
-AMADEUS_API_SECRET=seu_secret_aqui│   │   └── ui/
-
-│   └── App.jsx
-
-# ===== FIREBASE - Para login de usuários =====│
-
-# Pegue estas em: https://console.firebase.google.com/Backend (Flask + Python)
-
-VITE_FIREBASE_API_KEY=sua_firebase_key│
-
-VITE_FIREBASE_AUTH_DOMAIN=seu-projeto.firebaseapp.com├── src/
-
-VITE_FIREBASE_PROJECT_ID=seu-projeto-id│   ├── routes/
-
-VITE_FIREBASE_STORAGE_BUCKET=seu-projeto.firebasestorage.app│   │   └── busca.py
-
-VITE_FIREBASE_MESSAGING_SENDER_ID=123456789│   ├── models/
-
-VITE_FIREBASE_APP_ID=seu_app_id│   │   └── milhas.py
-
-│   └── services/
-
-# ===== Conexão entre Frontend e Backend =====│       └── flight_api.py
-
-VITE_API_BASE_URL=http://localhost:5001└── main.py
-
-``````
-
-
-
-#### Como conseguir a chave do Amadeus:## 🛠️ Tecnologias
-
-1. Vá em https://developers.amadeus.com/
-
-2. Crie uma conta (é grátis!)### Frontend
-
-3. Crie um novo "app" (aplicativo)- React 18
-
-4. Copie a **API Key** e o **API Secret**- Vite
-
-5. Cole no arquivo `.env`- TailwindCSS
-
-- Radix UI
-
-#### Como conseguir as chaves do Firebase:- Lucide Icons
-
-1. Vá em https://console.firebase.google.com/
-
-2. Crie um novo projeto (dê um nome, ex: "ClickPassagens")### Backend  
-
-3. Adicione um app **Web** (ícone `</>`)- Flask
-
-4. Copie todas as 6 informações que aparecem- SQLAlchemy
-
-5. Cole no arquivo `.env`- SQLite
-
-6. Ative **Authentication** → **Email/Password** e **Google**- Amadeus API
-
-7. Crie um **Firestore Database** (modo teste)- SkyScanner API
-
-
-
----## 📋 Scripts Disponíveis
-
-
-
-## ▶️ Como Iniciar o Site (Dia a Dia)- `start_clickpassagens.bat` - Inicia tudo automaticamente
-
-- `start_backend.bat` - Apenas backend Flask
-
-Criamos scripts especiais para facilitar sua vida! 🎁- `start_frontend.bat` - Apenas frontend React
-
-- `start_production.bat` - Modo produção com Gunicorn
-
-### Opção 1: Iniciar TUDO de uma vez (RECOMENDADO)
-
-## 🐛 Troubleshooting
-
-```bash
-
-.\start_sistema.ps1### "Failed to fetch"
-
-```- Certifique-se que o backend está rodando na porta 5001
-
-- Use os scripts `.bat` para manter os servidores ativos
-
-Este comando vai:- Verifique se não há firewall bloqueando as portas
-
-- ✅ Abrir o backend em uma janela
-
-- ✅ Abrir o frontend em outra janela### Dados não aparecem
-
-- ✅ Deixar tudo funcionando- Verifique o console do navegador (F12)
-
-- Confirme que a busca tem origem, destino e data válidos
-
-### Opção 2: Iniciar manualmente (se preferir)- Veja os logs do servidor Flask
-
-
-
-**Abra 2 terminais diferentes:**### Performance lenta
-
-- Use `FLIGHT_API_MODE=development` para dados de fallback
-
-**Terminal 1 - Backend:**- Credenciais de API podem ter rate limiting
-
-```bash
-
-.\start_backend_window.ps1## 🚀 Deploy
-
+# Backend (Python)
+python -m venv .venv
+.venv\Scripts\activate  # Windows
+pip install -r requirements.txt
+
+# Inicializar banco de dados
+python init_db.py
 ```
 
-Ver `README_DEPLOY.md` para instruções de deploy em produção.
+### 3️⃣ Executar Localmente
 
-**Terminal 2 - Frontend:**
+```bash
+# Frontend (porta 5173)
+npm run dev
 
-```bash## 🚀 Tecnologias
-
-.\start_frontend_window.ps1
-
-```- **React 18** - Framework principal
-
-- **Vite** - Build tool moderna
-
-### Pronto! 🎉- **Tailwind CSS** - Framework CSS utilitário
-
-- **shadcn/ui** - Componentes UI profissionais
-
-Agora abra seu navegador em: **http://localhost:5173**- **Lucide React** - Ícones modernos
-
-- **PWA** - Progressive Web App com suporte offline
+# Backend (porta 5000)
+python main.py
+```
 
 ---
 
-## 📱 Funcionalidades PWA
+## 🌐 Deploy
 
-## 🔧 Como Manter e Cuidar do Site
+### Netlify (Frontend)
 
-- ✅ Instalação como app nativo no celular
-
-### Atualizando o Código- ✅ Funcionamento offline
-
-- ✅ Notificações push
-
-Se você fez mudanças e quer salvar no GitHub:- ✅ Compartilhamento nativo
-
-- ✅ Ícones personalizados
-
-```bash
-
-git add .## 🛠️ Instalação
-
-git commit -m "Descreva o que você mudou"
-
-git push```bash
-
-```# Instalar dependências
-
-pnpm install
-
-### Se Algo Parar de Funcionar
-
-# Executar em desenvolvimento
-
-#### Problema: "Não encontra voos"pnpm run dev
-
-**Solução:** Verifique se o backend está rodando
-
-```bash# Build para produção
-
-# Veja se a porta 5001 está ativapnpm run build
-
-netstat -ano | findstr ":5001"```
-
-```
-
-## 📦 Scripts Disponíveis
-
-#### Problema: "Não consigo fazer login"
-
-**Solução:** Verifique se o Firebase está configurado- `pnpm run dev` - Inicia servidor de desenvolvimento
-
-```bash- `pnpm run build` - Gera build de produção
-
-# Execute o verificador- `pnpm run preview` - Visualiza build de produção
-
-.\verificar_configuracao.ps1- `pnpm run lint` - Executa linting do código
-
-```
-
-## 🏗️ Estrutura do Projeto
-
-#### Problema: "Erro de credenciais Amadeus"
-
-**Solução:** Sua chave pode ter expirado. Gere uma nova em https://developers.amadeus.com/```
-
-src/
-
-### Verificar se Está Tudo OK├── components/
-
-│   ├── BuscaIntegrada.jsx     # Busca integrada com API
-
-Criamos um script que verifica tudo para você:│   └── PWAInstallButton.jsx   # Botão de instalação PWA
-
-├── hooks/
-
-```bash│   └── usePWA.js              # Hook para funcionalidades PWA
-
-.\verificar_configuracao.ps1├── App.jsx                    # Componente principal
-
-```└── main.jsx                   # Ponto de entrada
-
-
-
-Ele vai te dizer se:public/
-
-- ✅ As chaves estão configuradas├── manifest.json              # Manifest PWA
-
-- ✅ O Firebase está OK├── sw.js                      # Service Worker
-
-- ✅ Tudo está funcionando├── icon-192x192.png          # Ícone PWA 192x192
-
-└── icon-512x512.png          # Ícone PWA 512x512
-
----```
-
-
-
-## 📚 Entendendo a Estrutura## 🔗 Integração com Backend
-
-
-
-```O frontend se comunica com o backend através das seguintes APIs:
-
-ClickPassagens/
-
-│- `GET /api/busca/companhias` - Lista companhias aéreas
-
-├── src/                      # Código principal- `POST /api/busca/buscar` - Busca passagens
-
-│   ├── components/           # Pedaços da interface (botões, cards, etc)- `POST /api/usuarios/cadastrar` - Cadastro de usuários
-
-│   ├── config/              # Configurações (Firebase, etc)- `POST /api/usuarios/login` - Login de usuários
-
-│   ├── routes/              # Rotas do backend (buscar voos, login, etc)
-
-│   └── services/            # Serviços (conecta com Amadeus)## 🎨 Design System
-
-│
-
-├── main.py                   # Inicia o backendO projeto utiliza uma paleta de cores focada em azul (#3B82F6) para transmitir confiança e profissionalismo. Os componentes seguem as diretrizes do shadcn/ui para consistência visual.
-
-├── package.json             # Lista de ferramentas do frontend
-
-├── .env                     # Suas chaves secretas (NUNCA compartilhe!)## 📱 Responsividade
-
-│
-
-├── start_sistema.ps1        # Inicia tudo de uma vezO layout é totalmente responsivo, funcionando perfeitamente em:
-
-├── start_backend_window.ps1 # Inicia só o backend- 📱 Mobile (320px+)
-
-└── start_frontend_window.ps1 # Inicia só o frontend- 📱 Tablet (768px+)
-
-```- 💻 Desktop (1024px+)
-
-
-
----## 🔧 Configuração PWA
-
-
-
-## 🎨 O que Você Pode PersonalizarO aplicativo está configurado como PWA com:
-
-- Service Worker para cache offline
-
-### Mudar Cores- Manifest para instalação
-
-Edite: `tailwind.config.js`- Ícones em múltiplas resoluções
-
-```javascript- Suporte a notificações push
-
-colors: {
-
-  'aviation-blue': '#3B82F6',  // Mude para a cor que quiser!## 🚀 Deploy
-
-}
-
-```Para fazer deploy:
-
-
-
-### Mudar Textos1. Execute `pnpm run build`
-
-Edite os arquivos em: `src/components/`2. Copie os arquivos da pasta `dist/` para seu servidor
-
-3. Configure seu servidor para servir o `index.html` para todas as rotas
-
-### Adicionar Novas Funcionalidades
-
-- **Backend:** Adicione em `src/routes/`## 📄 Licença
-
-- **Frontend:** Adicione em `src/components/`
-
-Este projeto é propriedade da ClickPassagens.
-
----
-
-## 🐛 Resolvendo Problemas Comuns
-
-| Problema | Solução |
-|----------|---------|
-| "Python não encontrado" | Instale Python 3.12+ |
-| "npm não encontrado" | Instale Node.js 18+ |
-| "Porta 5001 em uso" | Feche outros programas ou mude a porta em `main.py` |
-| "Erro de CORS" | Verifique CORS no `main.py` |
-| "Firebase error" | Verifique se configurou as 6 variáveis |
-| "Amadeus error" | Gere nova chave no site da Amadeus |
-
----
-
-## 🚀 Colocando na Internet (Deploy)
-
-### Backend → Render.com
-1. Crie conta no Render.com
-2. Conecte seu GitHub
-3. Adicione as variáveis de ambiente (copie do .env)
-4. Deploy automático! ✨
-
-### Frontend → Netlify
-1. Crie conta no Netlify
-2. Conecte seu GitHub
-3. Configure:
+1. **Conectar repositório GitHub**
+2. **Build settings:**
    - Build command: `npm run build`
    - Publish directory: `dist`
-4. Adicione variáveis de ambiente
-5. Deploy automático! ✨
+3. **Environment Variables:** Adicionar todas `VITE_*` do `.env`
+4. **Importante:** Adicionar `SECRETS_SCAN_ENABLED=false`
+
+### Render (Backend)
+
+1. **Criar Web Service**
+2. **Build command:** `pip install -r requirements.txt`
+3. **Start command:** `bash start.sh`
+4. **Environment Variables:** Adicionar variáveis do backend
+5. **Importante:** Fazer redeploy após adicionar variáveis
 
 ---
 
-## 💡 Dicas Importantes
+## 🔧 Solução de Problemas
 
-### ✅ FAÇA:
-- ✅ Mantenha o arquivo `.env` sempre atualizado
-- ✅ Faça backup das suas chaves em local seguro
-- ✅ Teste tudo localmente antes de fazer deploy
-- ✅ Use o script `verificar_configuracao.ps1` regularmente
+### 🚨 Login não funciona em produção
 
-### ❌ NÃO FAÇA:
-- ❌ NUNCA compartilhe o arquivo `.env`
-- ❌ NUNCA coloque chaves direto no código
-- ❌ NUNCA commit o `.env` no Git
-- ❌ NUNCA use a mesma senha em todos os lugares
+**Problema:** Tela pisca ao clicar em "Login com Google"
+
+**Solução:**
+1. Verificar Firebase Console → Authentication → Authorized domains
+2. Adicionar domínio: `clickpassagens.me` e `www.clickpassagens.me`
+3. Verificar se variáveis `VITE_FIREBASE_*` estão no Netlify
+4. Limpar cache do navegador (Ctrl + Shift + Delete)
+
+### 🚨 Busca retorna 0 resultados
+
+**Problema:** API retorna `success: true` mas `resultados: []`
+
+**Causas possíveis:**
+
+1. **Credenciais Amadeus não configuradas**
+   - Verificar se `AMADEUS_API_KEY` e `AMADEUS_API_SECRET` estão no Render
+   - Testar credenciais em https://developers.amadeus.com
+
+2. **Limite de API excedido**
+   - Plano gratuito: 2.000 chamadas/mês
+   - Solução temporária: `FLIGHT_API_MODE=simulated`
+
+3. **Render não fez redeploy**
+   - Após adicionar variáveis, forçar redeploy manual
+   - Render → Manual Deploy → Deploy latest commit
+
+**Como debugar:**
+```bash
+# Testar API diretamente
+curl -X POST https://clickpassagens-api.onrender.com/api/busca/buscar \
+  -H "Content-Type: application/json" \
+  -d '{"origem":"GRU","destino":"GIG","data_ida":"2025-12-01","passageiros":1}'
+```
+
+### 🚨 Netlify bloqueia deploy (Secrets detected)
+
+**Problema:** `Secrets scanning found secrets in build`
+
+**Solução:**
+1. Netlify → Site settings → Environment variables
+2. Adicionar: `SECRETS_SCAN_ENABLED = false`
+3. **Explicação:** Credenciais Firebase do frontend são públicas por design (segurança vem das Firebase Rules)
+
+### 🚨 CORS Error
+
+**Problema:** `Access-Control-Allow-Origin` error
+
+**Solução:**
+1. Verificar `netlify.toml` → proxy configurado corretamente
+2. Backend deve permitir origem `clickpassagens.me`
+3. Verificar se `VITE_API_BASE_URL` aponta para Render correto
+
+### 🚨 Build falha no Netlify
+
+**Problema:** `Build script returned non-zero exit code`
+
+**Causas comuns:**
+1. Variáveis de ambiente faltando
+2. Importações incorretas
+3. Dependências desatualizadas
+
+**Solução:**
+```bash
+# Testar build localmente
+npm run build
+
+# Ver logs detalhados no Netlify
+Netlify → Deploys → Ver log completo
+```
 
 ---
 
-## 📞 Precisa de Ajuda?
+## 🎯 Funcionalidades
 
-1. **Execute o verificador:**
-   ```bash
-   .\verificar_configuracao.ps1
-   ```
+### 1. Sistema de Autenticação
 
-2. **Veja os logs:**
-   - Backend: Olhe a janela onde está rodando o Python
-   - Frontend: Abra F12 no navegador → Console
+- ✅ Login com Email/Senha
+- ✅ Login com Google (popup desktop, redirect mobile)
+- ✅ Recuperação de senha
+- ✅ Persistência de sessão
+- ✅ Firestore para dados do usuário
 
-3. **Teste a API:**
-   ```bash
-   .venv\Scripts\python.exe test_amadeus_real.py
-   ```
+### 2. Busca de Voos
+
+- ✅ Integração com API Amadeus (voos reais)
+- ✅ Busca inteligente com datas alternativas (±3 dias)
+- ✅ Filtros: companhia, preço, horário, escalas
+- ✅ Ordenação: menor preço, menor duração, menos escalas
+- ✅ Fallback para dados simulados (modo desenvolvimento)
+
+### 3. Sistema de Milhas
+
+- ✅ Cálculo automático de milhas necessárias
+- ✅ Comparação: comprar milhas vs pagar em dinheiro
+- ✅ Tabela de valores de milheiro por companhia
+- ✅ Comissões configuráveis
+
+### 4. Orçamentos
+
+- ✅ Geração de orçamentos personalizados
+- ✅ Export PDF com branding
+- ✅ Export Word (DOCX)
+- ✅ Histórico de orçamentos
+- ✅ Compartilhamento
+
+### 5. PWA (Progressive Web App)
+
+- ✅ Instalável em iOS/Android
+- ✅ Funciona offline (cache de assets)
+- ✅ Ícones e splash screens
+- ✅ Manifest configurado
 
 ---
 
-## 🎉 Pronto!
+## 📊 Monitoramento
 
-Agora você sabe:
-- ✅ O que o site faz
-- ✅ Como configurar tudo
-- ✅ Como iniciar o sistema
-- ✅ Como manter funcionando
-- ✅ Como resolver problemas
+### Logs Importantes
 
-**Divirta-se buscando as melhores passagens! ✈️🌍**
+**Render (Backend):**
+- `ERROR in flight_api: Credenciais Amadeus não configuradas` → Adicionar vars ambiente
+- `Token Amadeus obtido com sucesso` → API funcionando
+- `20 voos encontrados` → Tudo OK!
+
+**Netlify (Frontend):**
+- `Secrets scanning found secrets` → Adicionar `SECRETS_SCAN_ENABLED=false`
+- `Build succeeded` → Deploy OK
+- `auth/api-key-not-valid` → Verificar Firebase credentials
+
+### Testes Rápidos
+
+```bash
+# Testar backend
+curl https://clickpassagens-api.onrender.com/api/health
+
+# Testar busca
+curl -X POST https://clickpassagens-api.onrender.com/api/busca/buscar \
+  -H "Content-Type: application/json" \
+  -d '{"origem":"GRU","destino":"GIG","data_ida":"2025-12-01","passageiros":1}'
+```
 
 ---
 
-*Desenvolvido com ❤️ por Jairo Souza*
+## 🔐 Segurança
+
+- ✅ Credenciais em variáveis de ambiente (nunca no código)
+- ✅ Firebase Security Rules configuradas
+- ✅ HTTPS obrigatório em produção
+- ✅ Secrets scan configurado
+- ✅ CORS configurado corretamente
+
+---
+
+## 📞 Suporte
+
+**Problemas comuns já documentados acima. Para novos problemas:**
+
+1. Verificar logs do Render e Netlify
+2. Testar APIs diretamente
+3. Verificar variáveis de ambiente
+4. Limpar cache do navegador
+5. Forçar novo deploy
+
+---
+
+## 📝 Licença
+
+Projeto proprietário - ClickPassagens © 2025
+
+---
+
+## 🔗 Links Úteis
+
+- **Site:** https://clickpassagens.me
+- **API Backend:** https://clickpassagens-api.onrender.com
+- **Firebase Console:** https://console.firebase.google.com
+- **Amadeus API:** https://developers.amadeus.com
+- **Netlify Dashboard:** https://app.netlify.com
+- **Render Dashboard:** https://dashboard.render.com
+
+---
+
+**Última atualização:** Outubro 2025
