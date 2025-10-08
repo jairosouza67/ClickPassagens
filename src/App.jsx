@@ -62,24 +62,43 @@ function App() {
   // Capturar resultado do redirect (login Google em mobile)
   useEffect(() => {
     const checkRedirectResult = async () => {
+      console.log('═══════════════════════════════════════════════════════');
+      console.log('🔍 [APP] Verificando redirect ao carregar a página');
+      console.log('🔍 [APP] URL:', window.location.href);
+      
       // Verificar se estamos voltando de um redirect do Google
       const googleLoginInProgress = sessionStorage.getItem('googleLoginInProgress');
+      console.log('🔍 [APP] Flag googleLoginInProgress:', googleLoginInProgress);
+      console.log('═══════════════════════════════════════════════════════');
       
       if (googleLoginInProgress) {
-        console.log('🔄 [App] Detectado redirect Google em andamento...');
+        console.log('═══════════════════════════════════════════════════════');
+        console.log('🔄 [APP] REDIRECT DETECTADO! Processando...');
+        console.log('═══════════════════════════════════════════════════════');
         
         try {
           const result = await handleRedirectResult();
+          console.log('🔄 [APP] handleRedirectResult retornou:', result);
           
           if (result && result.success) {
-            console.log('✅ [App] Redirect Google processado com sucesso!');
+            console.log('═══════════════════════════════════════════════════════');
+            console.log('✅ [APP] Redirect Google processado com sucesso!');
+            console.log('✅ [APP] Usuário:', result.user?.email);
+            console.log('✅ [APP] Removendo flag googleLoginInProgress');
+            console.log('═══════════════════════════════════════════════════════');
             sessionStorage.removeItem('googleLoginInProgress');
           } else if (result && !result.noResult) {
-            console.log('⚠️ [App] Erro no redirect:', result.error);
+            console.log('═══════════════════════════════════════════════════════');
+            console.log('⚠️ [APP] Erro no redirect:', result.error);
+            console.log('═══════════════════════════════════════════════════════');
           }
         } catch (error) {
-          console.error('❌ [App] Erro ao processar redirect:', error);
+          console.log('═══════════════════════════════════════════════════════');
+          console.error('❌ [APP] Erro ao processar redirect:', error);
+          console.log('═══════════════════════════════════════════════════════');
         }
+      } else {
+        console.log('ℹ️ [APP] Nenhum redirect pendente');
       }
     };
     

@@ -158,22 +158,31 @@ export async function loginWithGoogle() {
   }
   
   const isMobile = isMobileDevice();
-  console.log('🔵 [Firebase] Iniciando login com Google...');
-  console.log('📱 [Firebase] Dispositivo:', isMobile ? 'MOBILE' : 'DESKTOP');
-  console.log('🔵 [Firebase] Auth:', auth);
-  console.log('🔵 [Firebase] Provider:', googleProvider);
+  console.log('═══════════════════════════════════════════════════════');
+  console.log('🔵 [GOOGLE LOGIN] INICIANDO');
+  console.log('📱 [GOOGLE LOGIN] Dispositivo:', isMobile ? 'MOBILE' : 'DESKTOP');
+  console.log('� [GOOGLE LOGIN] User Agent:', navigator.userAgent);
+  console.log('🔵 [GOOGLE LOGIN] Auth:', auth ? 'OK' : 'NULL');
+  console.log('🔵 [GOOGLE LOGIN] Provider:', googleProvider ? 'OK' : 'NULL');
+  console.log('═══════════════════════════════════════════════════════');
   
   try {
     // Em mobile, usar redirect (melhor experiência)
     // Em desktop, usar popup (mais rápido)
     if (isMobile) {
-      console.log('📱 [Firebase] Mobile detectado - usando REDIRECT...');
+      console.log('═══════════════════════════════════════════════════════');
+      console.log('📱 [MOBILE LOGIN] USANDO REDIRECT');
+      console.log('📱 [MOBILE LOGIN] Salvando flag googleLoginInProgress no sessionStorage');
+      console.log('═══════════════════════════════════════════════════════');
       
       // Salvar flag para identificar que estamos fazendo login
       sessionStorage.setItem('googleLoginInProgress', 'true');
+      console.log('✅ [MOBILE LOGIN] Flag salva:', sessionStorage.getItem('googleLoginInProgress'));
       
       // Redirecionar para login do Google
+      console.log('🚀 [MOBILE LOGIN] Chamando signInWithRedirect...');
       await signInWithRedirect(auth, googleProvider);
+      console.log('✅ [MOBILE LOGIN] signInWithRedirect executado (redirect em andamento...)');
       
       // A função retorna aqui, mas o redirect vai acontecer
       // O resultado será capturado em handleRedirectResult()
@@ -250,21 +259,29 @@ export async function loginWithGoogle() {
  */
 export async function handleRedirectResult() {
   try {
-    console.log('🔄 firebase.js: Chamando getRedirectResult...');
-    console.log('🔄 firebase.js: Usuário atual antes:', auth.currentUser ? auth.currentUser.email : 'null');
+    console.log('═══════════════════════════════════════════════════════');
+    console.log('🔄 [REDIRECT] handleRedirectResult INICIADO');
+    console.log('🔄 [REDIRECT] URL atual:', window.location.href);
+    console.log('🔄 [REDIRECT] Usuário atual ANTES:', auth.currentUser ? auth.currentUser.email : 'null');
+    console.log('🔄 [REDIRECT] sessionStorage googleLoginInProgress:', sessionStorage.getItem('googleLoginInProgress'));
+    console.log('═══════════════════════════════════════════════════════');
     
     const result = await getRedirectResult(auth);
-    console.log('🔄 firebase.js: getRedirectResult retornou:', result);
-    console.log('🔄 firebase.js: Usuário atual depois:', auth.currentUser ? auth.currentUser.email : 'null');
+    console.log('🔄 [REDIRECT] getRedirectResult retornou:', result);
+    console.log('🔄 [REDIRECT] Usuário atual DEPOIS:', auth.currentUser ? auth.currentUser.email : 'null');
     
     // Se getRedirectResult retornar algo, processar normalmente
     if (result && result.user) {
       const user = result.user;
-      console.log('✅ firebase.js: Usuário do redirect:', user.email);
+      console.log('═══════════════════════════════════════════════════════');
+      console.log('✅ [REDIRECT] SUCESSO! getRedirectResult retornou usuário');
+      console.log('✅ [REDIRECT] Email:', user.email);
+      console.log('✅ [REDIRECT] UID:', user.uid);
+      console.log('═══════════════════════════════════════════════════════');
       
       // Verificar se é novo usuário
       const userDoc = await getDoc(doc(db, 'users', user.uid));
-      console.log('📄 firebase.js: Documento do usuário existe?', userDoc.exists());
+      console.log('📄 [REDIRECT] Documento do usuário existe?', userDoc.exists());
       
       if (!userDoc.exists()) {
         console.log('📝 firebase.js: Criando novo documento de usuário...');
