@@ -266,6 +266,7 @@ export async function handleRedirectResult() {
     console.log('═══════════════════════════════════════════════════════');
     console.log('🔄 [REDIRECT] handleRedirectResult INICIADO');
     console.log('🔄 [REDIRECT] URL atual:', window.location.href);
+    console.log('🔄 [REDIRECT] Hostname:', window.location.hostname);
     console.log('🔄 [REDIRECT] Usuário atual ANTES:', auth.currentUser ? auth.currentUser.email : 'null');
     console.log('🔄 [REDIRECT] sessionStorage googleLoginInProgress:', sessionStorage.getItem('googleLoginInProgress'));
     console.log('🔄 [REDIRECT] localStorage googleLoginInProgress:', localStorage.getItem('googleLoginInProgress'));
@@ -382,11 +383,32 @@ export async function handleRedirectResult() {
     }
     
     console.log('⚠️ firebase.js: Nenhum resultado de redirect e nenhum usuário autenticado');
+    console.log('⚠️ firebase.js: POSSÍVEIS CAUSAS:');
+    console.log('⚠️ firebase.js: 1. Domínio não autorizado no Firebase Console');
+    console.log('⚠️ firebase.js: 2. Verificar em: https://console.firebase.google.com/');
+    console.log('⚠️ firebase.js: 3. Authentication > Settings > Authorized domains');
+    console.log('⚠️ firebase.js: 4. Adicionar:', window.location.hostname);
     return { success: false, noResult: true };
   } catch (error) {
     console.error('❌ firebase.js: Erro ao processar redirect:', error);
     console.error('Código do erro:', error.code);
     console.error('Mensagem:', error.message);
+    console.error('Stack:', error.stack);
+    
+    // Verificar se é erro de domínio não autorizado
+    if (error.code === 'auth/unauthorized-domain' || 
+        error.message?.includes('domain') || 
+        error.message?.includes('authorized')) {
+      console.error('═══════════════════════════════════════════════════════');
+      console.error('🚨 ERRO: DOMÍNIO NÃO AUTORIZADO!');
+      console.error('🚨 Domínio atual:', window.location.hostname);
+      console.error('🚨 SOLUÇÃO:');
+      console.error('🚨 1. Acesse: https://console.firebase.google.com/');
+      console.error('🚨 2. Vá em: Authentication > Settings > Authorized domains');
+      console.error('🚨 3. Adicione:', window.location.hostname);
+      console.error('═══════════════════════════════════════════════════════');
+    }
+    
     return { success: false, error: getErrorMessage(error.code) };
   }
 }

@@ -91,6 +91,24 @@ function App() {
             console.log('═══════════════════════════════════════════════════════');
             sessionStorage.removeItem('googleLoginInProgress');
             localStorage.removeItem('googleLoginInProgress');
+          } else if (result && result.noResult) {
+            console.log('═══════════════════════════════════════════════════════');
+            console.log('⚠️ [APP] Firebase não processou a autenticação');
+            console.log('⚠️ [APP] Domínio atual:', window.location.hostname);
+            console.log('⚠️ [APP] AÇÃO NECESSÁRIA: Verificar domínios autorizados no Firebase');
+            console.log('═══════════════════════════════════════════════════════');
+            
+            // Mostrar alerta visual para o usuário
+            alert(`⚠️ ERRO DE CONFIGURAÇÃO\n\n` +
+                  `O domínio "${window.location.hostname}" precisa ser autorizado no Firebase.\n\n` +
+                  `Por favor, contate o administrador do sistema.\n\n` +
+                  `Detalhes técnicos:\n` +
+                  `- Acesse: Firebase Console\n` +
+                  `- Authentication > Settings > Authorized domains\n` +
+                  `- Adicione: ${window.location.hostname}`);
+            
+            sessionStorage.removeItem('googleLoginInProgress');
+            localStorage.removeItem('googleLoginInProgress');
           } else if (result && !result.noResult) {
             console.log('═══════════════════════════════════════════════════════');
             console.log('⚠️ [APP] Erro no redirect:', result.error);
