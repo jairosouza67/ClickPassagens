@@ -167,9 +167,13 @@ export async function loginWithGoogle() {
   console.log('═══════════════════════════════════════════════════════');
   
   try {
-    // Em mobile, usar redirect (melhor experiência)
-    // Em desktop, usar popup (mais rápido)
-    if (isMobile) {
+    // TEMPORÁRIO: Forçar POPUP em mobile para teste de debug
+    // Se funcionar, o problema é específico do redirect
+    console.log('⚠️ [DEBUG] MODO TESTE: Usando POPUP em mobile');
+    
+    const usePopup = true; // Forçar popup para teste
+    
+    if (!usePopup && isMobile) {
       console.log('═══════════════════════════════════════════════════════');
       console.log('📱 [MOBILE LOGIN] USANDO REDIRECT');
       console.log('📱 [MOBILE LOGIN] Salvando flag googleLoginInProgress no localStorage (mais seguro que sessionStorage)');
