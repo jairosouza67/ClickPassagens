@@ -306,12 +306,10 @@ export async function handleRedirectResult() {
           photoURL: user.photoURL || '',
           plan: 'free',
           searches: 0,
-          quotes: 0,
-          lastLogin: new Date().toISOString()
+          quotes: 0
         });
       }
       
-      sessionStorage.removeItem('googleLoginInProgress');
       return { success: true, user };
     }
     
@@ -335,8 +333,8 @@ export async function handleRedirectResult() {
       // ESTRATÉGIA: Aguardar e verificar se o usuário foi autenticado automaticamente
       console.log('⏳ firebase.js: Aguardando processamento do Firebase...');
       
-      // Aguardar 2 segundos para o Firebase processar (aumentado de 1s)
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // Aguardar 1 segundo para o Firebase processar
+      await new Promise(resolve => setTimeout(resolve, 1000));
       
       // Verificar diretamente se há um usuário autenticado
       if (auth.currentUser) {
@@ -348,7 +346,6 @@ export async function handleRedirectResult() {
         window.history.replaceState({}, document.title, cleanUrl);
         console.log('🧹 firebase.js: URL limpa');
         
-        sessionStorage.removeItem('googleLoginInProgress');
         return await processUserAfterRedirect(auth.currentUser);
       }
       
@@ -363,7 +360,6 @@ export async function handleRedirectResult() {
           const cleanUrl = window.location.origin + window.location.pathname;
           window.history.replaceState({}, document.title, cleanUrl);
           
-          sessionStorage.removeItem('googleLoginInProgress');
           return await processUserAfterRedirect(result.user);
         }
       } catch (error) {
@@ -372,7 +368,7 @@ export async function handleRedirectResult() {
       
       // Último recurso: verificar novamente após mais delay
       console.log('🔄 firebase.js: Tentando verificação final...');
-      await new Promise(resolve => setTimeout(resolve, 3000));
+      await new Promise(resolve => setTimeout(resolve, 2000));
       
       if (auth.currentUser) {
         console.log('✅ firebase.js: USUÁRIO ENCONTRADO NA VERIFICAÇÃO FINAL!');
@@ -380,7 +376,6 @@ export async function handleRedirectResult() {
         const cleanUrl = window.location.origin + window.location.pathname;
         window.history.replaceState({}, document.title, cleanUrl);
         
-        sessionStorage.removeItem('googleLoginInProgress');
         return await processUserAfterRedirect(auth.currentUser);
       }
       
