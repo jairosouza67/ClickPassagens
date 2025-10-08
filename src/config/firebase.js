@@ -344,43 +344,62 @@ export async function handleRedirectResult() {
     console.log('📱 firebase.js: getRedirectResult retornou null - usando estratégia alternativa');
     console.log('⏳ firebase.js: Aguardando Firebase processar autenticação...');
     
-    // Aguardar 2 segundos para dar tempo do Firebase processar internamente
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    console.log('🔍 firebase.js: Verificando auth.currentUser após delay...');
-    console.log('🔍 firebase.js: auth.currentUser =', auth.currentUser ? auth.currentUser.email : 'null');
-    
-    if (auth.currentUser) {
-      console.log('═══════════════════════════════════════════════════════');
-      console.log('✅ firebase.js: USUÁRIO ENCONTRADO! Firebase processou internamente!');
-      console.log('✅ firebase.js: Email:', auth.currentUser.email);
-      console.log('═══════════════════════════════════════════════════════');
+    // NOVA ABORDAGEM: Usar um listener onAuthStateChanged com timeout
+    // Isso é mais confiável que verificar auth.currentUser diretamente
+    return new Promise((resolve) => {
+      let resolved = false;
       
-      // Limpar URL
-      const cleanUrl = window.location.origin + window.location.pathname;
-      window.history.replaceState({}, document.title, cleanUrl);
+      // Timeout de segurança de 8 segundos
+      const timeout = setTimeout(() => {
+        if (!resolved) {
+          resolved = true;
+          console.log('⏰ firebase.js: TIMEOUT - Firebase não processou em 8 segundos');
+          console.log('⚠️ firebase.js: Nenhum resultado de redirect e nenhum usuário autenticado');
+          console.log('⚠️ firebase.js: POSSÍVEIS CAUSAS:');
+          console.log('⚠️ firebase.js: 1. Firebase não conseguiu processar o redirect');
+          console.log('⚠️ firebase.js: 2. Credenciais do Google OAuth podem estar incorretas');
+          console.log('⚠️ firebase.js: 3. Problema de comunicação entre Firebase e Google');
+          resolve({ success: false, noResult: true });
+        }
+      }, 8000);
       
-      return await processUserAfterRedirect(auth.currentUser);
-    }
-    
-    // Se ainda não encontrou, aguardar mais um pouco
-    console.log('⏳ firebase.js: Ainda não encontrou - aguardando mais 3 segundos...');
-    await new Promise(resolve => setTimeout(resolve, 3000));
-    
-    console.log('🔍 firebase.js: Última verificação auth.currentUser...');
-    console.log('🔍 firebase.js: auth.currentUser =', auth.currentUser ? auth.currentUser.email : 'null');
-    
-    if (auth.currentUser) {
-      console.log('═══════════════════════════════════════════════════════');
-      console.log('✅ firebase.js: USUÁRIO ENCONTRADO na última tentativa!');
-      console.log('✅ firebase.js: Email:', auth.currentUser.email);
-      console.log('═══════════════════════════════════════════════════════');
+      // Listener para mudanças de autenticação
+      const unsubscribe = onAuthStateChanged(auth, async (user) => {
+        if (!resolved && user) {
+          resolved = true;
+          clearTimeout(timeout);
+          unsubscribe();
+          
+          console.log('═══════════════════════════════════════════════════════');
+          console.log('✅ firebase.js: USUÁRIO ENCONTRADO via onAuthStateChanged!');
+          console.log('✅ firebase.js: Email:', user.email);
+          console.log('✅ firebase.js: Este é o método correto para mobile!');
+          console.log('═══════════════════════════════════════════════════════');
+          
+          const cleanUrl = window.location.origin + window.location.pathname;
+          window.history.replaceState({}, document.title, cleanUrl);
+          
+          const result = await processUserAfterRedirect(user);
+          resolve(result);
+        }
+      });
       
-      const cleanUrl = window.location.origin + window.location.pathname;
-      window.history.replaceState({}, document.title, cleanUrl);
-      
-      return await processUserAfterRedirect(auth.currentUser);
-    }
+      // Fallback: após 1 segundo, verificar se já tem usuário
+      setTimeout(() => {
+        if (!resolved && auth.currentUser) {
+          resolved = true;
+          clearTimeout(timeout);
+          unsubscribe();
+          
+          console.log('✅ firebase.js: USUÁRIO ENCONTRADO no fallback!');
+          
+          const cleanUrl = window.location.origin + window.location.pathname;
+          window.history.replaceState({}, document.title, cleanUrl);
+          
+          processUserAfterRedirect(auth.currentUser).then(resolve);
+        }
+      }, 1000);
+    });
     
     console.log('⚠️ firebase.js: Nenhum resultado de redirect e nenhum usuário autenticado');
     console.log('⚠️ firebase.js: POSSÍVEIS CAUSAS:');
