@@ -172,12 +172,16 @@ export async function loginWithGoogle() {
     if (isMobile) {
       console.log('═══════════════════════════════════════════════════════');
       console.log('📱 [MOBILE LOGIN] USANDO REDIRECT');
-      console.log('📱 [MOBILE LOGIN] Salvando flag googleLoginInProgress no sessionStorage');
+      console.log('📱 [MOBILE LOGIN] Salvando flag googleLoginInProgress no localStorage (mais seguro que sessionStorage)');
       console.log('═══════════════════════════════════════════════════════');
       
       // Salvar flag para identificar que estamos fazendo login
+      // IMPORTANTE: Usar localStorage ao invés de sessionStorage
+      // porque sessionStorage pode ser limpo durante redirects
+      localStorage.setItem('googleLoginInProgress', 'true');
       sessionStorage.setItem('googleLoginInProgress', 'true');
-      console.log('✅ [MOBILE LOGIN] Flag salva:', sessionStorage.getItem('googleLoginInProgress'));
+      console.log('✅ [MOBILE LOGIN] Flag salva em localStorage:', localStorage.getItem('googleLoginInProgress'));
+      console.log('✅ [MOBILE LOGIN] Flag salva em sessionStorage:', sessionStorage.getItem('googleLoginInProgress'));
       
       // Redirecionar para login do Google
       console.log('🚀 [MOBILE LOGIN] Chamando signInWithRedirect...');
@@ -264,6 +268,7 @@ export async function handleRedirectResult() {
     console.log('🔄 [REDIRECT] URL atual:', window.location.href);
     console.log('🔄 [REDIRECT] Usuário atual ANTES:', auth.currentUser ? auth.currentUser.email : 'null');
     console.log('🔄 [REDIRECT] sessionStorage googleLoginInProgress:', sessionStorage.getItem('googleLoginInProgress'));
+    console.log('🔄 [REDIRECT] localStorage googleLoginInProgress:', localStorage.getItem('googleLoginInProgress'));
     console.log('═══════════════════════════════════════════════════════');
     
     const result = await getRedirectResult(auth);
@@ -333,71 +338,47 @@ export async function handleRedirectResult() {
     // ABORDAGEM ALTERNATIVA: Verificação direta do usuário atual
     // Para mobile, às vezes o Firebase autentica mas não retorna pelo getRedirectResult
     
-    console.log('📱 firebase.js: Verificando autenticação mobile alternativa');
+    // NOVA ESTRATÉGIA: Como não há parâmetros na URL (Firebase pode tê-los removido),
+    // vamos aguardar o Firebase processar internamente e verificar auth.currentUser
+    console.log('📱 firebase.js: getRedirectResult retornou null - usando estratégia alternativa');
+    console.log('⏳ firebase.js: Aguardando Firebase processar autenticação...');
     
-    // Verificar se há parâmetros de auth na URL
-    const urlParams = new URLSearchParams(window.location.search);
-    const hasAuthParams = urlParams.toString().includes('auth') || 
-                         urlParams.toString().includes('code') ||
-                         urlParams.toString().includes('state');
+    // Aguardar 2 segundos para dar tempo do Firebase processar internamente
+    await new Promise(resolve => setTimeout(resolve, 2000));
     
-    console.log('📱 firebase.js: URL:', window.location.href);
-    console.log('📱 firebase.js: Tem parâmetros auth?', hasAuthParams);
+    console.log('🔍 firebase.js: Verificando auth.currentUser após delay...');
+    console.log('🔍 firebase.js: auth.currentUser =', auth.currentUser ? auth.currentUser.email : 'null');
     
-    if (hasAuthParams) {
-      console.log('🚨 firebase.js: PARÂMETROS AUTH DETECTADOS - TENTANDO ABORDAGEM ALTERNATIVA');
+    if (auth.currentUser) {
+      console.log('═══════════════════════════════════════════════════════');
+      console.log('✅ firebase.js: USUÁRIO ENCONTRADO! Firebase processou internamente!');
+      console.log('✅ firebase.js: Email:', auth.currentUser.email);
+      console.log('═══════════════════════════════════════════════════════');
       
-      // ESTRATÉGIA: Aguardar e verificar se o usuário foi autenticado automaticamente
-      console.log('⏳ firebase.js: Aguardando processamento do Firebase...');
+      // Limpar URL
+      const cleanUrl = window.location.origin + window.location.pathname;
+      window.history.replaceState({}, document.title, cleanUrl);
       
-      // Aguardar 1 segundo para o Firebase processar
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      return await processUserAfterRedirect(auth.currentUser);
+    }
+    
+    // Se ainda não encontrou, aguardar mais um pouco
+    console.log('⏳ firebase.js: Ainda não encontrou - aguardando mais 3 segundos...');
+    await new Promise(resolve => setTimeout(resolve, 3000));
+    
+    console.log('🔍 firebase.js: Última verificação auth.currentUser...');
+    console.log('🔍 firebase.js: auth.currentUser =', auth.currentUser ? auth.currentUser.email : 'null');
+    
+    if (auth.currentUser) {
+      console.log('═══════════════════════════════════════════════════════');
+      console.log('✅ firebase.js: USUÁRIO ENCONTRADO na última tentativa!');
+      console.log('✅ firebase.js: Email:', auth.currentUser.email);
+      console.log('═══════════════════════════════════════════════════════');
       
-      // Verificar diretamente se há um usuário autenticado
-      if (auth.currentUser) {
-        console.log('✅ firebase.js: USUÁRIO ENCONTRADO DIRETAMENTE!');
-        console.log('✅ firebase.js: Email:', auth.currentUser.email);
-        
-        // Limpar URL imediatamente
-        const cleanUrl = window.location.origin + window.location.pathname;
-        window.history.replaceState({}, document.title, cleanUrl);
-        console.log('🧹 firebase.js: URL limpa');
-        
-        return await processUserAfterRedirect(auth.currentUser);
-      }
+      const cleanUrl = window.location.origin + window.location.pathname;
+      window.history.replaceState({}, document.title, cleanUrl);
       
-      // Se não encontrou, tentar o método tradicional
-      console.log('🔄 firebase.js: Tentando getRedirectResult tradicional...');
-      try {
-        const result = await getRedirectResult(auth);
-        if (result && result.user) {
-          console.log('✅ firebase.js: getRedirectResult funcionou!');
-          
-          // Limpar URL
-          const cleanUrl = window.location.origin + window.location.pathname;
-          window.history.replaceState({}, document.title, cleanUrl);
-          
-          return await processUserAfterRedirect(result.user);
-        }
-      } catch (error) {
-        console.error('❌ firebase.js: Erro no getRedirectResult:', error);
-      }
-      
-      // Último recurso: verificar novamente após mais delay
-      console.log('🔄 firebase.js: Tentando verificação final...');
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      if (auth.currentUser) {
-        console.log('✅ firebase.js: USUÁRIO ENCONTRADO NA VERIFICAÇÃO FINAL!');
-        
-        const cleanUrl = window.location.origin + window.location.pathname;
-        window.history.replaceState({}, document.title, cleanUrl);
-        
-        return await processUserAfterRedirect(auth.currentUser);
-      }
-      
-      console.log('⚠️ firebase.js: Nenhuma abordagem funcionou');
-      return { success: false, error: 'Nenhuma abordagem de autenticação funcionou' };
+      return await processUserAfterRedirect(auth.currentUser);
     }
     
     console.log('⚠️ firebase.js: Nenhum resultado de redirect e nenhum usuário autenticado');

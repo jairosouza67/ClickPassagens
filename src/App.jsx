@@ -67,8 +67,11 @@ function App() {
       console.log('🔍 [APP] URL:', window.location.href);
       
       // Verificar se estamos voltando de um redirect do Google
-      const googleLoginInProgress = sessionStorage.getItem('googleLoginInProgress');
-      console.log('🔍 [APP] Flag googleLoginInProgress:', googleLoginInProgress);
+      // Verificar AMBOS sessionStorage e localStorage
+      const googleLoginInProgress = sessionStorage.getItem('googleLoginInProgress') || 
+                                    localStorage.getItem('googleLoginInProgress');
+      console.log('🔍 [APP] Flag googleLoginInProgress (session):', sessionStorage.getItem('googleLoginInProgress'));
+      console.log('🔍 [APP] Flag googleLoginInProgress (local):', localStorage.getItem('googleLoginInProgress'));
       console.log('═══════════════════════════════════════════════════════');
       
       if (googleLoginInProgress) {
@@ -84,18 +87,25 @@ function App() {
             console.log('═══════════════════════════════════════════════════════');
             console.log('✅ [APP] Redirect Google processado com sucesso!');
             console.log('✅ [APP] Usuário:', result.user?.email);
-            console.log('✅ [APP] Removendo flag googleLoginInProgress');
+            console.log('✅ [APP] Removendo flags googleLoginInProgress');
             console.log('═══════════════════════════════════════════════════════');
             sessionStorage.removeItem('googleLoginInProgress');
+            localStorage.removeItem('googleLoginInProgress');
           } else if (result && !result.noResult) {
             console.log('═══════════════════════════════════════════════════════');
             console.log('⚠️ [APP] Erro no redirect:', result.error);
+            console.log('⚠️ [APP] Removendo flags mesmo com erro para evitar loop');
             console.log('═══════════════════════════════════════════════════════');
+            sessionStorage.removeItem('googleLoginInProgress');
+            localStorage.removeItem('googleLoginInProgress');
           }
         } catch (error) {
           console.log('═══════════════════════════════════════════════════════');
           console.error('❌ [APP] Erro ao processar redirect:', error);
+          console.log('❌ [APP] Removendo flags para evitar loop');
           console.log('═══════════════════════════════════════════════════════');
+          sessionStorage.removeItem('googleLoginInProgress');
+          localStorage.removeItem('googleLoginInProgress');
         }
       } else {
         console.log('ℹ️ [APP] Nenhum redirect pendente');
