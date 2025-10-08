@@ -167,11 +167,12 @@ export async function loginWithGoogle() {
   console.log('═══════════════════════════════════════════════════════');
   
   try {
-    // TEMPORÁRIO: Forçar POPUP em mobile para teste de debug
-    // Se funcionar, o problema é específico do redirect
-    console.log('⚠️ [DEBUG] MODO TESTE: Usando POPUP em mobile');
+    // Usar POPUP para todos os dispositivos (mobile e desktop)
+    // Popup é mais confiável e evita problemas com redirect URIs
+    console.log('🔵 [Firebase] Usando POPUP para autenticação...');
     
-    const usePopup = true; // Forçar popup para teste
+    // Sempre usar popup (funciona em mobile e desktop)
+    const usePopup = true;
     
     if (!usePopup && isMobile) {
       console.log('═══════════════════════════════════════════════════════');
