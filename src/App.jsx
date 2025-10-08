@@ -95,20 +95,26 @@ function App() {
             console.log('═══════════════════════════════════════════════════════');
             console.log('⚠️ [APP] Firebase não processou a autenticação');
             console.log('⚠️ [APP] Domínio atual:', window.location.hostname);
-            console.log('⚠️ [APP] AÇÃO NECESSÁRIA: Verificar domínios autorizados no Firebase');
+            console.log('⚠️ [APP] AÇÃO NECESSÁRIA: Verificar URIs de redirect no Google Cloud Console');
             console.log('═══════════════════════════════════════════════════════');
             
             // Mostrar alerta visual para o usuário
-            alert(`⚠️ ERRO DE CONFIGURAÇÃO\n\n` +
-                  `O domínio "${window.location.hostname}" precisa ser autorizado no Firebase.\n\n` +
-                  `Por favor, contate o administrador do sistema.\n\n` +
-                  `Detalhes técnicos:\n` +
-                  `- Acesse: Firebase Console\n` +
-                  `- Authentication > Settings > Authorized domains\n` +
-                  `- Adicione: ${window.location.hostname}`);
+            const redirectUri = `https://${window.location.hostname}/__/auth/handler`;
+            const jsOrigin = `https://${window.location.hostname}`;
+            
+            alert(`⚠️ ERRO DE CONFIGURAÇÃO OAUTH\n\n` +
+                  `O Google não está retornando a autenticação.\n\n` +
+                  `SOLUÇÃO:\n` +
+                  `1. Acesse: https://console.cloud.google.com/\n` +
+                  `2. APIs & Services > Credentials\n` +
+                  `3. Edite o OAuth 2.0 Client ID\n` +
+                  `4. Adicione em "Authorized redirect URIs":\n   ${redirectUri}\n` +
+                  `5. Adicione em "Authorized JavaScript origins":\n   ${jsOrigin}\n` +
+                  `6. Salve e aguarde 5-10 minutos`);
             
             sessionStorage.removeItem('googleLoginInProgress');
             localStorage.removeItem('googleLoginInProgress');
+            localStorage.removeItem('googleLoginTimestamp');
           } else if (result && !result.noResult) {
             console.log('═══════════════════════════════════════════════════════');
             console.log('⚠️ [APP] Erro no redirect:', result.error);

@@ -183,6 +183,16 @@ export async function loginWithGoogle() {
       console.log('✅ [MOBILE LOGIN] Flag salva em localStorage:', localStorage.getItem('googleLoginInProgress'));
       console.log('✅ [MOBILE LOGIN] Flag salva em sessionStorage:', sessionStorage.getItem('googleLoginInProgress'));
       
+      // Salvar timestamp para debug
+      localStorage.setItem('googleLoginTimestamp', new Date().toISOString());
+      
+      console.log('═══════════════════════════════════════════════════════');
+      console.log('📱 [MOBILE LOGIN] INFORMAÇÕES DE DEBUG:');
+      console.log('📱 [MOBILE LOGIN] Auth Domain:', auth.config.authDomain);
+      console.log('📱 [MOBILE LOGIN] API Key:', auth.config.apiKey?.substring(0, 10) + '...');
+      console.log('📱 [MOBILE LOGIN] Redirect URI esperada:', `https://${window.location.hostname}/__/auth/handler`);
+      console.log('═══════════════════════════════════════════════════════');
+      
       // Redirecionar para login do Google
       console.log('🚀 [MOBILE LOGIN] Chamando signInWithRedirect...');
       await signInWithRedirect(auth, googleProvider);
@@ -270,6 +280,15 @@ export async function handleRedirectResult() {
     console.log('🔄 [REDIRECT] Usuário atual ANTES:', auth.currentUser ? auth.currentUser.email : 'null');
     console.log('🔄 [REDIRECT] sessionStorage googleLoginInProgress:', sessionStorage.getItem('googleLoginInProgress'));
     console.log('🔄 [REDIRECT] localStorage googleLoginInProgress:', localStorage.getItem('googleLoginInProgress'));
+    
+    const loginTimestamp = localStorage.getItem('googleLoginTimestamp');
+    if (loginTimestamp) {
+      const elapsed = (Date.now() - new Date(loginTimestamp).getTime()) / 1000;
+      console.log('🔄 [REDIRECT] Tempo desde início do login:', elapsed.toFixed(2), 'segundos');
+    }
+    
+    console.log('🔄 [REDIRECT] Auth Domain configurado:', auth.config.authDomain);
+    console.log('🔄 [REDIRECT] Redirect URI esperada:', `https://${window.location.hostname}/__/auth/handler`);
     console.log('═══════════════════════════════════════════════════════');
     
     const result = await getRedirectResult(auth);
@@ -355,10 +374,16 @@ export async function handleRedirectResult() {
           resolved = true;
           console.log('⏰ firebase.js: TIMEOUT - Firebase não processou em 8 segundos');
           console.log('⚠️ firebase.js: Nenhum resultado de redirect e nenhum usuário autenticado');
-          console.log('⚠️ firebase.js: POSSÍVEIS CAUSAS:');
-          console.log('⚠️ firebase.js: 1. Firebase não conseguiu processar o redirect');
-          console.log('⚠️ firebase.js: 2. Credenciais do Google OAuth podem estar incorretas');
-          console.log('⚠️ firebase.js: 3. Problema de comunicação entre Firebase e Google');
+          console.log('═══════════════════════════════════════════════════════');
+          console.log('⚠️ POSSÍVEIS CAUSAS:');
+          console.log('⚠️ 1. URI de Redirect não autorizada no Google Cloud Console');
+          console.log('⚠️ 2. Verificar em: https://console.cloud.google.com/');
+          console.log('⚠️ 3. APIs & Services > Credentials > OAuth 2.0 Client IDs');
+          console.log('⚠️ 4. Adicionar esta URI EXATA nas "Authorized redirect URIs":');
+          console.log(`⚠️    https://${window.location.hostname}/__/auth/handler`);
+          console.log('⚠️ 5. Também verificar "Authorized JavaScript origins":');
+          console.log(`⚠️    https://${window.location.hostname}`);
+          console.log('═══════════════════════════════════════════════════════');
           resolve({ success: false, noResult: true });
         }
       }, 8000);
